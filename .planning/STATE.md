@@ -4,20 +4,20 @@
 
 **Milestone:** 1 (MVP Launch)
 **Phase:** 02 (Mobile UI Shell)
-**Plan:** 03 of 06 complete (02-01, 02-02, 02-03 completed)
+**Plan:** 04 of 06 complete (02-01, 02-02, 02-03, 02-04 completed)
 **Status:** In Progress
 **Last Updated:** 2026-02-04
 
-**Progress:** [####------] 50% (Phase 02: 3/6 plans complete)
+**Progress:** [######----] 67% (Phase 02: 4/6 plans complete)
 
-**Last activity:** 2026-02-04 - Completed 02-01-PLAN.md (Image Quality Detection)
+**Last activity:** 2026-02-04 - Completed 02-04-PLAN.md (Camera Capture Interface)
 
 ---
 
 ## Session Continuity
 
-**Last session:** 2026-02-04T20:03:08Z
-**Stopped at:** Completed 02-01-PLAN.md
+**Last session:** 2026-02-04T20:06:42Z
+**Stopped at:** Completed 02-04-PLAN.md
 **Resume file:** None
 
 ---
@@ -123,6 +123,12 @@
 | Count badge cap | 99+ maximum | Prevents layout issues with large numbers | 2026-02-04 |
 | Empty state pattern | Icon + heading + message + optional CTA | Clear guidance without overwhelming users | 2026-02-04 |
 | Thumb zone minimum | 56px (min-h-14) for primary buttons | Comfortable reach in bottom screen area | 2026-02-04 |
+| Press-and-hold duration | 1 second hold required | Prevents accidental captures while remaining responsive | 2026-02-04 |
+| Quality validation enforcement | Strict rejection - no bypass | Poor photos lead to poor AI results; better to reject upfront | 2026-02-04 |
+| Capture button size | 80x80px | Optimal thumb zone size for comfortable one-handed operation | 2026-02-04 |
+| Tip rotation frequency | 4 seconds per tip | Enough time to read, short enough to see variety | 2026-02-04 |
+| Corner bracket style | L-shaped brackets at 4 corners | Frames capture area without obscuring view, premium feel | 2026-02-04 |
+| Gallery button placement | Bottom-left corner | Secondary action, easily accessible but not primary focus | 2026-02-04 |
 
 ### UX Quality Gaps - Approved Fixes
 
@@ -222,6 +228,15 @@
 - Chat mutations (createConversation, markAsRead)
 - sendMessage action with conversation history and error handling
 - **Summary:** `.planning/phases/02-mobile-ui-shell/02-03-SUMMARY.md`
+
+**Plan 04 - Camera Capture Interface (Completed 2026-02-04):**
+- Capacitor Camera wrapper (capturePhoto, selectFromGallery, checkCameraPermission)
+- CaptureButton with 1-second press-and-hold gesture and visual progress ring
+- GuidanceOverlay with corner brackets and rotating tips (4-second cycle)
+- PhotoPreview with automatic quality validation and strict rejection
+- CameraCapture state machine orchestrating full capture flow
+- Home page integration with camera open/close state management
+- **Summary:** `.planning/phases/02-mobile-ui-shell/02-04-SUMMARY.md`
 
 ---
 
