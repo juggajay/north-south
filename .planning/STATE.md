@@ -3,22 +3,22 @@
 ## Current Position
 
 **Milestone:** 1 (MVP Launch)
-**Phase:** 01 (Foundation Setup)
-**Plan:** 03 of 03 complete (gap closure plans)
-**Status:** Phase Complete
+**Phase:** 02 (Mobile UI Shell)
+**Plan:** 03 of 06 complete
+**Status:** In Progress
 **Last Updated:** 2026-02-04
 
-**Progress:** [##########] 100% (Phase 01 Complete)
+**Progress:** [####------] 50% (Phase 02: 3/6 plans complete)
 
-**Last activity:** 2026-02-04 - Completed 01-03-PLAN.md (PWA Manifest & Icons)
+**Last activity:** 2026-02-04 - Completed 02-03-PLAN.md (Chat Backend)
 
 ---
 
 ## Session Continuity
 
-**Last session:** 2026-02-04T00:32:34Z
-**Stopped at:** Completed 01-03-PLAN.md
-**Resume file:** None (Phase 01 complete)
+**Last session:** 2026-02-04T00:59:00Z
+**Stopped at:** Completed 02-03-PLAN.md
+**Resume file:** None
 
 ---
 
@@ -38,7 +38,9 @@
 
 | Decision | Choice | Rationale | Date |
 |----------|--------|-----------|------|
-| Chat model | Gemini 3.0 Flash | Fast, initial qualification only | 2026-02-03 |
+| Chat model | Gemini 2.0 Flash | Fast, production-stable model | 2026-02-03 |
+| Gemini model version | 2.0 Flash over 3.0 preview | Production stability over preview features | 2026-02-04 |
+| Chat history context | Last 20 messages | Balance context quality with token usage | 2026-02-04 |
 | Vision analysis | Claude Vision API | Space analysis, style extraction | 2026-02-03 |
 | Dimension estimation | Depth Anything V2 | Monocular depth, good accuracy | 2026-02-03 |
 | Render generation | Nano Banana Pro | Fast photorealistic renders | 2026-02-03 |
@@ -136,7 +138,7 @@
 | Google Play Developer account | Android deployment | Pending |
 | Vercel account | Web hosting | Pending |
 | Claude API key | Vision analysis | Pending |
-| Gemini API key | Chat | Pending |
+| Gemini API key | Chat | **Required - Backend ready** |
 | Depth Anything V2 access | Dimension estimation | Pending |
 | Nano Banana Pro access | Render generation | Pending |
 | Resend account | Transactional emails | Pending |
@@ -185,6 +187,19 @@
 - Favicon.ico for browser compatibility
 - Programmatic icon generation scripts
 - **Summary:** `.planning/phases/01-foundation/01-03-SUMMARY.md`
+
+---
+
+## Phase 02 Deliverables
+
+**Plan 03 - Chat Backend (Completed 2026-02-04):**
+- Chat tables (conversations, messages) in Convex schema with indexes
+- Gemini 2.0 Flash integration with @google/genai SDK
+- Tradesperson personality with strict product-knowledge boundaries
+- Chat queries (getConversation, listConversations, getUnreadCount)
+- Chat mutations (createConversation, markAsRead)
+- sendMessage action with conversation history and error handling
+- **Summary:** `.planning/phases/02-mobile-ui-shell/02-03-SUMMARY.md`
 
 ---
 
