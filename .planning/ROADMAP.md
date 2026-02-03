@@ -9,7 +9,7 @@
 ---
 
 ### Phase 01: Foundation Setup
-**Status:** Not Started  
+**Status:** Gap Closure
 **Requirements:** ARCH-001 → ARCH-006, BACK-001 → BACK-004, AUTH-001 → AUTH-004, Database Schema
 
 **Deliverables:**
@@ -21,16 +21,22 @@
 - CI/CD pipeline for all three targets
 
 **Must-Haves:**
-- [ ] `npm run build` produces deployable artifacts for web, iOS, Android
+- [x] `npm run build` produces deployable artifacts for web, iOS, Android
 - [ ] User can register, login, logout
-- [ ] Convex database seeded with product data (materials, hardware, modules)
-- [ ] Type-safe queries working frontend ↔ backend
+- [x] Convex database seeded with product data (materials, hardware, modules)
+- [x] Type-safe queries working frontend ↔ backend
 - [ ] App installable as PWA
+
+**Plans:** 3 plans
+Plans:
+- [x] 01-01-PLAN.md — Project setup, Convex backend, schema, seed data, CI/CD
+- [ ] 01-02-PLAN.md — Auth UI (login/register forms, logout button) [gap closure]
+- [ ] 01-03-PLAN.md — PWA manifest and icons [gap closure]
 
 ---
 
 ### Phase 02: Mobile UI Shell
-**Status:** Not Started  
+**Status:** Not Started
 **Requirements:** NAV-001 → NAV-004, CAM-001 → CAM-005, CHAT-001 → CHAT-004
 
 **Deliverables:**
@@ -54,7 +60,7 @@
 ---
 
 ### Phase 03: AI Pipeline
-**Status:** Not Started  
+**Status:** Not Started
 **Requirements:** PROC-001 → PROC-003, AI-001 → AI-007, DIM-001 → DIM-004
 
 **Deliverables:**
@@ -78,7 +84,7 @@
 ---
 
 ### Phase 04: 3D Configurator Core
-**Status:** Not Started  
+**Status:** Not Started
 **Requirements:** CFG-001 → CFG-005, DIM-UI-001 → DIM-UI-005, SLOT-001 → SLOT-007, MOD-B01 → MOD-B07, MOD-O01 → MOD-O05, TOUCH-001 → TOUCH-005, CFG-F01 → CFG-F05
 
 **Deliverables:**
@@ -109,7 +115,7 @@
 ---
 
 ### Phase 05: Finishes & Pricing
-**Status:** Not Started  
+**Status:** Not Started
 **Requirements:** FIN-001 → FIN-005, REV-001 → REV-004, PRICE-001 → PRICE-006, PRICE-D01 → PRICE-D04
 
 **Deliverables:**
@@ -136,7 +142,7 @@
 ---
 
 ### Phase 06: Quote Submission Flow
-**Status:** Not Started  
+**Status:** Not Started
 **Requirements:** SUBMIT-001 → SUBMIT-005, QUEUE-001 → QUEUE-005, QUOTE-001 → QUOTE-004, PAY-001 → PAY-004
 
 **Deliverables:**
@@ -160,7 +166,7 @@
 ---
 
 ### Phase 07: Customer Portal & Notifications
-**Status:** Not Started  
+**Status:** Not Started
 **Requirements:** ORD-001 → ORD-008, PORT-001 → PORT-007, NOTIF-001 → NOTIF-006
 
 **Deliverables:**
@@ -186,7 +192,7 @@
 ---
 
 ### Phase 08: Production Integration & Admin
-**Status:** Not Started  
+**Status:** Not Started
 **Requirements:** PROD-001 → PROD-010, QR-001 → QR-003, DASH-001 → DASH-006
 
 **Deliverables:**
@@ -217,7 +223,7 @@
 
 | Phase | Name | Status | Requirements Covered |
 |-------|------|--------|---------------------|
-| 01 | Foundation Setup | Not Started | ARCH-*, BACK-*, AUTH-* |
+| 01 | Foundation Setup | Gap Closure | ARCH-*, BACK-*, AUTH-* |
 | 02 | Mobile UI Shell | Not Started | NAV-*, CAM-*, CHAT-* |
 | 03 | AI Pipeline | Not Started | PROC-*, AI-*, DIM-* |
 | 04 | 3D Configurator Core | Not Started | CFG-*, SLOT-*, MOD-*, TOUCH-* |
