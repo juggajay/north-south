@@ -4,20 +4,20 @@
 
 **Milestone:** 1 (MVP Launch)
 **Phase:** 02 (Mobile UI Shell)
-**Plan:** 02 of 06 complete (02-02 completed, 02-03 also complete)
+**Plan:** 03 of 06 complete (02-01, 02-02, 02-03 completed)
 **Status:** In Progress
 **Last Updated:** 2026-02-04
 
-**Progress:** [###-------] 33% (Phase 02: 2/6 plans complete)
+**Progress:** [####------] 50% (Phase 02: 3/6 plans complete)
 
-**Last activity:** 2026-02-04 - Completed 02-02-PLAN.md (Tab Badges & Empty States)
+**Last activity:** 2026-02-04 - Completed 02-01-PLAN.md (Image Quality Detection)
 
 ---
 
 ## Session Continuity
 
-**Last session:** 2026-02-04T20:03:00Z
-**Stopped at:** Completed 02-02-PLAN.md
+**Last session:** 2026-02-04T20:03:08Z
+**Stopped at:** Completed 02-01-PLAN.md
 **Resume file:** None
 
 ---
@@ -115,6 +115,9 @@
 
 | Decision | Choice | Rationale | Date |
 |----------|--------|-----------|------|
+| Blur detection threshold | Laplacian variance < 100 | Empirically tuned for typical mobile photos | 2026-02-04 |
+| Brightness thresholds | <50 dark, >220 bright | Practical ranges for under/overexposure | 2026-02-04 |
+| Image downscaling | 1024px max dimension | Performance optimization for large images | 2026-02-04 |
 | Badge visibility | Hidden by default | Infrastructure ready, data sources wired in future phases | 2026-02-04 |
 | Badge positioning | Absolute positioning relative to icon | Consistent placement without affecting touch targets | 2026-02-04 |
 | Count badge cap | 99+ maximum | Prevents layout issues with large numbers | 2026-02-04 |
@@ -201,6 +204,15 @@
 ---
 
 ## Phase 02 Deliverables
+
+**Plan 01 - Image Quality Detection (Completed 2026-02-04):**
+- Client-side blur detection via Laplacian variance (threshold: 100)
+- Brightness detection via pixel averaging (thresholds: <50 dark, >220 bright)
+- Combined validation with user-friendly error messages
+- Canvas API-based image processing with downscaling to 1024px
+- Helper functions: detectBlur, detectBrightness, validateImageQuality
+- Full test coverage (14 tests) with Canvas API mocks
+- **Summary:** `.planning/phases/02-mobile-ui-shell/02-01-SUMMARY.md`
 
 **Plan 03 - Chat Backend (Completed 2026-02-04):**
 - Chat tables (conversations, messages) in Convex schema with indexes
