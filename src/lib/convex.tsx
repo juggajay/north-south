@@ -7,18 +7,18 @@ import { ReactNode } from "react";
 const convexUrl = process.env.NEXT_PUBLIC_CONVEX_URL;
 
 // Create a Convex client instance
-// Note: In development, NEXT_PUBLIC_CONVEX_URL may be undefined
-// The app will work in offline mode until Convex is configured
-const convex = convexUrl ? new ConvexReactClient(convexUrl) : null;
+// Note: In development/build, NEXT_PUBLIC_CONVEX_URL may be undefined
+// We create a stub client with a fake URL to enable hooks during build
+// The client will fail to connect but the app structure will render
+const convex = convexUrl
+  ? new ConvexReactClient(convexUrl)
+  : new ConvexReactClient("https://offline.convex.cloud");  // Stub URL for build/offline mode
 
 export function ConvexClientProvider({ children }: { children: ReactNode }) {
-  if (!convex) {
-    // Return children without Convex wrapper if not configured
-    // This allows the app to run in development without Convex
+  if (!convexUrl) {
     console.warn(
-      "NEXT_PUBLIC_CONVEX_URL is not set. Running in offline mode."
+      "NEXT_PUBLIC_CONVEX_URL is not set. Running in offline mode with stub client."
     );
-    return <>{children}</>;
   }
 
   return (
