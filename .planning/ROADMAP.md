@@ -37,7 +37,7 @@ Plans:
 ---
 
 ### Phase 02: Mobile UI Shell
-**Status:** Not Started
+**Status:** Planned
 **Requirements:** NAV-001 → NAV-004, CAM-001 → CAM-005, CHAT-001 → CHAT-004
 
 **Deliverables:**
@@ -57,6 +57,15 @@ Plans:
 - [ ] Chat responds with product knowledge
 - [ ] All modals use bottom sheet pattern
 - [ ] Touch targets meet 44x44px minimum
+
+**Plans:** 6 plans
+Plans:
+- [ ] 02-01-PLAN.md — Image quality detection (TDD: blur/brightness validation)
+- [ ] 02-02-PLAN.md — Tab navigation badges and empty states
+- [ ] 02-03-PLAN.md — Chat backend with Gemini integration
+- [ ] 02-04-PLAN.md — Camera capture interface with guidance overlay
+- [ ] 02-05-PLAN.md — Chat UI and conversation management
+- [ ] 02-06-PLAN.md — Human verification of complete mobile shell
 
 ---
 
@@ -225,7 +234,7 @@ Plans:
 | Phase | Name | Status | Requirements Covered |
 |-------|------|--------|---------------------|
 | 01 | Foundation Setup | Complete ✓ | ARCH-*, BACK-*, AUTH-* |
-| 02 | Mobile UI Shell | Not Started | NAV-*, CAM-*, CHAT-* |
+| 02 | Mobile UI Shell | Planned | NAV-*, CAM-*, CHAT-* |
 | 03 | AI Pipeline | Not Started | PROC-*, AI-*, DIM-* |
 | 04 | 3D Configurator Core | Not Started | CFG-*, SLOT-*, MOD-*, TOUCH-* |
 | 05 | Finishes & Pricing | Not Started | FIN-*, REV-*, PRICE-* |
