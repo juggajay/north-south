@@ -7,6 +7,7 @@ import {
   internalQuery,
 } from "./_generated/server";
 import { v } from "convex/values";
+import { Id } from "./_generated/dataModel";
 import { SYSTEM_INSTRUCTION, GEMINI_CONFIG } from "../src/lib/gemini";
 import { internal } from "./_generated/api";
 
@@ -186,7 +187,7 @@ export const sendMessage = action({
     message: v.string(),
     userId: v.optional(v.id("users")),
   },
-  handler: async (ctx, args) => {
+  handler: async (ctx, args): Promise<{ conversationId: Id<"conversations"> | null; response: string; error?: boolean }> => {
     try {
       // Initialize Gemini
       const apiKey = process.env.GEMINI_API_KEY;
@@ -221,7 +222,7 @@ export const sendMessage = action({
 
       // Send message
       const response = await chat.sendMessage({ message: args.message });
-      const assistantMessage = response.text;
+      const assistantMessage = response.text || "I'm having trouble responding right now.";
 
       // Store both messages
       const conversationId = await ctx.runMutation(
