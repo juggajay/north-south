@@ -3,6 +3,8 @@
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { Home, Palette, Package, MessageCircle } from "lucide-react";
+import { useQuery } from "convex/react";
+import { api } from "../../../convex/_generated/api";
 import { cn } from "@/lib/utils";
 import { TabBadge } from "./TabBadge";
 
@@ -34,6 +36,12 @@ const tabs = [
 export function BottomNav() {
   const pathname = usePathname();
 
+  // Query unread count from Convex
+  // TODO: Wire up userId when auth is ready
+  const unreadCount = useQuery(api.chat.getUnreadCount, {
+    userId: undefined,
+  });
+
   return (
     <nav className="fixed bottom-0 left-0 right-0 z-50 border-t border-zinc-200 bg-white/80 backdrop-blur-lg dark:border-zinc-800 dark:bg-zinc-950/80">
       {/* Safe area padding for devices with home indicator */}
@@ -63,11 +71,15 @@ export function BottomNav() {
                     )}
                     strokeWidth={isActive ? 2.5 : 2}
                   />
-                  {/* Badge - hidden by default, will be wired to real data later */}
-                  {tab.badge && (
+                  {/* Badge - wired to real data */}
+                  {tab.badge && tab.badge.key === "chat" && (
                     <TabBadge
-                      showDot={tab.badge.type === "dot" ? false : undefined}
-                      count={tab.badge.type === "count" ? undefined : undefined}
+                      showDot={unreadCount !== undefined && unreadCount > 0}
+                    />
+                  )}
+                  {tab.badge && tab.badge.key === "orders" && (
+                    <TabBadge
+                      count={undefined} // TODO: Wire up orders count
                     />
                   )}
                 </div>
