@@ -4,6 +4,7 @@ import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { Home, Palette, Package, MessageCircle } from "lucide-react";
 import { cn } from "@/lib/utils";
+import { TabBadge } from "./TabBadge";
 
 const tabs = [
   {
@@ -20,11 +21,13 @@ const tabs = [
     name: "Orders",
     href: "/orders",
     icon: Package,
+    badge: { type: "count" as const, key: "orders" },
   },
   {
     name: "Chat",
     href: "/chat",
     icon: MessageCircle,
+    badge: { type: "dot" as const, key: "chat" },
   },
 ];
 
@@ -46,19 +49,28 @@ export function BottomNav() {
                 key={tab.name}
                 href={tab.href}
                 className={cn(
-                  "flex min-h-[44px] min-w-[44px] flex-col items-center justify-center gap-1 px-3 py-2 transition-colors",
+                  "relative flex min-h-[44px] min-w-[44px] flex-col items-center justify-center gap-1 px-3 py-2 transition-colors",
                   isActive
                     ? "text-zinc-900 dark:text-zinc-50"
                     : "text-zinc-500 dark:text-zinc-400"
                 )}
               >
-                <tab.icon
-                  className={cn(
-                    "h-6 w-6 transition-transform",
-                    isActive && "scale-110"
+                <div className="relative">
+                  <tab.icon
+                    className={cn(
+                      "h-6 w-6 transition-transform",
+                      isActive && "scale-110"
+                    )}
+                    strokeWidth={isActive ? 2.5 : 2}
+                  />
+                  {/* Badge - hidden by default, will be wired to real data later */}
+                  {tab.badge && (
+                    <TabBadge
+                      showDot={tab.badge.type === "dot" ? false : undefined}
+                      count={tab.badge.type === "count" ? undefined : undefined}
+                    />
                   )}
-                  strokeWidth={isActive ? 2.5 : 2}
-                />
+                </div>
                 <span
                   className={cn(
                     "text-xs transition-all",

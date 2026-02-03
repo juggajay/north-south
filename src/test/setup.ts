@@ -25,7 +25,8 @@ Object.defineProperty(window, "matchMedia", {
 // Add Canvas API support for image quality tests
 // jsdom doesn't fully support canvas, so we polyfill necessary methods
 if (typeof HTMLCanvasElement !== "undefined") {
-  HTMLCanvasElement.prototype.getContext = function (contextId: string) {
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  (HTMLCanvasElement.prototype.getContext as any) = function (this: any, contextId: string) {
     if (contextId === "2d") {
       return {
         canvas: this,
@@ -91,6 +92,22 @@ if (typeof ImageData === "undefined") {
         this.height = widthOrHeight;
         this.data = new Uint8ClampedArray(this.width * this.height * 4);
       }
+    }
+  };
+}
+
+// Mock Image constructor to support async loading in tests
+if (typeof Image !== "undefined") {
+  const OriginalImage = Image;
+  (global as any).Image = class extends OriginalImage {
+    constructor() {
+      super();
+      // Defer onload to next tick to simulate async behavior
+      setTimeout(() => {
+        if (this.onload) {
+          this.onload(new Event("load"));
+        }
+      }, 0);
     }
   };
 }
