@@ -8,10 +8,13 @@
  * @module
  */
 
+import type * as auth from "../auth.js";
 import type * as designs from "../designs.js";
 import type * as users from "../users.js";
 import type * as submissions from "../submissions.js";
 import type * as seed from "../seed.js";
+import type * as products_materials from "../products/materials.js";
+import type * as products_hardware from "../products/hardware.js";
 
 import type {
   ApiFromModules,
@@ -28,10 +31,13 @@ import type {
  * ```
  */
 declare const fullApi: ApiFromModules<{
+  auth: typeof auth;
   designs: typeof designs;
   users: typeof users;
   submissions: typeof submissions;
   seed: typeof seed;
+  "products/materials": typeof products_materials;
+  "products/hardware": typeof products_hardware;
 }>;
 export declare const api: FilterApi<
   typeof fullApi,
