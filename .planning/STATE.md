@@ -4,21 +4,21 @@
 
 **Milestone:** 1 (MVP Launch)
 **Phase:** 01 (Foundation Setup)
-**Plan:** 01 of 01 complete
-**Status:** Phase 01 Complete
-**Last Updated:** 2026-02-03
+**Plan:** 03 of 03 complete (gap closure plans)
+**Status:** Phase Complete
+**Last Updated:** 2026-02-04
 
-**Progress:** [##########] 100% (Phase 01)
+**Progress:** [##########] 100% (Phase 01 Complete)
 
-**Last activity:** 2026-02-03 - Completed 01-01-PLAN.md
+**Last activity:** 2026-02-04 - Completed 01-03-PLAN.md (PWA Manifest & Icons)
 
 ---
 
 ## Session Continuity
 
-**Last session:** 2026-02-03T13:02:32Z
-**Stopped at:** Completed 01-01-PLAN.md
-**Resume file:** None (phase complete)
+**Last session:** 2026-02-04T00:32:34Z
+**Stopped at:** Completed 01-03-PLAN.md
+**Resume file:** None (Phase 01 complete)
 
 ---
 
@@ -102,6 +102,9 @@
 | Tab routing | (tabs) route group | Clean URL structure, no /home | 2026-02-03 |
 | Button variant | Added 'primary' | Brand styling distinct from shadcn default | 2026-02-03 |
 | BottomSheet snaps | 25%/50%/85% | Good coverage for varied content | 2026-02-03 |
+| PWA icon generation | Programmatic Node.js scripts | Reproducible, cross-platform, no external tools | 2026-02-04 |
+| PWA icon color | Zinc-900 (#18181b) | Matches app theme | 2026-02-04 |
+| PWA orientation | portrait-primary | Mobile-first app (99% mobile usage) | 2026-02-04 |
 
 ### UX Quality Gaps - Approved Fixes
 
@@ -153,8 +156,7 @@
 
 ## Phase 01 Deliverables
 
-**Completed 2026-02-03:**
-
+**Plan 01 - Project Setup & Convex Foundation (Completed 2026-02-03):**
 - Next.js 14 with static export for Capacitor
 - Capacitor 8 with iOS/Android native projects (8 plugins)
 - Convex schema with 15 tables
@@ -165,8 +167,21 @@
 - UI components (Button with loading, Input with label/error, BottomSheet)
 - CI/CD workflows (lint-test, deploy-preview)
 - Test setup with Vitest
+- **Summary:** `.planning/phases/01-foundation/01-01-SUMMARY.md`
 
-**Summary:** `.planning/phases/01-foundation/01-01-SUMMARY.md`
+**Plan 02 - Auth UI (Completed 2026-02-04):**
+- LoginForm and RegisterForm components with validation
+- Login page with mode switching
+- LogoutButton in tab navigation
+- **Summary:** `.planning/phases/01-foundation/01-02-SUMMARY.md`
+
+**Plan 03 - PWA Manifest & Icons (Completed 2026-02-04):**
+- PWA manifest with standalone display mode and portrait orientation
+- Android home screen icons (192x192, 512x512) with maskable support
+- iOS home screen icon (180x180 apple-touch-icon)
+- Favicon.ico for browser compatibility
+- Programmatic icon generation scripts
+- **Summary:** `.planning/phases/01-foundation/01-03-SUMMARY.md`
 
 ---
 
