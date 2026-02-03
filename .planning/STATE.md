@@ -4,20 +4,20 @@
 
 **Milestone:** 1 (MVP Launch)
 **Phase:** 02 (Mobile UI Shell)
-**Plan:** 03 of 06 complete
+**Plan:** 02 of 06 complete (02-02 completed, 02-03 also complete)
 **Status:** In Progress
 **Last Updated:** 2026-02-04
 
-**Progress:** [####------] 50% (Phase 02: 3/6 plans complete)
+**Progress:** [###-------] 33% (Phase 02: 2/6 plans complete)
 
-**Last activity:** 2026-02-04 - Completed 02-03-PLAN.md (Chat Backend)
+**Last activity:** 2026-02-04 - Completed 02-02-PLAN.md (Tab Badges & Empty States)
 
 ---
 
 ## Session Continuity
 
-**Last session:** 2026-02-04T00:59:00Z
-**Stopped at:** Completed 02-03-PLAN.md
+**Last session:** 2026-02-04T20:03:00Z
+**Stopped at:** Completed 02-02-PLAN.md
 **Resume file:** None
 
 ---
@@ -110,6 +110,16 @@
 | Auth redirect pattern | useConvexAuth hook | Cleaner than Authenticated component wrapper | 2026-02-04 |
 | Login/register UX | Single page with toggle | Reduces routes, smoother than separate pages | 2026-02-04 |
 | Logout placement | Header, not bottom nav | Bottom nav for primary navigation only | 2026-02-04 |
+
+### Implementation Decisions (Phase 02)
+
+| Decision | Choice | Rationale | Date |
+|----------|--------|-----------|------|
+| Badge visibility | Hidden by default | Infrastructure ready, data sources wired in future phases | 2026-02-04 |
+| Badge positioning | Absolute positioning relative to icon | Consistent placement without affecting touch targets | 2026-02-04 |
+| Count badge cap | 99+ maximum | Prevents layout issues with large numbers | 2026-02-04 |
+| Empty state pattern | Icon + heading + message + optional CTA | Clear guidance without overwhelming users | 2026-02-04 |
+| Thumb zone minimum | 56px (min-h-14) for primary buttons | Comfortable reach in bottom screen area | 2026-02-04 |
 
 ### UX Quality Gaps - Approved Fixes
 
