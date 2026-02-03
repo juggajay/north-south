@@ -4,20 +4,20 @@
 
 **Milestone:** 1 (MVP Launch)
 **Phase:** 02 (Mobile UI Shell)
-**Plan:** 04 of 06 complete (02-01, 02-02, 02-03, 02-04 completed)
+**Plan:** 05 of 06 complete (02-01, 02-02, 02-03, 02-04, 02-05 completed)
 **Status:** In Progress
 **Last Updated:** 2026-02-04
 
-**Progress:** [######----] 67% (Phase 02: 4/6 plans complete)
+**Progress:** [########--] 83% (Phase 02: 5/6 plans complete)
 
-**Last activity:** 2026-02-04 - Completed 02-04-PLAN.md (Camera Capture Interface)
+**Last activity:** 2026-02-04 - Completed 02-05-PLAN.md (Chat UI Interface)
 
 ---
 
 ## Session Continuity
 
-**Last session:** 2026-02-04T20:06:42Z
-**Stopped at:** Completed 02-04-PLAN.md
+**Last session:** 2026-02-04T20:59:08Z
+**Stopped at:** Completed 02-05-PLAN.md
 **Resume file:** None
 
 ---
@@ -129,6 +129,10 @@
 | Tip rotation frequency | 4 seconds per tip | Enough time to read, short enough to see variety | 2026-02-04 |
 | Corner bracket style | L-shaped brackets at 4 corners | Frames capture area without obscuring view, premium feel | 2026-02-04 |
 | Gallery button placement | Bottom-left corner | Secondary action, easily accessible but not primary focus | 2026-02-04 |
+| Stub Convex client | https://offline.convex.cloud | Enables Convex hooks during static export build without provider errors | 2026-02-04 |
+| Chat page rendering | Dynamic import with ssr:false | Prevents SSR errors for Convex hooks in static export | 2026-02-04 |
+| Conversation persistence | localStorage with conversationId | Simple persistence before auth integration | 2026-02-04 |
+| Message animations | Framer Motion fadeIn + slideUp | Smooth visual feedback for new messages | 2026-02-04 |
 
 ### UX Quality Gaps - Approved Fixes
 
@@ -237,6 +241,16 @@
 - CameraCapture state machine orchestrating full capture flow
 - Home page integration with camera open/close state management
 - **Summary:** `.planning/phases/02-mobile-ui-shell/02-04-SUMMARY.md`
+
+**Plan 05 - Chat UI Interface (Completed 2026-02-04):**
+- ChatMessage and ChatInput components with Framer Motion animations
+- ChatInterface with full chat UI, auto-scroll, and error handling
+- Convex integration (useQuery for messages, useAction for sending, markAsRead mutation)
+- Conversation persistence via localStorage
+- Typing indicator during AI response
+- Unread badge on Chat tab with real-time reactive updates
+- Stub Convex client pattern for static export build compatibility
+- **Summary:** `.planning/phases/02-mobile-ui-shell/02-05-SUMMARY.md`
 
 ---
 
