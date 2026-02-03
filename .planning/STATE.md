@@ -105,6 +105,9 @@
 | PWA icon generation | Programmatic Node.js scripts | Reproducible, cross-platform, no external tools | 2026-02-04 |
 | PWA icon color | Zinc-900 (#18181b) | Matches app theme | 2026-02-04 |
 | PWA orientation | portrait-primary | Mobile-first app (99% mobile usage) | 2026-02-04 |
+| Auth redirect pattern | useConvexAuth hook | Cleaner than Authenticated component wrapper | 2026-02-04 |
+| Login/register UX | Single page with toggle | Reduces routes, smoother than separate pages | 2026-02-04 |
+| Logout placement | Header, not bottom nav | Bottom nav for primary navigation only | 2026-02-04 |
 
 ### UX Quality Gaps - Approved Fixes
 
