@@ -1,0 +1,239 @@
+# Roadmap — North South Carpentry Platform
+
+## Milestone 1: MVP Launch
+
+**Definition of Done:** Complete mobile app allowing customers to photograph space, configure joinery, submit for quote, and track orders through production.
+
+**Target:** Months 1-4
+
+---
+
+### Phase 01: Foundation Setup
+**Status:** Not Started  
+**Requirements:** ARCH-001 → ARCH-006, BACK-001 → BACK-004, AUTH-001 → AUTH-004, Database Schema
+
+**Deliverables:**
+- Next.js 14 project with App Router configured for static export
+- Capacitor 8 integration with iOS/Android projects scaffolded
+- Convex backend deployed with full database schema
+- Authentication working (email/password, magic link)
+- PWA manifest and service worker
+- CI/CD pipeline for all three targets
+
+**Must-Haves:**
+- [ ] `npm run build` produces deployable artifacts for web, iOS, Android
+- [ ] User can register, login, logout
+- [ ] Convex database seeded with product data (materials, hardware, modules)
+- [ ] Type-safe queries working frontend ↔ backend
+- [ ] App installable as PWA
+
+---
+
+### Phase 02: Mobile UI Shell
+**Status:** Not Started  
+**Requirements:** NAV-001 → NAV-004, CAM-001 → CAM-005, CHAT-001 → CHAT-004
+
+**Deliverables:**
+- Bottom tab navigation (Home, Design, Orders, Chat)
+- Camera capture interface with guidance overlay
+- Gallery selection integration
+- Image quality validation (reject blurry/dark with guidance)
+- AI chat integration with Gemini 3.0 Flash
+- Bottom sheet component system
+- Thumb zone layout patterns established
+
+**Must-Haves:**
+- [ ] Four-tab navigation functional on all platforms
+- [ ] Camera opens as primary entry point
+- [ ] User can capture photo or select from gallery
+- [ ] Poor quality photos rejected with helpful message
+- [ ] Chat responds with product knowledge
+- [ ] All modals use bottom sheet pattern
+- [ ] Touch targets meet 44x44px minimum
+
+---
+
+### Phase 03: AI Pipeline
+**Status:** Not Started  
+**Requirements:** PROC-001 → PROC-003, AI-001 → AI-007, DIM-001 → DIM-004
+
+**Deliverables:**
+- Processing screen with animated progress stages
+- Claude Vision integration for space analysis
+- Depth Anything V2 integration for dimension estimation
+- Nano Banana Pro integration for render generation
+- Render compositing pipeline
+- Dimension accuracy tier system
+- Error handling with retry options
+
+**Must-Haves:**
+- [ ] Photo uploads trigger processing pipeline
+- [ ] Progress stages display: Analyzing → Measuring → Matching → Creating
+- [ ] 3 styled renders generated within 30 seconds
+- [ ] Renders show user's actual space transformed
+- [ ] Dimension estimate displayed with confidence %
+- [ ] Materials in renders match Polytec finishes
+- [ ] Failed processing shows clear error + retry option
+
+---
+
+### Phase 04: 3D Configurator Core
+**Status:** Not Started  
+**Requirements:** CFG-001 → CFG-005, DIM-UI-001 → DIM-UI-005, SLOT-001 → SLOT-007, MOD-B01 → MOD-B07, MOD-O01 → MOD-O05, TOUCH-001 → TOUCH-005, CFG-F01 → CFG-F05
+
+**Deliverables:**
+- Three.js / React Three Fiber 3D viewport
+- 4-step wizard layout (Dimensions → Layout → Finishes → Review)
+- Step 1: Dimension controls with sliders
+- Step 2: Slot-based module placement with bottom sheets
+- All 12 module types modeled and functional
+- Touch gesture system (rotate, zoom, pan, tap, swipe)
+- Undo/redo history (20 states)
+- Save design to cloud
+- Share via deep link
+- Before/after comparison slider
+- LOD system for performance
+
+**Must-Haves:**
+- [ ] 3D viewport renders at 30+ FPS on target devices
+- [ ] Wizard steps navigable via swipe or tap
+- [ ] AI-estimated dimensions pre-populate Step 1
+- [ ] User can tap any slot, select module type via bottom sheet
+- [ ] All 7 base + 5 overhead module types selectable
+- [ ] Interior options (shelves, dividers) configurable
+- [ ] Add-ons (LED, bins) selectable per module
+- [ ] Undo button visible and functional
+- [ ] Design saves to Convex, retrievable on return
+- [ ] Share link opens saved design
+
+---
+
+### Phase 05: Finishes & Pricing
+**Status:** Not Started  
+**Requirements:** FIN-001 → FIN-005, REV-001 → REV-004, PRICE-001 → PRICE-006, PRICE-D01 → PRICE-D04
+
+**Deliverables:**
+- Step 3: Swipeable finish cards (Material → Hardware → Profile)
+- Material swatches with texture preview
+- Hardware selection interface
+- Door profile visual selection
+- Live 3D material updates
+- Step 4: Review screen with price breakdown
+- Component-based pricing engine
+- Database-driven price management
+- ±5% variance disclaimer display
+
+**Must-Haves:**
+- [ ] User can select from all Polytec materials
+- [ ] User can select hardware options
+- [ ] User can select door profile
+- [ ] 3D viewport updates materials in real-time
+- [ ] Price breakdown shows: Cabinets · Material · Hardware · Add-ons
+- [ ] Total price updates live as user configures
+- [ ] All prices pulled from database (admin-editable)
+- [ ] ±5% supplier variance disclaimer visible
+
+---
+
+### Phase 06: Quote Submission Flow
+**Status:** Not Started  
+**Requirements:** SUBMIT-001 → SUBMIT-005, QUEUE-001 → QUEUE-005, QUOTE-001 → QUOTE-004, PAY-001 → PAY-004
+
+**Deliverables:**
+- Pre-submit options screen (site measure, installation quote)
+- Submission form (name, email)
+- Internal submission queue dashboard
+- Configuration data display for team review
+- Status tracking system
+- Manual quote workflow documentation
+
+**Must-Haves:**
+- [ ] User can choose site measure: yes/no
+- [ ] User can request installation quote: yes/no
+- [ ] User enters name (required) and email (required)
+- [ ] Submit sends data to Convex
+- [ ] Submission appears in internal dashboard
+- [ ] Team can view full configuration details
+- [ ] Team can update submission status
+- [ ] Workflow documented for manual quote creation
+
+---
+
+### Phase 07: Customer Portal & Notifications
+**Status:** Not Started  
+**Requirements:** ORD-001 → ORD-008, PORT-001 → PORT-007, NOTIF-001 → NOTIF-006
+
+**Deliverables:**
+- Order status display with timeline
+- Production photos gallery
+- Documents section (quote, invoice, specs)
+- Installation guides section (placeholder for videos)
+- QR panel lookup interface
+- Chat/support access
+- Referral program tracking
+- Email notification system (6 triggers)
+
+**Must-Haves:**
+- [ ] Customer can see current order status
+- [ ] Timeline shows completed + upcoming milestones
+- [ ] Production photos uploaded by team appear in portal
+- [ ] Documents downloadable
+- [ ] QR scan shows panel info + assembly context
+- [ ] Chat accessible from portal
+- [ ] Referral link generated
+- [ ] Emails sent at: Order confirmed, Production started, QC complete, Ready to ship, Delivered, Post-install
+
+---
+
+### Phase 08: Production Integration & Admin
+**Status:** Not Started  
+**Requirements:** PROD-001 → PROD-010, QR-001 → QR-003, DASH-001 → DASH-006
+
+**Deliverables:**
+- Production spec PDF export
+- Production spec CSV export
+- QR label data generation
+- QR scan → panel info page
+- Admin dashboard: submission queue
+- Admin dashboard: order management
+- Admin dashboard: photo upload
+- Admin dashboard: production spec download
+- Admin dashboard: notification triggers
+
+**Must-Haves:**
+- [ ] PDF spec includes: header, cabinet schedule, panel schedule, edge banding, drilling, hardware, assembly groups
+- [ ] CSV spec importable to spreadsheet
+- [ ] QR labels link to panel info page
+- [ ] Panel info shows dimensions, material, edges, assembly context
+- [ ] Admin can view/manage all submissions
+- [ ] Admin can update order status
+- [ ] Admin can upload production photos
+- [ ] Admin can download production specs
+- [ ] Admin can trigger notification emails
+
+---
+
+## Phase Checklist
+
+| Phase | Name | Status | Requirements Covered |
+|-------|------|--------|---------------------|
+| 01 | Foundation Setup | Not Started | ARCH-*, BACK-*, AUTH-* |
+| 02 | Mobile UI Shell | Not Started | NAV-*, CAM-*, CHAT-* |
+| 03 | AI Pipeline | Not Started | PROC-*, AI-*, DIM-* |
+| 04 | 3D Configurator Core | Not Started | CFG-*, SLOT-*, MOD-*, TOUCH-* |
+| 05 | Finishes & Pricing | Not Started | FIN-*, REV-*, PRICE-* |
+| 06 | Quote Submission | Not Started | SUBMIT-*, QUEUE-*, QUOTE-*, PAY-* |
+| 07 | Portal & Notifications | Not Started | ORD-*, PORT-*, NOTIF-* |
+| 08 | Production & Admin | Not Started | PROD-*, QR-*, DASH-* |
+
+---
+
+## Milestone 2: Post-Launch Enhancements (Future)
+
+**Planned Phases:**
+- Phase 09: Style Extraction (Pinterest analysis, preference pre-population)
+- Phase 10: Payment Automation (Stripe integration)
+- Phase 11: Pytha Automation (JSON export, parametric templates)
+- Phase 12: AR Preview (ARKit/ARCore integration)
+- Phase 13: Additional Products (AcoustiSlat, Federation Mudroom, Home Office)
+- Phase 14: Trade Portal (B2B accounts, builder pricing)

@@ -1,0 +1,21 @@
+{
+  "project": "north-south-carpentry",
+  "version": "1.0.0",
+  "mode": "interactive",
+  "depth": "comprehensive",
+  "profile": "balanced",
+  "workflow": {
+    "research": true,
+    "plan_check": true,
+    "verifier": true
+  },
+  "parallelization": {
+    "enabled": true
+  },
+  "planning": {
+    "commit_docs": true
+  },
+  "branching": {
+    "enabled": true
+  }
+}
