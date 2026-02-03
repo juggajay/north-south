@@ -28,6 +28,10 @@ if (typeof HTMLCanvasElement !== "undefined") {
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   (HTMLCanvasElement.prototype.getContext as any) = function (this: any, contextId: string) {
     if (contextId === "2d") {
+      // Store image data for the canvas
+      const canvasData = new Map<string, ImageData>();
+      const canvasKey = Math.random().toString();
+
       return {
         canvas: this,
         fillStyle: "",
@@ -45,11 +49,19 @@ if (typeof HTMLCanvasElement !== "undefined") {
         arc: () => {},
         drawImage: () => {},
         getImageData: (x: number, y: number, width: number, height: number) => {
-          // Return ImageData with transparent pixels
+          // Try to return stored data, otherwise return what was put
+          const stored = canvasData.get(canvasKey);
+          if (stored) {
+            return stored;
+          }
+          // Return empty ImageData as fallback
           const data = new Uint8ClampedArray(width * height * 4);
           return new ImageData(data, width, height);
         },
-        putImageData: () => {},
+        putImageData: (imageData: ImageData) => {
+          // Store the image data so getImageData can retrieve it
+          canvasData.set(canvasKey, imageData);
+        },
         createImageData: (width: number, height: number) => {
           const data = new Uint8ClampedArray(width * height * 4);
           return new ImageData(data, width, height);
