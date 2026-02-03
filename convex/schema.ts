@@ -100,6 +100,28 @@ export default defineSchema({
     .index("by_status", ["status"]),
 
   // ===================
+  // CHAT
+  // ===================
+  conversations: defineTable({
+    userId: v.optional(v.id("users")), // Optional for anonymous users
+    title: v.optional(v.string()),     // Auto-generated from first message
+    lastMessageAt: v.number(),         // Unix timestamp for sorting
+    unreadCount: v.number(),           // Track unread for badge
+    createdAt: v.number(),
+  })
+    .index("by_userId", ["userId"])
+    .index("by_lastMessageAt", ["lastMessageAt"]),
+
+  messages: defineTable({
+    conversationId: v.id("conversations"),
+    role: v.string(),                  // "user" | "assistant"
+    content: v.string(),
+    createdAt: v.number(),
+  })
+    .index("by_conversationId", ["conversationId"])
+    .index("by_createdAt", ["createdAt"]),
+
+  // ===================
   // PRODUCT CATALOG: STYLES
   // ===================
   styles: defineTable({
