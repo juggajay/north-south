@@ -1,0 +1,7 @@
+<?xml version='1.0' encoding='utf-8'?>
+<resources>
+    <string name="app_name">North South Carpentry</string>
+    <string name="title_activity_main">North South Carpentry</string>
+    <string name="package_name">au.com.nscarpentry.app</string>
+    <string name="custom_url_scheme">au.com.nscarpentry.app</string>
+</resources>
