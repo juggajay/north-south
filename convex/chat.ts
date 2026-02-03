@@ -42,17 +42,13 @@ export const listConversations = query({
     userId: v.optional(v.id("users")),
   },
   handler: async (ctx, args) => {
-    let conversationsQuery = ctx.db.query("conversations");
-
-    if (args.userId) {
-      conversationsQuery = conversationsQuery.withIndex("by_userId", (q) =>
-        q.eq("userId", args.userId)
-      );
-    }
-
-    const conversations = await conversationsQuery
-      .order("desc")
-      .collect();
+    const conversations = args.userId
+      ? await ctx.db
+          .query("conversations")
+          .withIndex("by_userId", (q) => q.eq("userId", args.userId))
+          .order("desc")
+          .collect()
+      : await ctx.db.query("conversations").order("desc").collect();
 
     return conversations.sort((a, b) => b.lastMessageAt - a.lastMessageAt);
   },
