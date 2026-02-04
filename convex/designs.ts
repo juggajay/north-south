@@ -171,3 +171,32 @@ export const getRecent = query({
       .take(limit);
   },
 });
+
+/**
+ * Duplicate a design (for "Save a Copy" from share page)
+ */
+export const duplicate = mutation({
+  args: {
+    sourceId: v.id("designs"),
+    userId: v.optional(v.id("users")),
+  },
+  handler: async (ctx, { sourceId, userId }) => {
+    const sourceDesign = await ctx.db.get(sourceId);
+    if (!sourceDesign) {
+      throw new Error("Design not found");
+    }
+
+    const now = Date.now();
+    const newDesignId = await ctx.db.insert("designs", {
+      userId,
+      productType: sourceDesign.productType,
+      config: sourceDesign.config,
+      status: "draft",
+      renders: [], // Don't copy renders
+      createdAt: now,
+      updatedAt: now,
+    });
+
+    return newDesignId;
+  },
+});
