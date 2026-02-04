@@ -57,6 +57,7 @@ export default defineSchema({
     installQuote: v.boolean(),
     status: v.string(), // "pending", "quoted", "ordered", "rejected"
     notes: v.optional(v.string()),
+    internalNotes: v.optional(v.string()), // Team-only notes, not visible to customer
     createdAt: v.number(),
   })
     .index("by_designId", ["designId"])
