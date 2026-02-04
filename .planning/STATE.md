@@ -4,22 +4,22 @@
 
 **Milestone:** 1 (MVP Launch)
 **Phase:** 04 (3D Configurator Core)
-**Plan:** 04 of 07 complete
+**Plan:** 04 of 10 complete
 **Status:** In progress
 **Last Updated:** 2026-02-04
 
-**Progress:** [####------] 57% (Phase 04: 4/7 plans complete)
+**Progress:** [####------] 40% (Phase 04: 4/10 plans complete)
 
-**Last activity:** 2026-02-04 - Completed 04-04-PLAN.md (Wizard Shell & Step 1)
+**Last activity:** 2026-02-04 - Completed 04-03-PLAN.md (3D Model & Camera)
 
 ---
 
 ## Session Continuity
 
-**Last session:** 2026-02-04T08:07:55Z
-**Stopped at:** Completed 04-04-PLAN.md
+**Last session:** 2026-02-04T15:15:20Z
+**Stopped at:** Completed 04-03-PLAN.md
 **Resume file:** None
-**Next:** Continue Phase 04 (04-05: Layout Step or 04-06: Performance Testing)
+**Next:** Continue Phase 04 (remaining plans)
 
 ---
 
@@ -174,6 +174,10 @@
 | DimensionSync pattern | Inside Canvas context only | useThree() must be inside Canvas, store subscription triggers invalidate() | 2026-02-04 |
 | Depth selector UI | Discrete button grid | 5 fixed options clearer than slider with snapping | 2026-02-04 |
 | Step indicator placement | Top of wizard shell | Always-visible progress, natural reading order | 2026-02-04 |
+| damp() import | THREE.MathUtils.damp | Proper TypeScript namespace access vs. three/src/math/MathUtils | 2026-02-04 |
+| Camera rotation limits | Front hemisphere (-90° to +90° azimuth, 18° to 108° polar) | Prevent viewing cabinet back, practical viewing angles | 2026-02-04 |
+| Reset button positioning | Top-right absolute via Html component | Non-intrusive, standard UI pattern for 3D controls | 2026-02-04 |
+| Touch gesture config | ONE: ROTATE, TWO: DOLLY_PAN | Standard OrbitControls mobile pattern | 2026-02-04 |
 
 ### UX Quality Gaps - Approved Fixes
 
@@ -379,6 +383,22 @@
 - Canvas3D wrapper with adaptive DPR (1-1.5), demand frameloop, mobile optimizations
 - Fixed Convex schema issues (designVersions table, .js/.ts conflicts)
 - **Summary:** `.planning/phases/04-3d-configurator-core/04-01-SUMMARY.md`
+
+**Plan 02 - Version History & Auto-save (Completed 2026-02-04):**
+- designVersions table in Convex schema with indexes
+- Version management functions (saveVersion, getDesignVersions, restoreVersion)
+- useAutoSave hook with 1-second debounced Convex sync
+- Auto-save triggered on every cabinet config change
+- **Summary:** `.planning/phases/04-3d-configurator-core/04-02-SUMMARY.md`
+
+**Plan 03 - 3D Model & Camera (Completed 2026-02-04):**
+- CabinetFrame component with scaling wireframe box and smooth dimension transitions
+- CameraController with OrbitControls, rotation limits, and reset button
+- CabinetModel container composing frame and floor plane
+- useCabinetGestures hook for future tap interactions
+- Touch gestures: rotate (1 finger), zoom/pan (2 fingers)
+- Test page with dimension sliders for real-time cabinet scaling
+- **Summary:** `.planning/phases/04-3d-configurator-core/04-03-SUMMARY.md`
 
 **Plan 04 - Wizard Shell & Step 1 (Completed 2026-02-04):**
 - WizardShell with StepIndicator, StepNavigation, and step content routing
