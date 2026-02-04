@@ -6,6 +6,7 @@
  */
 
 import Anthropic from "@anthropic-ai/sdk";
+import { GoogleGenAI, Part } from "@google/genai";
 import { action } from "./_generated/server";
 import { v } from "convex/values";
 import { z } from "zod";
@@ -162,5 +163,146 @@ Return ONLY the JSON object, no markdown formatting or explanation.`,
         error: "Failed to analyze space. Please try again.",
       };
     }
+  },
+});
+
+/**
+ * Generate styled renders using Gemini image generation
+ *
+ * Takes the original image and generates photorealistic renders
+ * showing custom joinery in different style options.
+ *
+ * Uses Gemini 2.0 Flash for image generation.
+ * Handles partial failures gracefully - returns successful renders
+ * even if some style generations fail.
+ */
+export const generateRendersAction = action({
+  args: {
+    imageBase64: v.string(),
+    styles: v.array(
+      v.object({
+        id: v.string(),
+        name: v.string(),
+        polytec: v.array(v.string()),
+      })
+    ),
+    roomType: v.string(),
+    dimensions: v.object({
+      width: v.number(),
+      depth: v.number(),
+      height: v.number(),
+    }),
+    styleAesthetic: v.string(),
+    lightingConditions: v.string(),
+  },
+  handler: async (_ctx, args) => {
+    const apiKey = process.env.GEMINI_API_KEY;
+    if (!apiKey) {
+      return {
+        success: false,
+        error: "Render generation service not configured. Please contact support.",
+        renders: [],
+        failedCount: args.styles.length,
+        errors: args.styles.map((s) => ({
+          styleId: s.id,
+          error: "API key not configured",
+        })),
+      };
+    }
+
+    const ai = new GoogleGenAI({ apiKey });
+
+    // Use Gemini 2.0 Flash for image generation
+    // Note: Image generation capabilities vary by model availability
+    const modelName = "gemini-2.0-flash-exp";
+
+    const renderResults = await Promise.all(
+      args.styles.slice(0, 3).map(async (style, index) => {
+        const prompt = `Generate a photorealistic interior render showing custom joinery/cabinetry in this ${args.roomType}.
+
+Style: ${style.name}
+Materials: ${style.polytec.join(", ")} (Polytec finishes)
+Space dimensions: ${args.dimensions.width}mm wide x ${args.dimensions.depth}mm deep x ${args.dimensions.height}mm high
+
+Requirements:
+- Keep the original room context (walls, floor, ceiling visible)
+- Add modern ${style.name.toLowerCase()} style cabinetry
+- Use ${style.polytec[0]} as primary material
+- Realistic ${args.lightingConditions} lighting
+- ${args.styleAesthetic} aesthetic
+- Professional custom joinery quality
+
+Output a single photorealistic image.`;
+
+        try {
+          const result = await ai.models.generateContent({
+            model: modelName,
+            contents: [
+              {
+                role: "user",
+                parts: [
+                  { text: prompt },
+                  {
+                    inlineData: {
+                      mimeType: "image/jpeg",
+                      data: args.imageBase64,
+                    },
+                  },
+                ],
+              },
+            ],
+          });
+
+          // Try to extract image from response
+          const imagePart = result.candidates?.[0]?.content?.parts?.find(
+            (part: Part) => part.inlineData !== undefined
+          );
+
+          if (imagePart?.inlineData?.data) {
+            return {
+              success: true as const,
+              render: {
+                id: `render-${style.id}-${index}`,
+                styleLabel: style.name,
+                styleId: style.id,
+                imageBase64: imagePart.inlineData.data,
+              },
+            };
+          }
+
+          // If no image, model returned text instead
+          // This can happen if the model doesn't support image generation
+          return {
+            success: false as const,
+            error: "Model returned text instead of image",
+            styleId: style.id,
+          };
+        } catch (error) {
+          console.error(`Render generation failed for ${style.name}:`, error);
+          return {
+            success: false as const,
+            error: error instanceof Error ? error.message : "Unknown error",
+            styleId: style.id,
+          };
+        }
+      })
+    );
+
+    // Separate successful and failed renders
+    const successful = renderResults.filter(
+      (r): r is { success: true; render: typeof r extends { render: infer R } ? R : never } =>
+        r.success === true
+    );
+    const failed = renderResults.filter(
+      (r): r is { success: false; error: string; styleId: string } =>
+        r.success === false
+    );
+
+    return {
+      success: successful.length > 0,
+      renders: successful.map((r) => r.render),
+      failedCount: failed.length,
+      errors: failed.map((f) => ({ styleId: f.styleId, error: f.error })),
+    };
   },
 });
