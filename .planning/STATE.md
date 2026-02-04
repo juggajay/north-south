@@ -4,22 +4,22 @@
 
 **Milestone:** 1 (MVP Launch)
 **Phase:** 04 (3D Configurator Core)
-**Plan:** 08 of 10 complete
+**Plan:** 09 of 10 complete
 **Status:** In progress
 **Last Updated:** 2026-02-04
 
-**Progress:** [########--] 80% (Phase 04: 8/10 plans complete)
+**Progress:** [#########-] 90% (Phase 04: 9/10 plans complete)
 
-**Last activity:** 2026-02-04 - Completed 04-08-PLAN.md (Undo/Redo & Shareable Links)
+**Last activity:** 2026-02-04 - Completed 04-09-PLAN.md (Version History, Before/After, LOD)
 
 ---
 
 ## Session Continuity
 
-**Last session:** 2026-02-04T08:28:40Z
-**Stopped at:** Completed 04-08-PLAN.md
+**Last session:** 2026-02-04T08:36:33Z
+**Stopped at:** Completed 04-09-PLAN.md
 **Resume file:** None
-**Next:** Continue Phase 04 (remaining plans 04-09 through 04-10)
+**Next:** Continue Phase 04 (remaining plan 04-10)
 
 ---
 
@@ -475,6 +475,20 @@
 - duplicate mutation in convex/designs.ts
 - Navigation from share page to edit page after duplication
 - **Summary:** `.planning/phases/04-3d-configurator-core/04-08-SUMMARY.md`
+
+**Plan 09 - Version History, Before/After, LOD (Completed 2026-02-04):**
+- VersionHistory panel with timeline list and restore functionality
+- Store subscription pattern for 3D invalidation (no useThree requirement)
+- Version count badge and empty state UI
+- BeforeAfterSlider with swipeable drag interactions
+- ClipPath-based image reveal for AI render comparison
+- BeforeAfterToggle for simple mode switching
+- LODWrapper using drei's Detailed component (distance-based switching)
+- SimpleLOD for manual quality reduction
+- useLODConfig hook with device capability detection (CPU, memory, mobile)
+- FPSMonitor for real-time frame rate tracking
+- usePerformanceDegradation for automatic quality adjustment
+- **Summary:** `.planning/phases/04-3d-configurator-core/04-09-SUMMARY.md`
 
 ---
 
