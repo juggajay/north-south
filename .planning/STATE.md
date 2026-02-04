@@ -178,6 +178,11 @@
 | Camera rotation limits | Front hemisphere (-90° to +90° azimuth, 18° to 108° polar) | Prevent viewing cabinet back, practical viewing angles | 2026-02-04 |
 | Reset button positioning | Top-right absolute via Html component | Non-intrusive, standard UI pattern for 3D controls | 2026-02-04 |
 | Touch gesture config | ONE: ROTATE, TWO: DOLLY_PAN | Standard OrbitControls mobile pattern | 2026-02-04 |
+| Slot width default | 600mm | Standard cabinet module size, divides evenly | 2026-02-04 |
+| Slot calculation | Simple division by default width | MVP simplicity, sophisticated fitting later | 2026-02-04 |
+| Empty slot visual | Wireframe with + icon | Clear boundaries, obvious tap target | 2026-02-04 |
+| Module picker UI | Bottom sheet with grid | Thumb-friendly, follows mobile patterns | 2026-02-04 |
+| Slot validation | At least one module required | Prevents empty configurations | 2026-02-04 |
 | Door animation method | damp() in useFrame | Smooth 60fps animation without component re-renders | 2026-02-04 |
 | Module height defaults | 800mm base, 600mm overhead, 2100mm tall | Standard Australian kitchen dimensions | 2026-02-04 |
 | Carcass component sharing | Shared CabinetCarcass and OverheadCarcass | DRY principle, consistent 18mm panel thickness | 2026-02-04 |
@@ -414,13 +419,16 @@
 - Sticky price bar placeholder
 - **Summary:** `.planning/phases/04-3d-configurator-core/04-04-SUMMARY.md`
 
-**Plan 05 - Slot System (Completed 2026-02-04):**
+**Plan 05 - Slot-based Module Placement (Completed 2026-02-04):**
 - SlotSystem component for calculating slot positions from cabinet dimensions
-- ModuleSlot component with empty/filled states
-- Empty slots: wireframe placeholder with + icon
+- ModuleSlot component with empty/filled states and tap handling
+- Empty slots: wireframe placeholder with + icon, hover feedback
 - Filled slots: solid geometry with module type label
-- Hover feedback and click handling
-- Standard dimensions: 800mm base, 600mm overhead, 560mm depth
+- ModulePicker bottom sheet with all 12 module types (7 base + 5 overhead)
+- StepLayout component for Step 2 (Layout) in wizard
+- Integrated slot tapping → picker → module placement flow
+- Wizard validation: requires at least one module before Step 3
+- Fixed import errors (react-modal-sheet, damp, event types)
 - **Summary:** `.planning/phases/04-3d-configurator-core/04-05-SUMMARY.md`
 
 **Plan 06 - Module Library & Interior Options (Completed 2026-02-04):**
