@@ -1,26 +1,25 @@
 /**
  * StepReview component
  * Phase 04-07: Finish Selection & Review
+ * Phase 05-03: Real pricing integration
  *
  * Features:
  * - Complete configuration summary (dimensions, modules, finishes)
- * - Price breakdown with placeholder pricing
+ * - Database-driven price breakdown via PriceBreakdown component
  * - Variance disclaimer per pricing decisions
  * - Ready for Phase 06 quote submission integration
  */
 
 import { useCabinetStore } from '@/stores/useCabinetStore';
+import { PriceBreakdown } from '@/components/pricing/PriceBreakdown';
 
 export function StepReview() {
   const dimensions = useCabinetStore((state) => state.config.dimensions);
   const slots = useCabinetStore((state) => state.config.slots);
   const finishes = useCabinetStore((state) => state.config.finishes);
 
-  // Calculate price (placeholder - real pricing in Phase 05)
+  // Count modules for summary display
   const moduleCount = slots.size;
-  const basePrice = 5000;
-  const modulePrice = moduleCount * 800;
-  const estimatedTotal = basePrice + modulePrice;
 
   return (
     <div className="p-4 space-y-6">
@@ -98,37 +97,12 @@ export function StepReview() {
         </div>
       </div>
 
-      {/* Price breakdown */}
-      <div className="p-4 bg-white border rounded-lg">
-        <h3 className="font-medium mb-3">Estimated Price</h3>
-        <div className="space-y-2 text-sm">
-          <div className="flex justify-between">
-            <span className="text-zinc-600">Base Cabinet</span>
-            <span>${basePrice.toLocaleString()}</span>
-          </div>
-          <div className="flex justify-between">
-            <span className="text-zinc-600">Modules ({moduleCount})</span>
-            <span>${modulePrice.toLocaleString()}</span>
-          </div>
-          <div className="border-t pt-2 mt-2 flex justify-between font-semibold text-base">
-            <span>Total</span>
-            <span>${estimatedTotal.toLocaleString()}</span>
-          </div>
-        </div>
-        <div className="mt-4 p-3 bg-zinc-50 rounded text-xs text-zinc-600 space-y-1">
-          <p>
-            <strong>Important:</strong> This is an estimate only. Final price will be confirmed
-            after site measure.
-          </p>
-          <p>
-            Hardware pricing may vary ±5% based on supplier availability.
-          </p>
-        </div>
-      </div>
+      {/* Price breakdown - database-driven via PriceBreakdown component */}
+      <PriceBreakdown />
 
       {/* Submit button placeholder - will be wired in Phase 06 */}
       <div className="text-center text-sm text-zinc-500 py-4">
-        Quote submission will be enabled in Phase 06
+        Submit for Quote will be enabled soon
       </div>
     </div>
   );
