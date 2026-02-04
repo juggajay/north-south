@@ -12,6 +12,7 @@
     "typecheck": "tsc --noEmit"
   },
   "dependencies": {
+    "@anthropic-ai/sdk": "^0.72.1",
     "@auth/core": "^0.37.4",
     "@capacitor/android": "^8.0.2",
     "@capacitor/browser": "^8.0.0",
