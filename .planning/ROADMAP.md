@@ -156,26 +156,33 @@ Plans:
 **Status:** Not Started
 **Requirements:** FIN-001 → FIN-005, REV-001 → REV-004, PRICE-001 → PRICE-006, PRICE-D01 → PRICE-D04
 
+**Goal:** Replace placeholder pricing with database-driven component pricing, show live totals throughout wizard, display price breakdown with variance disclaimers.
+
 **Deliverables:**
-- Step 3: Swipeable finish cards (Material → Hardware → Profile)
-- Material swatches with texture preview
-- Hardware selection interface
-- Door profile visual selection
-- Live 3D material updates
-- Step 4: Review screen with price breakdown
-- Component-based pricing engine
-- Database-driven price management
-- ±5% variance disclaimer display
+- Database pricing migrated to cents (integer arithmetic)
+- Centralized usePricing hook for calculations
+- Live sticky price bar throughout wizard
+- Price display on all finish options
+- Step 4: Review screen with real price breakdown
+- ±5% hardware variance disclaimer
+- Site measure disclaimer
 
 **Must-Haves:**
 - [ ] User can select from all Polytec materials
 - [ ] User can select hardware options
 - [ ] User can select door profile
 - [ ] 3D viewport updates materials in real-time
-- [ ] Price breakdown shows: Cabinets · Material · Hardware · Add-ons
+- [ ] Price breakdown shows: Cabinets · Material · Hardware · Door Profile
 - [ ] Total price updates live as user configures
 - [ ] All prices pulled from database (admin-editable)
 - [ ] ±5% supplier variance disclaimer visible
+
+**Plans:** 4 plans
+Plans:
+- [ ] 05-01-PLAN.md — Migrate seed data to cents, create modules query API
+- [ ] 05-02-PLAN.md — usePricing hook and pricing display components
+- [ ] 05-03-PLAN.md — Wire pricing to wizard UI (StepReview, MaterialPicker, sticky bar)
+- [ ] 05-04-PLAN.md — Human verification of complete pricing system
 
 ---
 
