@@ -9,11 +9,11 @@ export default defineSchema({
   // USERS
   // ===================
   users: defineTable({
-    email: v.string(),
-    name: v.string(),
+    email: v.optional(v.string()),
+    name: v.optional(v.string()),
     phone: v.optional(v.string()),
     address: v.optional(v.string()),
-    createdAt: v.number(), // Unix timestamp
+    createdAt: v.optional(v.number()), // Unix timestamp
   }).index("by_email", ["email"]),
 
   // ===================
