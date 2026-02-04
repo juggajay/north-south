@@ -1,4 +1,3 @@
-import { useState } from 'react'
 import { useWizardStore } from '@/stores/useWizardStore'
 import { StepIndicator } from './StepIndicator'
 import { StepNavigation } from './StepNavigation'
@@ -15,18 +14,17 @@ interface WizardShellProps {
 
 export function WizardShell({ aiEstimate, onSlotTap }: WizardShellProps) {
   const currentStep = useWizardStore((state) => state.currentStep)
-  const [selectedSlot, setSelectedSlot] = useState<{
-    id: string
-    type: 'base' | 'overhead'
-  } | null>(null)
+  const selectedSlot = useWizardStore((state) => state.selectedSlot)
+  const selectSlot = useWizardStore((state) => state.selectSlot)
+  const clearSelectedSlot = useWizardStore((state) => state.clearSelectedSlot)
 
   const handleSlotTap = (slotId: string, slotType: 'base' | 'overhead') => {
-    setSelectedSlot({ id: slotId, type: slotType })
+    selectSlot(slotId, slotType)
     onSlotTap?.(slotId, slotType)
   }
 
   const handleClosePicker = () => {
-    setSelectedSlot(null)
+    clearSelectedSlot()
   }
 
   const renderStepContent = () => {

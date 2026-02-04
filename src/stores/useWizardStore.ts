@@ -19,6 +19,7 @@ interface WizardState {
   currentStep: number;                    // 0-3: dimensions, layout, finishes, review
   visitedSteps: Set<number>;              // Steps that have been visited (unlocked)
   validationErrors: Map<string, string>;  // Field-level validation errors
+  selectedSlot: { id: string; type: 'base' | 'overhead' } | null; // Currently selected slot for module picker
 
   // Actions
   goToStep: (step: number) => void;
@@ -26,6 +27,8 @@ interface WizardState {
   prevStep: () => void;
   setValidationError: (field: string, error: string) => void;
   clearErrors: () => void;
+  selectSlot: (slotId: string, slotType: 'base' | 'overhead') => void;
+  clearSelectedSlot: () => void;
 }
 
 // ============================================================================
@@ -86,6 +89,7 @@ export const useWizardStore = create<WizardState>()(
     currentStep: 0,
     visitedSteps: new Set([0]), // Step 0 starts visited
     validationErrors: new Map(),
+    selectedSlot: null,
 
     // Go to a specific step
     goToStep: (step) =>
@@ -138,6 +142,18 @@ export const useWizardStore = create<WizardState>()(
     clearErrors: () =>
       set((state) => {
         state.validationErrors.clear();
+      }),
+
+    // Select a slot for module picker
+    selectSlot: (slotId, slotType) =>
+      set((state) => {
+        state.selectedSlot = { id: slotId, type: slotType };
+      }),
+
+    // Clear selected slot (close module picker)
+    clearSelectedSlot: () =>
+      set((state) => {
+        state.selectedSlot = null;
       }),
   }))
 );

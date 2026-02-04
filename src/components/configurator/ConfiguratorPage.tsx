@@ -20,6 +20,9 @@ import type { Id } from '../../../convex/_generated/dataModel'
 import { useCabinetStore } from '@/stores/useCabinetStore'
 import { useWizardStore } from '@/stores/useWizardStore'
 
+// Get selectSlot action from wizard store
+const selectSlot = useWizardStore.getState().selectSlot;
+
 // Components
 import { Canvas3D } from './Canvas3D'
 import { CabinetModel } from './CabinetModel'
@@ -156,7 +159,8 @@ export function ConfiguratorPage({ designId, aiEstimate }: ConfiguratorPageProps
   }
 
   const handleSlotTap = (slotId: string, slotType: 'base' | 'overhead') => {
-    // Handled by WizardShell internally
+    // Update wizard store to open module picker
+    selectSlot(slotId, slotType);
   }
 
   return (

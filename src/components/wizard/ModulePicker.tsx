@@ -101,8 +101,8 @@ export function ModulePicker({
     <Sheet
       isOpen={isOpen}
       onClose={onClose}
-      snapPoints={[500, 300, 0]}
-      initialSnap={0}
+      snapPoints={[0, 0.5, 1]}
+      initialSnap={1}
     >
       <Sheet.Container>
         <Sheet.Header />
