@@ -4,22 +4,22 @@
 
 **Milestone:** 1 (MVP Launch)
 **Phase:** 03 (AI Pipeline) - IN PROGRESS
-**Plan:** 01 of 05 complete
+**Plan:** 02 of 05 complete
 **Status:** In progress
 **Last Updated:** 2026-02-04
 
-**Progress:** [##--------] 20% (Phase 03: 1/5 plans complete)
+**Progress:** [####------] 40% (Phase 03: 2/5 plans complete)
 
-**Last activity:** 2026-02-04 - Completed 03-01-PLAN.md (Query Infrastructure)
+**Last activity:** 2026-02-04 - Completed 03-02-PLAN.md (Claude Vision API)
 
 ---
 
 ## Session Continuity
 
-**Last session:** 2026-02-04T05:41:30Z
-**Stopped at:** Completed 03-01-PLAN.md
+**Last session:** 2026-02-04T05:44:26Z
+**Stopped at:** Completed 03-02-PLAN.md
 **Resume file:** None
-**Next:** 03-02-PLAN.md (Claude Vision API)
+**Next:** 03-04-PLAN.md (Render Generation) or 03-05-PLAN.md (Processing Flow)
 
 ---
 
@@ -144,6 +144,10 @@
 | Retry backoff | Exponential 1s/2s/4s, max 30s | Prevents thundering herd, reasonable wait | 2026-02-04 |
 | Query stale time | 5 minutes | Balance freshness with API call reduction | 2026-02-04 |
 | Provider order | Convex (outer) -> Query (inner) | Query hooks may need auth context | 2026-02-04 |
+| Vision model | Claude Sonnet 4.5 | Cost-effective for vision tasks, good quality | 2026-02-04 |
+| Vision image size | 1568px max dimension | Claude's optimal size, avoids latency penalty | 2026-02-04 |
+| AI response validation | Zod schemas | Type-safe structured response parsing | 2026-02-04 |
+| API key security | Server-side Convex actions | Keeps ANTHROPIC_API_KEY secure | 2026-02-04 |
 
 ### UX Quality Gaps - Approved Fixes
 
@@ -171,7 +175,7 @@
 | Apple Developer account | iOS deployment | Pending |
 | Google Play Developer account | Android deployment | Pending |
 | Vercel account | Web hosting | Pending |
-| Claude API key | Vision analysis | Pending |
+| Claude API key | Vision analysis | **Required - Backend ready** |
 | Gemini API key | Chat | **Required - Backend ready** |
 | Depth Anything V2 access | Dimension estimation | Pending |
 | Nano Banana Pro access | Render generation | Pending |
@@ -289,6 +293,14 @@
 - Retry only on 5xx errors, exponential backoff (1s, 2s, 4s, max 30s)
 - 5-minute stale time for cached data
 - **Summary:** `.planning/phases/03-ai-pipeline/03-01-SUMMARY.md`
+
+**Plan 02 - Claude Vision API (Completed 2026-02-04):**
+- Anthropic SDK v0.72.1 for Claude Vision API
+- Claude Vision client (analyzeSpace) for space analysis
+- Image preprocessing helpers (imageUriToBase64, resizeImageForVision)
+- Server-side Convex action (analyzeSpaceAction) for secure API calls
+- Zod schema validation for structured response parsing
+- **Summary:** `.planning/phases/03-ai-pipeline/03-02-SUMMARY.md`
 
 ---
 
