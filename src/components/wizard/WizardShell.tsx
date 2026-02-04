@@ -6,6 +6,7 @@ import { StepLayout } from './StepLayout'
 import { ModulePicker } from './ModulePicker'
 import { StepFinishes } from './StepFinishes'
 import { StepReview } from './StepReview'
+import { PriceStickyBar } from '@/components/pricing/PriceStickyBar'
 
 interface WizardShellProps {
   aiEstimate?: { width: number; depth: number; height: number }
@@ -60,13 +61,8 @@ export function WizardShell({ aiEstimate, onSlotTap }: WizardShellProps) {
         {renderStepContent()}
       </div>
 
-      {/* Sticky price bar placeholder */}
-      <div className="px-4 py-2 bg-white border-t">
-        <div className="flex items-center justify-between">
-          <span className="text-sm text-zinc-500">Estimated total</span>
-          <span className="text-lg font-semibold text-zinc-900">$--,---</span>
-        </div>
-      </div>
+      {/* Sticky price bar - live pricing throughout wizard */}
+      <PriceStickyBar />
 
       <StepNavigation />
     </div>
