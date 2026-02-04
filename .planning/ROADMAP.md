@@ -191,6 +191,8 @@ Plans:
 **Status:** Not Started
 **Requirements:** SUBMIT-001 → SUBMIT-005, QUEUE-001 → QUEUE-005, QUOTE-001 → QUOTE-004, PAY-001 → PAY-004
 
+**Goal:** Customer can submit configured design for a quote, team reviews submissions in internal dashboard, manages workflow from New to Quoted.
+
 **Deliverables:**
 - Pre-submit options screen (site measure, installation quote)
 - Submission form (name, email)
@@ -208,6 +210,13 @@ Plans:
 - [ ] Team can view full configuration details
 - [ ] Team can update submission status
 - [ ] Workflow documented for manual quote creation
+
+**Plans:** 4 plans
+Plans:
+- [ ] 06-01-PLAN.md — Schema update (internalNotes field) and API enhancements
+- [ ] 06-02-PLAN.md — Customer submission flow (options, review, confirmation)
+- [ ] 06-03-PLAN.md — Internal team dashboard at /admin/submissions
+- [ ] 06-04-PLAN.md — Human verification of complete submission system
 
 ---
 
