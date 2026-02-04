@@ -5,7 +5,8 @@ import { StepNavigation } from './StepNavigation'
 import { StepDimensions } from './StepDimensions'
 import { StepLayout } from './StepLayout'
 import { ModulePicker } from './ModulePicker'
-// Future: import { StepFinishes, StepReview } from './...'
+import { StepFinishes } from './StepFinishes'
+import { StepReview } from './StepReview'
 
 interface WizardShellProps {
   aiEstimate?: { width: number; depth: number; height: number }
@@ -45,9 +46,9 @@ export function WizardShell({ aiEstimate, onSlotTap }: WizardShellProps) {
           </>
         )
       case 2:
-        return <div className="p-4 text-zinc-500">Finishes step (Plan 07)</div>
+        return <StepFinishes />
       case 3:
-        return <div className="p-4 text-zinc-500">Review step (Plan 07)</div>
+        return <StepReview />
       default:
         return null
     }
