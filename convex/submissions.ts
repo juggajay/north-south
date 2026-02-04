@@ -78,6 +78,32 @@ export const getByDesign = query({
 });
 
 /**
+ * List all submissions (internal/admin use)
+ */
+export const listAll = query({
+  args: {},
+  handler: async (ctx) => {
+    const submissions = await ctx.db
+      .query("submissions")
+      .order("desc")
+      .take(100);
+
+    // Enrich with design data
+    const enriched = await Promise.all(
+      submissions.map(async (submission) => {
+        const design = await ctx.db.get(submission.designId);
+        return {
+          ...submission,
+          design,
+        };
+      })
+    );
+
+    return enriched;
+  },
+});
+
+/**
  * List pending submissions (internal/admin use)
  */
 export const listPending = query({
@@ -161,8 +187,8 @@ export const updateStatus = mutation({
       throw new Error("Submission not found");
     }
 
-    // Validate status
-    const validStatuses = ["pending", "quoted", "ordered", "rejected"];
+    // Validate status (3-step workflow: pending -> in_review -> quoted)
+    const validStatuses = ["pending", "in_review", "quoted", "ordered", "rejected"];
     if (!validStatuses.includes(status)) {
       throw new Error(`Invalid status: ${status}`);
     }
@@ -196,6 +222,26 @@ export const addNotes = mutation({
     }
 
     await ctx.db.patch(id, { notes });
+
+    return await ctx.db.get(id);
+  },
+});
+
+/**
+ * Update internal notes (team-only)
+ */
+export const updateInternalNotes = mutation({
+  args: {
+    id: v.id("submissions"),
+    internalNotes: v.string(),
+  },
+  handler: async (ctx, { id, internalNotes }) => {
+    const submission = await ctx.db.get(id);
+    if (!submission) {
+      throw new Error("Submission not found");
+    }
+
+    await ctx.db.patch(id, { internalNotes });
 
     return await ctx.db.get(id);
   },
