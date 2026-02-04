@@ -36,6 +36,9 @@ yarn-error.log*
 
 # Convex
 .convex
+convex/**/*.js
+convex/**/*.js.map
+!convex/schema.js
 
 # vercel
 .vercel

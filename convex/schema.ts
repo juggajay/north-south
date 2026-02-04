@@ -29,6 +29,20 @@ export default defineSchema({
     .index("by_status", ["status"]),
 
   // ===================
+  // DESIGN VERSIONS (for history/restore)
+  // ===================
+  designVersions: defineTable({
+    designId: v.id("designs"),
+    version: v.number(), // Auto-incrementing per design
+    config: v.any(), // Full config snapshot (dimensions, slots, finishes)
+    thumbnail: v.optional(v.string()), // Optional screenshot storage ID
+    label: v.optional(v.string()), // Optional user label ("Before adding pantry")
+    createdAt: v.number(),
+  })
+    .index("by_designId", ["designId"])
+    .index("by_designId_version", ["designId", "version"]),
+
+  // ===================
   // SUBMISSIONS
   // ===================
   submissions: defineTable({

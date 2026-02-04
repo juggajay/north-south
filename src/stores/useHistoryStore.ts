@@ -5,7 +5,6 @@
  * Exposes undo/redo functionality from useCabinetStore's temporal middleware
  */
 
-import { useTemporalStore } from 'zundo';
 import { useCabinetStore } from './useCabinetStore';
 
 // ============================================================================
@@ -30,19 +29,24 @@ import { useCabinetStore } from './useCabinetStore';
  * ```
  */
 export const useHistoryStore = () => {
-  const temporalStore = useTemporalStore(useCabinetStore);
+  // Access the temporal store from the cabinet store
+  const undo = useCabinetStore.temporal.getState().undo;
+  const redo = useCabinetStore.temporal.getState().redo;
+  const clear = useCabinetStore.temporal.getState().clear;
+  const pastStates = useCabinetStore.temporal.getState().pastStates;
+  const futureStates = useCabinetStore.temporal.getState().futureStates;
 
   return {
     // Actions
-    undo: temporalStore.undo,
-    redo: temporalStore.redo,
-    clear: temporalStore.clear,
+    undo,
+    redo,
+    clear,
 
     // State
-    canUndo: temporalStore.pastStates.length > 0,
-    canRedo: temporalStore.futureStates.length > 0,
-    pastStatesCount: temporalStore.pastStates.length,
-    futureStatesCount: temporalStore.futureStates.length,
+    canUndo: pastStates.length > 0,
+    canRedo: futureStates.length > 0,
+    pastStatesCount: pastStates.length,
+    futureStatesCount: futureStates.length,
   };
 };
 
@@ -55,7 +59,7 @@ export const useHistoryStore = () => {
  * Useful for conditional rendering or logic checks
  */
 export const getHistoryState = () => {
-  const temporalStore = useTemporalStore.getState();
+  const temporalStore = useCabinetStore.temporal.getState();
   return {
     canUndo: temporalStore.pastStates.length > 0,
     canRedo: temporalStore.futureStates.length > 0,
