@@ -4,22 +4,22 @@
 
 **Milestone:** 1 (MVP Launch)
 **Phase:** 04 (3D Configurator Core)
-**Plan:** 02 of 07 complete
+**Plan:** 01 of 07 complete
 **Status:** In progress
 **Last Updated:** 2026-02-04
 
-**Progress:** [###-------] 29% (Phase 04: 2/7 plans complete)
+**Progress:** [#---------] 14% (Phase 04: 1/7 plans complete)
 
-**Last activity:** 2026-02-04 - Completed 04-02-PLAN.md (Version History and Auto-Save)
+**Last activity:** 2026-02-04 - Completed 04-01-PLAN.md (R3F Foundation)
 
 ---
 
 ## Session Continuity
 
-**Last session:** 2026-02-04T18:54:12Z
-**Stopped at:** Completed 04-02-PLAN.md
+**Last session:** 2026-02-04T08:00:45Z
+**Stopped at:** Completed 04-01-PLAN.md
 **Resume file:** None
-**Next:** Continue Phase 04 (04-03: Wizard UI Framework)
+**Next:** Continue Phase 04 (04-02: 3D Cabinet Primitives)
 
 ---
 
@@ -163,10 +163,13 @@
 
 | Decision | Choice | Rationale | Date |
 |----------|--------|-----------|------|
-| Auto-save debounce | 1000ms | Balances responsiveness with API efficiency | 2026-02-04 |
-| Version snapshot frequency | Every 10 auto-saves | Creates recovery points without database bloat | 2026-02-04 |
-| Version table structure | Separate designVersions table | Clean separation, independent queries and pruning | 2026-02-04 |
-| Restore behavior | Auto-create restore-point version | Preserves full audit trail, never lose work | 2026-02-04 |
+| R3F version | v9.0.4 (not v9.5.0) | React 19 compatibility | 2026-02-04 |
+| Drei version | v10.7.7 (latest) | React 19 and R3F v9 support | 2026-02-04 |
+| Undo/redo limit | 20 states | Balance memory with history depth | 2026-02-04 |
+| Wizard progression | Strict validation gates | Prevents invalid configurations | 2026-02-04 |
+| Canvas DPR | Adaptive 1-1.5 | Mobile performance optimization | 2026-02-04 |
+| Canvas frameloop | demand | Render only when needed (battery saving) | 2026-02-04 |
+| WebGL antialias | Disabled | Mobile performance optimization | 2026-02-04 |
 
 ### UX Quality Gaps - Approved Fixes
 
@@ -362,22 +365,16 @@
 
 ## Phase 04 Deliverables
 
-**Plan 01 - 3D Visualization Setup (Completed 2026-02-04):**
+**Plan 01 - R3F Foundation (Completed 2026-02-04):**
 - Three.js v0.182.0, React Three Fiber v9.0.4, Drei v10.7.7
-- Zustand v5.0.11 for state management
-- @use-gesture/react, react-modal-sheet, use-debounce
-- TypeScript types for configurator (CabinetDimensions, ModuleType, ModuleConfig, SlotConfig, FinishConfig, CabinetConfig, WizardStep, DesignVersion)
-- 12 module types defined (base, overhead, tall, corner, pantry, etc.)
+- Zustand v5.0.11 with zundo temporal middleware (20-state undo/redo)
+- TypeScript types for configurator (CabinetDimensions, ModuleType with 12 types, ModuleConfig, SlotConfig, FinishConfig, CabinetConfig, WizardStep, DesignVersion)
+- useCabinetStore with temporal middleware for undo/redo
+- useWizardStore with strict validation-based progression
+- useHistoryStore exposing undo/redo functionality
+- Canvas3D wrapper with adaptive DPR (1-1.5), demand frameloop, mobile optimizations
+- Fixed Convex schema issues (designVersions table, .js/.ts conflicts)
 - **Summary:** `.planning/phases/04-3d-configurator-core/04-01-SUMMARY.md`
-
-**Plan 02 - Version History and Auto-Save (Completed 2026-02-04):**
-- designVersions table with auto-incrementing version numbers
-- Version management operations (create, restore, list, get, getByVersionNumber, pruneOldVersions)
-- useAutoSave hook with 1000ms debounce
-- Periodic version snapshots (every 10 saves)
-- SaveIndicator component with time-ago display
-- Full audit trail with restore-point versions
-- **Summary:** `.planning/phases/04-3d-configurator-core/04-02-SUMMARY.md`
 
 ---
 
