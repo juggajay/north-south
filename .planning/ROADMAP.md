@@ -74,23 +74,33 @@ Plans:
 **Status:** Not Started
 **Requirements:** PROC-001 → PROC-003, AI-001 → AI-007, DIM-001 → DIM-004
 
+**Goal:** Transform user photos into styled renders with dimension estimates, showing joinery in their actual space with animated processing feedback.
+
 **Deliverables:**
 - Processing screen with animated progress stages
 - Claude Vision integration for space analysis
-- Depth Anything V2 integration for dimension estimation
-- Nano Banana Pro integration for render generation
-- Render compositing pipeline
-- Dimension accuracy tier system
+- Dimension estimation with confidence tiers
+- Nano Banana Pro/Gemini integration for render generation
+- Swipeable render carousel
 - Error handling with retry options
 
 **Must-Haves:**
 - [ ] Photo uploads trigger processing pipeline
-- [ ] Progress stages display: Analyzing → Measuring → Matching → Creating
+- [ ] Progress stages display: Analyzing → Measuring → Styling → Creating
 - [ ] 3 styled renders generated within 30 seconds
 - [ ] Renders show user's actual space transformed
 - [ ] Dimension estimate displayed with confidence %
 - [ ] Materials in renders match Polytec finishes
 - [ ] Failed processing shows clear error + retry option
+
+**Plans:** 6 plans
+Plans:
+- [ ] 03-01-PLAN.md — Pipeline types and TanStack Query setup
+- [ ] 03-02-PLAN.md — Claude Vision space analysis integration
+- [ ] 03-03-PLAN.md — Dimension estimation and render generation
+- [ ] 03-04-PLAN.md — Processing screen with animated progress
+- [ ] 03-05-PLAN.md — Render carousel and pipeline integration
+- [ ] 03-06-PLAN.md — Human verification of complete AI pipeline
 
 ---
 
