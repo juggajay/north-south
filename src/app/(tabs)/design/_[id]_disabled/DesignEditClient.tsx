@@ -1,15 +1,7 @@
-/**
- * Design Edit Page with Auto-save
- * Phase 04-08: Undo/Redo & Shareable Links
- *
- * Loads a saved design from Convex and renders the 3D configurator
- * with auto-save on every change.
- */
-
 'use client';
 
 import { useEffect, useState } from 'react';
-import { useQuery, useMutation } from 'convex/react';
+import { useQuery } from 'convex/react';
 import { api } from '../../../../../convex/_generated/api';
 import type { Id } from '../../../../../convex/_generated/dataModel';
 import { useCabinetStore } from '@/stores/useCabinetStore';
@@ -18,22 +10,20 @@ import { SaveIndicator } from '@/components/configurator/SaveIndicator';
 import { UndoRedoButtons } from '@/components/wizard/UndoRedoButtons';
 import { WizardShell } from '@/components/wizard/WizardShell';
 import { Canvas3D } from '@/components/configurator/Canvas3D';
-import { CabinetModel } from '@/components/models/CabinetModel';
+import { CabinetModel } from '@/components/configurator/CabinetModel';
 import { DimensionSync } from '@/components/wizard/DimensionSync';
 import { Loader2 } from 'lucide-react';
 
-interface DesignPageProps {
-  params: {
-    id: string;
-  };
+interface DesignEditClientProps {
+  designId: string;
 }
 
-export default function DesignPage({ params }: DesignPageProps) {
-  const designId = params.id as Id<'designs'>;
+export default function DesignEditClient({ designId }: DesignEditClientProps) {
+  const id = designId as Id<'designs'>;
   const [isLoaded, setIsLoaded] = useState(false);
 
   // Fetch design from Convex
-  const design = useQuery(api.designs.get, { id: designId });
+  const design = useQuery(api.designs.get, { id });
 
   // Load design config into cabinet store once
   useEffect(() => {
@@ -42,12 +32,10 @@ export default function DesignPage({ params }: DesignPageProps) {
 
       // Load dimensions
       if (design.config?.dimensions) {
-        Object.entries(design.config.dimensions).forEach(([key, value]) => {
-          cabinetStore.setDimension(
-            key as keyof typeof design.config.dimensions,
-            value as number
-          );
-        });
+        const dims = design.config.dimensions as any;
+        if (dims.width) cabinetStore.setDimension('width', dims.width);
+        if (dims.height) cabinetStore.setDimension('height', dims.height);
+        if (dims.depth) cabinetStore.setDimension('depth', dims.depth);
       }
 
       // Load slots
@@ -66,12 +54,10 @@ export default function DesignPage({ params }: DesignPageProps) {
 
       // Load finishes
       if (design.config?.finishes) {
-        Object.entries(design.config.finishes).forEach(([key, value]) => {
-          cabinetStore.setFinish(
-            key as keyof typeof design.config.finishes,
-            value as string
-          );
-        });
+        const finishes = design.config.finishes as any;
+        if (finishes.material) cabinetStore.setFinish('material', finishes.material);
+        if (finishes.hardware) cabinetStore.setFinish('hardware', finishes.hardware);
+        if (finishes.doorProfile) cabinetStore.setFinish('doorProfile', finishes.doorProfile);
       }
 
       setIsLoaded(true);
@@ -83,7 +69,7 @@ export default function DesignPage({ params }: DesignPageProps) {
 
   // Auto-save on every change
   const autoSave = useAutoSave(
-    designId,
+    id,
     {
       dimensions: cabinetConfig.dimensions,
       slots: Array.from(cabinetConfig.slots.entries()),

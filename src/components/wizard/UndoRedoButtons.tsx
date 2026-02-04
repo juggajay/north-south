@@ -46,7 +46,7 @@ export function UndoRedoButtons() {
       <Button
         variant="outline"
         size="icon-md"
-        onClick={undo}
+        onClick={() => undo()}
         disabled={!canUndo}
         aria-label="Undo (Ctrl+Z)"
         title="Undo (Ctrl+Z)"
@@ -57,7 +57,7 @@ export function UndoRedoButtons() {
       <Button
         variant="outline"
         size="icon-md"
-        onClick={redo}
+        onClick={() => redo()}
         disabled={!canRedo}
         aria-label="Redo (Ctrl+Shift+Z)"
         title="Redo (Ctrl+Shift+Z)"

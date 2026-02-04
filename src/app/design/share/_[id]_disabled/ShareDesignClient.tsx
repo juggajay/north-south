@@ -1,41 +1,30 @@
-/**
- * Shareable Design View Page
- * Phase 04-08: Undo/Redo & Shareable Links
- *
- * Read-only view of a design with "Save a Copy" option.
- * Deep link format: /design/share/{designId}
- */
-
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import { useQuery, useMutation } from 'convex/react';
 import { useConvexAuth } from 'convex/react';
 import { api } from '../../../../../convex/_generated/api';
 import type { Id } from '../../../../../convex/_generated/dataModel';
 import { Canvas3D } from '@/components/configurator/Canvas3D';
-import { CabinetModel } from '@/components/models/CabinetModel';
+import { CabinetModel } from '@/components/configurator/CabinetModel';
 import { Button } from '@/components/ui/button';
 import { Share2, Copy, Loader2 } from 'lucide-react';
 import { useCabinetStore } from '@/stores/useCabinetStore';
-import { useEffect } from 'react';
 
-interface SharePageProps {
-  params: {
-    id: string;
-  };
+interface ShareDesignClientProps {
+  designId: string;
 }
 
-export default function ShareDesignPage({ params }: SharePageProps) {
+export default function ShareDesignClient({ designId }: ShareDesignClientProps) {
   const router = useRouter();
-  const designId = params.id as Id<'designs'>;
+  const id = designId as Id<'designs'>;
   const [isLoaded, setIsLoaded] = useState(false);
   const [isCopying, setIsCopying] = useState(false);
   const [copySuccess, setCopySuccess] = useState(false);
 
   const { isAuthenticated, isLoading: authLoading } = useConvexAuth();
-  const design = useQuery(api.designs.get, { id: designId });
+  const design = useQuery(api.designs.get, { id });
   const duplicateDesign = useMutation(api.designs.duplicate);
 
   // Load design config into cabinet store for 3D preview
@@ -48,12 +37,10 @@ export default function ShareDesignPage({ params }: SharePageProps) {
 
       // Load dimensions
       if (design.config?.dimensions) {
-        Object.entries(design.config.dimensions).forEach(([key, value]) => {
-          cabinetStore.setDimension(
-            key as keyof typeof design.config.dimensions,
-            value as number
-          );
-        });
+        const dims = design.config.dimensions as any;
+        if (dims.width) cabinetStore.setDimension('width', dims.width);
+        if (dims.height) cabinetStore.setDimension('height', dims.height);
+        if (dims.depth) cabinetStore.setDimension('depth', dims.depth);
       }
 
       // Load slots
@@ -71,12 +58,10 @@ export default function ShareDesignPage({ params }: SharePageProps) {
 
       // Load finishes
       if (design.config?.finishes) {
-        Object.entries(design.config.finishes).forEach(([key, value]) => {
-          cabinetStore.setFinish(
-            key as keyof typeof design.config.finishes,
-            value as string
-          );
-        });
+        const finishes = design.config.finishes as any;
+        if (finishes.material) cabinetStore.setFinish('material', finishes.material);
+        if (finishes.hardware) cabinetStore.setFinish('hardware', finishes.hardware);
+        if (finishes.doorProfile) cabinetStore.setFinish('doorProfile', finishes.doorProfile);
       }
 
       setIsLoaded(true);
@@ -86,7 +71,7 @@ export default function ShareDesignPage({ params }: SharePageProps) {
   // Copy share link to clipboard
   const handleCopyLink = async () => {
     try {
-      const shareUrl = `${window.location.origin}/design/share/${designId}`;
+      const shareUrl = `${window.location.origin}/design/share/${id}`;
       await navigator.clipboard.writeText(shareUrl);
       setCopySuccess(true);
       setTimeout(() => setCopySuccess(false), 2000);
@@ -101,7 +86,7 @@ export default function ShareDesignPage({ params }: SharePageProps) {
     try {
       // Duplicate the design (will be associated with current user if authenticated)
       const newDesignId = await duplicateDesign({
-        sourceId: designId,
+        sourceId: id,
       });
 
       // Navigate to the new design edit page
