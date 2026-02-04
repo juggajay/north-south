@@ -3,23 +3,23 @@
 ## Current Position
 
 **Milestone:** 1 (MVP Launch)
-**Phase:** 03 (AI Pipeline) - COMPLETE
-**Plan:** 06 of 06 complete
-**Status:** Phase complete - verified working
+**Phase:** 04 (3D Configurator Core)
+**Plan:** 02 of 07 complete
+**Status:** In progress
 **Last Updated:** 2026-02-04
 
-**Progress:** [##########] 100% (Phase 03: 6/6 plans complete)
+**Progress:** [###-------] 29% (Phase 04: 2/7 plans complete)
 
-**Last activity:** 2026-02-04 - Completed 03-06-PLAN.md (Human Verification - PASSED)
+**Last activity:** 2026-02-04 - Completed 04-02-PLAN.md (Version History and Auto-Save)
 
 ---
 
 ## Session Continuity
 
-**Last session:** 2026-02-04T05:55:43Z
-**Stopped at:** Completed 03-05-PLAN.md
+**Last session:** 2026-02-04T18:54:12Z
+**Stopped at:** Completed 04-02-PLAN.md
 **Resume file:** None
-**Next:** Phase 04 (3D Configurator)
+**Next:** Continue Phase 04 (04-03: Wizard UI Framework)
 
 ---
 
@@ -158,6 +158,15 @@
 | Pipeline orchestration | TanStack Query mutation | Consistent with existing query patterns, retry logic | 2026-02-04 |
 | Convex API types | Manual addition | Blocking fix for unprovisionned deployment | 2026-02-04 |
 | View state machine | camera/processing/renders | Clear flow states, easy to extend | 2026-02-04 |
+
+### Implementation Decisions (Phase 04)
+
+| Decision | Choice | Rationale | Date |
+|----------|--------|-----------|------|
+| Auto-save debounce | 1000ms | Balances responsiveness with API efficiency | 2026-02-04 |
+| Version snapshot frequency | Every 10 auto-saves | Creates recovery points without database bloat | 2026-02-04 |
+| Version table structure | Separate designVersions table | Clean separation, independent queries and pruning | 2026-02-04 |
+| Restore behavior | Auto-create restore-point version | Preserves full audit trail, never lose work | 2026-02-04 |
 
 ### UX Quality Gaps - Approved Fixes
 
@@ -348,6 +357,27 @@
 - **Summary:** `.planning/phases/03-ai-pipeline/03-06-SUMMARY.md`
 
 **Phase 03 Complete** - Full AI Pipeline infrastructure ready. Manual verification of end-to-end flow recommended on mobile device before Phase 04 (3D Configurator).
+
+---
+
+## Phase 04 Deliverables
+
+**Plan 01 - 3D Visualization Setup (Completed 2026-02-04):**
+- Three.js v0.182.0, React Three Fiber v9.0.4, Drei v10.7.7
+- Zustand v5.0.11 for state management
+- @use-gesture/react, react-modal-sheet, use-debounce
+- TypeScript types for configurator (CabinetDimensions, ModuleType, ModuleConfig, SlotConfig, FinishConfig, CabinetConfig, WizardStep, DesignVersion)
+- 12 module types defined (base, overhead, tall, corner, pantry, etc.)
+- **Summary:** `.planning/phases/04-3d-configurator-core/04-01-SUMMARY.md`
+
+**Plan 02 - Version History and Auto-Save (Completed 2026-02-04):**
+- designVersions table with auto-incrementing version numbers
+- Version management operations (create, restore, list, get, getByVersionNumber, pruneOldVersions)
+- useAutoSave hook with 1000ms debounce
+- Periodic version snapshots (every 10 saves)
+- SaveIndicator component with time-ago display
+- Full audit trail with restore-point versions
+- **Summary:** `.planning/phases/04-3d-configurator-core/04-02-SUMMARY.md`
 
 ---
 
