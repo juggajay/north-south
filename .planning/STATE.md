@@ -4,22 +4,22 @@
 
 **Milestone:** 1 (MVP Launch)
 **Phase:** 04 (3D Configurator Core)
-**Plan:** 07 of 10 complete
+**Plan:** 08 of 10 complete
 **Status:** In progress
 **Last Updated:** 2026-02-04
 
-**Progress:** [#######---] 70% (Phase 04: 7/10 plans complete)
+**Progress:** [########--] 80% (Phase 04: 8/10 plans complete)
 
-**Last activity:** 2026-02-04 - Completed 04-07-PLAN.md (Finish Selection & Review)
+**Last activity:** 2026-02-04 - Completed 04-08-PLAN.md (Undo/Redo & Shareable Links)
 
 ---
 
 ## Session Continuity
 
-**Last session:** 2026-02-04T08:26:50Z
-**Stopped at:** Completed 04-07-PLAN.md
+**Last session:** 2026-02-04T08:28:40Z
+**Stopped at:** Completed 04-08-PLAN.md
 **Resume file:** None
-**Next:** Continue Phase 04 (remaining plans 04-08 through 04-10)
+**Next:** Continue Phase 04 (remaining plans 04-09 through 04-10)
 
 ---
 
@@ -190,6 +190,11 @@
 | Material instance sharing | useMemo for Three.js materials | Prevents recreation per mesh, better performance | 2026-02-04 |
 | Finish selection validation | Material required before Step 4 | Ensures complete configuration before review | 2026-02-04 |
 | Placeholder pricing | $5000 base + $800/module | Simple estimate until Phase 05 real pricing | 2026-02-04 |
+| UndoRedoButtons placement | Outside Canvas context | DimensionSync handles 3D invalidation, keeps UI header clean | 2026-02-04 |
+| Auto-save debounce | 1000ms | Balances responsiveness with API efficiency | 2026-02-04 |
+| Share page design | Read-only with "Save a Copy" | Prevents unauthorized edits, enables collaboration | 2026-02-04 |
+| Duplicate mutation behavior | Doesn't copy renders | Fresh start for duplicated design | 2026-02-04 |
+| Deep link format | /design/share/{designId} | Simple, clean shareable URL | 2026-02-04 |
 
 ### UX Quality Gaps - Approved Fixes
 
@@ -458,6 +463,18 @@
 - Variance disclaimer (±5%, site measure required)
 - Complete 4-step wizard flow now functional
 - **Summary:** `.planning/phases/04-3d-configurator-core/04-07-SUMMARY.md`
+
+**Plan 08 - Undo/Redo & Shareable Links (Completed 2026-02-04):**
+- UndoRedoButtons component with keyboard shortcuts (Ctrl+Z, Ctrl+Shift+Z)
+- SaveIndicator component with real-time status (Saving.../Saved Xs ago)
+- Design edit page with auto-save integration (1000ms debounce)
+- Split layout: 3D viewport + wizard sidebar
+- Shareable design page with read-only 3D preview
+- Deep link format: /design/share/{designId}
+- "Save a Copy" functionality for duplicating designs
+- duplicate mutation in convex/designs.ts
+- Navigation from share page to edit page after duplication
+- **Summary:** `.planning/phases/04-3d-configurator-core/04-08-SUMMARY.md`
 
 ---
 
