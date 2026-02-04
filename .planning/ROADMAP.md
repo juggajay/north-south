@@ -153,7 +153,8 @@ Plans:
 ---
 
 ### Phase 05: Finishes & Pricing
-**Status:** Not Started
+**Status:** Complete ✓
+**Completed:** 2026-02-04
 **Requirements:** FIN-001 → FIN-005, REV-001 → REV-004, PRICE-001 → PRICE-006, PRICE-D01 → PRICE-D04
 
 **Goal:** Replace placeholder pricing with database-driven component pricing, show live totals throughout wizard, display price breakdown with variance disclaimers.
@@ -168,21 +169,21 @@ Plans:
 - Site measure disclaimer
 
 **Must-Haves:**
-- [ ] User can select from all Polytec materials
-- [ ] User can select hardware options
-- [ ] User can select door profile
-- [ ] 3D viewport updates materials in real-time
-- [ ] Price breakdown shows: Cabinets · Material · Hardware · Door Profile
-- [ ] Total price updates live as user configures
-- [ ] All prices pulled from database (admin-editable)
-- [ ] ±5% supplier variance disclaimer visible
+- [x] User can select from all Polytec materials
+- [x] User can select hardware options
+- [x] User can select door profile
+- [x] 3D viewport updates materials in real-time
+- [x] Price breakdown shows: Cabinets · Material · Hardware · Door Profile
+- [x] Total price updates live as user configures
+- [x] All prices pulled from database (admin-editable)
+- [x] ±5% supplier variance disclaimer visible
 
 **Plans:** 4 plans
 Plans:
-- [ ] 05-01-PLAN.md — Migrate seed data to cents, create modules query API
-- [ ] 05-02-PLAN.md — usePricing hook and pricing display components
-- [ ] 05-03-PLAN.md — Wire pricing to wizard UI (StepReview, MaterialPicker, sticky bar)
-- [ ] 05-04-PLAN.md — Human verification of complete pricing system
+- [x] 05-01-PLAN.md — Migrate seed data to cents, create modules query API
+- [x] 05-02-PLAN.md — usePricing hook and pricing display components
+- [x] 05-03-PLAN.md — Wire pricing to wizard UI (StepReview, MaterialPicker, sticky bar)
+- [x] 05-04-PLAN.md — Human verification of complete pricing system
 
 ---
 
@@ -272,7 +273,7 @@ Plans:
 | 02 | Mobile UI Shell | Complete ✓ | NAV-*, CAM-*, CHAT-* |
 | 03 | AI Pipeline | Complete ✓ | PROC-*, AI-*, DIM-* |
 | 04 | 3D Configurator Core | Complete ✓ | CFG-*, SLOT-*, MOD-*, TOUCH-* |
-| 05 | Finishes & Pricing | Not Started | FIN-*, REV-*, PRICE-* |
+| 05 | Finishes & Pricing | Complete ✓ | FIN-*, REV-*, PRICE-* |
 | 06 | Quote Submission | Not Started | SUBMIT-*, QUEUE-*, QUOTE-*, PAY-* |
 | 07 | Portal & Notifications | Not Started | ORD-*, PORT-*, NOTIF-* |
 | 08 | Production & Admin | Not Started | PROD-*, QR-*, DASH-* |
