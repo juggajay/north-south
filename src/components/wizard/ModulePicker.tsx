@@ -8,7 +8,7 @@
 
 'use client';
 
-import Sheet from 'react-modal-sheet';
+import { Sheet } from 'react-modal-sheet';
 import { useCabinetStore } from '@/stores/useCabinetStore';
 import type { ModuleType } from '@/types/configurator';
 

@@ -1,7 +1,8 @@
 import { useRef, useState, useCallback } from 'react'
 import { useFrame, useThree } from '@react-three/fiber'
-import { damp } from 'three/src/math/MathUtils'
 import * as THREE from 'three'
+
+const damp = THREE.MathUtils.damp
 
 // ============================================
 // 1. CABINET DOOR - Standard hinged door
@@ -53,7 +54,7 @@ export function CabinetDoor({
     }
   })
 
-  const handleClick = useCallback((event: THREE.Event) => {
+  const handleClick = useCallback((event: any) => {
     event.stopPropagation()
     setIsOpen((prev) => !prev)
     invalidate()
@@ -148,7 +149,7 @@ export function CabinetDrawer({
     }
   })
 
-  const handleClick = useCallback((event: THREE.Event) => {
+  const handleClick = useCallback((event: any) => {
     event.stopPropagation()
     setIsOpen((prev) => !prev)
     invalidate()
@@ -249,7 +250,7 @@ export function LiftUpDoorPanel({
     }
   })
 
-  const handleClick = useCallback((event: THREE.Event) => {
+  const handleClick = useCallback((event: any) => {
     event.stopPropagation()
     setIsOpen((prev) => !prev)
     invalidate()

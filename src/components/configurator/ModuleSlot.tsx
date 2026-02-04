@@ -80,7 +80,7 @@ export function ModuleSlot({
     document.body.style.cursor = 'default';
   };
 
-  const handleClick = (event: THREE.Event) => {
+  const handleClick = (event: any) => {
     event.stopPropagation();
     onTap();
   };
