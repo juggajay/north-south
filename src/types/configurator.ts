@@ -49,8 +49,10 @@ export type ModuleType =
  * Interior options for a module (e.g., shelves, dividers, pull-outs)
  */
 export interface InteriorOptions {
-  shelves?: number;           // Adjustable shelf count
-  dividers?: number;          // Vertical dividers
+  shelfCount?: number;        // Adjustable shelf count
+  drawerCount?: number;       // Number of drawers (drawer-stack)
+  basketCount?: number;       // Number of baskets (pull-out-pantry)
+  hasDividers?: boolean;      // Drawer dividers
   pullOut?: boolean;          // Pull-out mechanism
   softClose?: boolean;        // Soft-close hardware
   cutoutForSink?: boolean;    // Sink cutout (sink-base only)

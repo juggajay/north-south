@@ -1,23 +1,25 @@
 /**
  * CabinetModel container component
  * Phase 04-03: 3D Model & Camera
+ * Phase 04-05: Slot-based Module Placement
  *
  * Composes the complete cabinet 3D model:
  * - CabinetFrame (wireframe box)
+ * - SlotSystem (module slots)
  * - Floor plane (grounding)
- * - Slots/modules (to be added in Plan 05)
  */
 
 'use client';
 
 import { CabinetFrame } from './CabinetFrame';
+import { SlotSystem } from './SlotSystem';
 
 // ============================================================================
 // TYPES
 // ============================================================================
 
 interface CabinetModelProps {
-  onSlotTap?: (slotId: string) => void;
+  onSlotTap?: (slotId: string, slotType: 'base' | 'overhead') => void;
 }
 
 // ============================================================================
@@ -33,7 +35,7 @@ export function CabinetModel({ onSlotTap }: CabinetModelProps) {
   return (
     <group>
       <CabinetFrame />
-      {/* Slots will be added in Plan 05 */}
+      {onSlotTap && <SlotSystem onSlotTap={onSlotTap} />}
     </group>
   );
 }

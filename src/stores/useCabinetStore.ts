@@ -88,12 +88,12 @@ export const useCabinetStore = create<CabinetState>()(
             existingSlot.module = module;
             state.config.slots.set(slotId, existingSlot);
           } else {
-            // Create new slot (this shouldn't happen in normal usage)
-            console.warn(`Slot ${slotId} not found, creating new slot`);
+            // Create new slot entry (slots are generated dynamically by SlotSystem)
+            const position = slotId.startsWith('base') ? 'base' : 'overhead';
             const newSlot: SlotConfig = {
               id: slotId,
-              position: 'base', // Default to base
-              x: 0,
+              position: position as 'base' | 'overhead',
+              x: 0, // Actual position calculated by SlotSystem
               module,
             };
             state.config.slots.set(slotId, newSlot);
