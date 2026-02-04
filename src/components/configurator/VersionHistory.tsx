@@ -220,7 +220,7 @@ export function VersionHistory({
                 </p>
               </div>
             ) : (
-              versions.map((version, index) => {
+              versions.map((version: { _id: Id<'designVersions'>; _creationTime: number; version: number; label?: string; thumbnail?: string; createdAt: number; dimensions: any }, index: number) => {
                 const isRestoring = restoringId === version._id;
                 const isCurrent = index === 0; // First version is most recent
 

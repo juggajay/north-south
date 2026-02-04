@@ -205,7 +205,7 @@ export const sendMessage = action({
         : [];
 
       // Format history for Gemini
-      const formattedHistory = history.map((msg) => ({
+      const formattedHistory = history.map((msg: { role: string; content: string }) => ({
         role: msg.role === "user" ? "user" : "model",
         parts: [{ text: msg.content }],
       }));

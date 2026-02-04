@@ -113,7 +113,7 @@ export function ChatInterface() {
           </div>
         ) : (
           <div className="flex flex-col gap-4">
-            {messages.map((msg) => (
+            {messages.map((msg: { _id: string; role: string; content: string; createdAt: number }) => (
               <ChatMessage
                 key={msg._id}
                 role={msg.role as "user" | "assistant"}
