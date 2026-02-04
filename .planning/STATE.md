@@ -4,25 +4,25 @@
 
 **Milestone:** 1 (MVP Launch)
 **Phase:** 06 (Quote Submission Flow) - IN PROGRESS
-**Plan:** 2 of 4 complete
-**Status:** Customer submission flow complete
-**Last Updated:** 2026-02-05
+**Plan:** 3 of 4 complete
+**Status:** Team dashboard operational
+**Last Updated:** 2026-02-04
 
-**Progress:** 65.6% (5.5/8 phases complete)
+**Progress:** 66.3% (5.75/8 phases complete)
 ```
-██████████████████▓░░░░░░░░░░░ 65.6%
+███████████████████░░░░░░░░░░░ 66.3%
 ```
 
-**Latest Completion:** 06-02 - Customer-Facing Submission Flow (2026-02-05)
+**Latest Completion:** 06-03 - Team Dashboard UI (2026-02-04)
 
 ---
 
 ## Session Continuity
 
-**Last session:** 2026-02-05T06:09:14Z
-**Stopped at:** Completed 06-02-PLAN.md
+**Last session:** 2026-02-04T19:09:57Z
+**Stopped at:** Completed 06-03-PLAN.md
 **Resume file:** None
-**Next:** Phase 06-03 (Team Dashboard UI)
+**Next:** Phase 06-04 (Quote Email Flow)
 
 ---
 
@@ -223,6 +223,11 @@
 | Confirmation email | NO confirmation email sent | User only notified when quote ready | 2026-02-05 |
 | Auto-redirect timing | 2.5 seconds to Orders tab | Smooth UX transition after confirmation | 2026-02-05 |
 | Submission flow pattern | Overlay in wizard (replaces review) | Cancel returns to review screen | 2026-02-05 |
+| Queue ordering | Ascending (FIFO, oldest first) | Standard workflow - work through in order received | 2026-02-04 |
+| Detail view pattern | Expand/collapse inline | Faster than navigation to separate page | 2026-02-04 |
+| Status action buttons | Context-aware transitions | Shows only valid next states from current status | 2026-02-04 |
+| Internal notes styling | Amber background | Visual distinction from customer notes | 2026-02-04 |
+| Admin auth | Unprotected for MVP | Role-based access control deferred to production | 2026-02-04 |
 
 ### UX Quality Gaps - Approved Fixes
 
@@ -608,6 +613,15 @@
 - Uses existing auto-saved designId from sessionStorage (no duplicate creation)
 - React Hook Form + Zod validation for submission
 - **Summary:** `.planning/phases/06-quote-submission-flow/06-02-SUMMARY.md`
+
+**Plan 03 - Team Dashboard UI (Completed 2026-02-04):**
+- StatusBadge component with semantic color coding for 5 status states
+- SubmissionCard with expand/collapse functionality and context-aware status actions
+- SubmissionDetail showing full config breakdown (dimensions, modules, finishes) with internal notes editing
+- SubmissionQueue with real-time Convex subscriptions and FIFO ordering (oldest first)
+- Admin page at /admin/submissions (unprotected for MVP)
+- Fixed listAll query ordering bug (desc → asc for proper FIFO workflow)
+- **Summary:** `.planning/phases/06-quote-submission-flow/06-03-SUMMARY.md`
 
 ---
 
