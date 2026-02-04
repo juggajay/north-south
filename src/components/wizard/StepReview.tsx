@@ -2,18 +2,31 @@
  * StepReview component
  * Phase 04-07: Finish Selection & Review
  * Phase 05-03: Real pricing integration
+ * Phase 06-02: Quote submission integration
  *
  * Features:
  * - Complete configuration summary (dimensions, modules, finishes)
  * - Database-driven price breakdown via PriceBreakdown component
  * - Variance disclaimer per pricing decisions
- * - Ready for Phase 06 quote submission integration
+ * - Submit for Quote button that launches SubmissionFlow
+ * - Uses existing auto-saved designId from sessionStorage
  */
 
+"use client";
+
+import { useState } from 'react';
 import { useCabinetStore } from '@/stores/useCabinetStore';
+import { useAuth } from '@/hooks/useAuth';
 import { PriceBreakdown } from '@/components/pricing/PriceBreakdown';
+import { SubmissionFlow } from '@/components/submission/SubmissionFlow';
+import { Button } from '@/components/ui/button';
+import { toast } from 'sonner';
+import type { Id } from '../../../convex/_generated/dataModel';
 
 export function StepReview() {
+  const [showSubmission, setShowSubmission] = useState(false);
+  const { user } = useAuth();
+
   const dimensions = useCabinetStore((state) => state.config.dimensions);
   const slots = useCabinetStore((state) => state.config.slots);
   const finishes = useCabinetStore((state) => state.config.finishes);
@@ -21,6 +34,45 @@ export function StepReview() {
   // Count modules for summary display
   const moduleCount = slots.size;
 
+  // Get existing auto-saved designId from sessionStorage
+  // Design was already auto-saved in Phase 04 - DO NOT create new design
+  const getDesignId = (): Id<"designs"> | null => {
+    if (typeof window !== 'undefined') {
+      const stored = sessionStorage.getItem('currentDesignId');
+      if (stored) return stored as Id<"designs">;
+    }
+    return null;
+  };
+
+  const handleStartSubmission = () => {
+    const designId = getDesignId();
+
+    if (!designId) {
+      toast.error("No saved design found. Please save your design first.");
+      return;
+    }
+
+    setShowSubmission(true);
+  };
+
+  // If submission flow is shown, render only that
+  if (showSubmission) {
+    const designId = getDesignId();
+    if (!designId) {
+      toast.error("Design ID missing. Cannot submit.");
+      setShowSubmission(false);
+      return null;
+    }
+
+    return (
+      <SubmissionFlow
+        designId={designId}
+        onCancel={() => setShowSubmission(false)}
+      />
+    );
+  }
+
+  // Normal review content
   return (
     <div className="p-4 space-y-6">
       <div>
@@ -100,9 +152,14 @@ export function StepReview() {
       {/* Price breakdown - database-driven via PriceBreakdown component */}
       <PriceBreakdown />
 
-      {/* Submit button placeholder - will be wired in Phase 06 */}
-      <div className="text-center text-sm text-zinc-500 py-4">
-        Submit for Quote will be enabled soon
+      {/* Submit for Quote button */}
+      <div className="flex justify-center pt-4">
+        <Button
+          onClick={handleStartSubmission}
+          className="px-8 py-6 text-lg bg-blue-600 hover:bg-blue-700"
+        >
+          Submit for Quote
+        </Button>
       </div>
     </div>
   );
