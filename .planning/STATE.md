@@ -4,22 +4,22 @@
 
 **Milestone:** 1 (MVP Launch)
 **Phase:** 04 (3D Configurator Core)
-**Plan:** 06 of 10 complete
+**Plan:** 07 of 10 complete
 **Status:** In progress
 **Last Updated:** 2026-02-04
 
-**Progress:** [######----] 60% (Phase 04: 6/10 plans complete)
+**Progress:** [#######---] 70% (Phase 04: 7/10 plans complete)
 
-**Last activity:** 2026-02-04 - Completed 04-06-PLAN.md (Module Library & Interior Options)
+**Last activity:** 2026-02-04 - Completed 04-07-PLAN.md (Finish Selection & Review)
 
 ---
 
 ## Session Continuity
 
-**Last session:** 2026-02-04T08:16:43Z
-**Stopped at:** Completed 04-06-PLAN.md
+**Last session:** 2026-02-04T08:26:50Z
+**Stopped at:** Completed 04-07-PLAN.md
 **Resume file:** None
-**Next:** Continue Phase 04 (remaining plans 04-07 through 04-10)
+**Next:** Continue Phase 04 (remaining plans 04-08 through 04-10)
 
 ---
 
@@ -187,6 +187,9 @@
 | Module height defaults | 800mm base, 600mm overhead, 2100mm tall | Standard Australian kitchen dimensions | 2026-02-04 |
 | Carcass component sharing | Shared CabinetCarcass and OverheadCarcass | DRY principle, consistent 18mm panel thickness | 2026-02-04 |
 | Interior options UI pattern | Type-specific controls in bottom sheet | Context-aware configuration per module type | 2026-02-04 |
+| Material instance sharing | useMemo for Three.js materials | Prevents recreation per mesh, better performance | 2026-02-04 |
+| Finish selection validation | Material required before Step 4 | Ensures complete configuration before review | 2026-02-04 |
+| Placeholder pricing | $5000 base + $800/module | Simple estimate until Phase 05 real pricing | 2026-02-04 |
 
 ### UX Quality Gaps - Approved Fixes
 
@@ -441,6 +444,20 @@
 - Configurable: shelf count, drawer count, basket count, dividers
 - Add-ons: LED strip, pull-out bin, drawer dividers
 - **Summary:** `.planning/phases/04-3d-configurator-core/04-06-SUMMARY.md`
+
+**Plan 07 - Finish Selection & Review (Completed 2026-02-04):**
+- MaterialPicker with tabbed interface (material, hardware, door profile)
+- Material swatches grid with category grouping (woodmatt, satin, gloss)
+- Hardware options list with supplier info
+- Door profile selection with images
+- useMaterialPreview hook for shared material instances
+- MaterialApplicator for real-time 3D material updates
+- StepFinishes component for Step 3 with selection summary
+- StepReview component for Step 4 with full configuration summary
+- Price breakdown with placeholder pricing ($5000 base + $800/module)
+- Variance disclaimer (±5%, site measure required)
+- Complete 4-step wizard flow now functional
+- **Summary:** `.planning/phases/04-3d-configurator-core/04-07-SUMMARY.md`
 
 ---
 
