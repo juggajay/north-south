@@ -542,6 +542,40 @@ const styles = [
 ];
 
 /**
+ * Clear all seed data from database
+ * Useful for resetting catalog to re-seed with updated data
+ */
+export const clearSeed = mutation({
+  args: {},
+  handler: async (ctx) => {
+    const tables = [
+      "materials",
+      "hardware",
+      "doorProfiles",
+      "products",
+      "modules",
+      "addons",
+      "styles",
+    ] as const;
+
+    let totalDeleted = 0;
+
+    for (const table of tables) {
+      const docs = await ctx.db.query(table).collect();
+      for (const doc of docs) {
+        await ctx.db.delete(doc._id);
+        totalDeleted++;
+      }
+    }
+
+    return {
+      success: true,
+      message: `Cleared ${totalDeleted} documents from seed tables`,
+    };
+  },
+});
+
+/**
  * Run this mutation once to populate all product catalog data
  */
 export const runSeed = mutation({
