@@ -1,9 +1,22 @@
 import { query, mutation } from "./_generated/server";
-import { auth } from "./auth.config";
+import { convexAuth } from "@convex-dev/auth/server";
+import { Password } from "@convex-dev/auth/providers/Password";
 import { v } from "convex/values";
 
-// Re-export auth functions for use in other Convex functions
-export { auth, signIn, signOut, store, isAuthenticated } from "./auth.config";
+// Configure authentication with Password provider
+export const { auth, signIn, signOut, store, isAuthenticated } = convexAuth({
+  providers: [
+    Password({
+      id: "password",
+      profile(params) {
+        return {
+          email: params.email as string,
+          name: (params.name as string) ?? undefined,
+        };
+      },
+    }),
+  ],
+});
 
 /**
  * Get the currently authenticated user

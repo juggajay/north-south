@@ -12,11 +12,11 @@ import type * as ai from "../ai.js";
 import type * as auth from "../auth.js";
 import type * as chat from "../chat.js";
 import type * as designs from "../designs.js";
-import type * as users from "../users.js";
-import type * as submissions from "../submissions.js";
-import type * as seed from "../seed.js";
-import type * as products_materials from "../products/materials.js";
 import type * as products_hardware from "../products/hardware.js";
+import type * as products_materials from "../products/materials.js";
+import type * as seed from "../seed.js";
+import type * as submissions from "../submissions.js";
+import type * as users from "../users.js";
 
 import type {
   ApiFromModules,
@@ -24,29 +24,39 @@ import type {
   FunctionReference,
 } from "convex/server";
 
+declare const fullApi: ApiFromModules<{
+  ai: typeof ai;
+  auth: typeof auth;
+  chat: typeof chat;
+  designs: typeof designs;
+  "products/hardware": typeof products_hardware;
+  "products/materials": typeof products_materials;
+  seed: typeof seed;
+  submissions: typeof submissions;
+  users: typeof users;
+}>;
+
 /**
- * A utility for referencing Convex functions in your app's API.
+ * A utility for referencing Convex functions in your app's public API.
  *
  * Usage:
  * ```js
  * const myFunctionReference = api.myModule.myFunction;
  * ```
  */
-declare const fullApi: ApiFromModules<{
-  ai: typeof ai;
-  auth: typeof auth;
-  chat: typeof chat;
-  designs: typeof designs;
-  users: typeof users;
-  submissions: typeof submissions;
-  seed: typeof seed;
-  "products/materials": typeof products_materials;
-  "products/hardware": typeof products_hardware;
-}>;
 export declare const api: FilterApi<
   typeof fullApi,
   FunctionReference<any, "public">
 >;
+
+/**
+ * A utility for referencing Convex functions in your app's internal API.
+ *
+ * Usage:
+ * ```js
+ * const myFunctionReference = internal.myModule.myFunction;
+ * ```
+ */
 export declare const internal: FilterApi<
   typeof fullApi,
   FunctionReference<any, "internal">
