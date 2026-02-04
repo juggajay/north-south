@@ -4,22 +4,22 @@
 
 **Milestone:** 1 (MVP Launch)
 **Phase:** 03 (AI Pipeline) - IN PROGRESS
-**Plan:** 02 of 05 complete
+**Plan:** 03 of 05 complete
 **Status:** In progress
 **Last Updated:** 2026-02-04
 
-**Progress:** [####------] 40% (Phase 03: 2/5 plans complete)
+**Progress:** [######----] 60% (Phase 03: 3/5 plans complete)
 
-**Last activity:** 2026-02-04 - Completed 03-02-PLAN.md (Claude Vision API)
+**Last activity:** 2026-02-04 - Completed 03-03-PLAN.md (Dimension Estimation & Render Generation)
 
 ---
 
 ## Session Continuity
 
-**Last session:** 2026-02-04T05:44:26Z
-**Stopped at:** Completed 03-02-PLAN.md
+**Last session:** 2026-02-04T05:46:30Z
+**Stopped at:** Completed 03-03-PLAN.md
 **Resume file:** None
-**Next:** 03-04-PLAN.md (Render Generation) or 03-05-PLAN.md (Processing Flow)
+**Next:** 03-04-PLAN.md (Processing Flow) or 03-05-PLAN.md (Results UI)
 
 ---
 
@@ -148,6 +148,9 @@
 | Vision image size | 1568px max dimension | Claude's optimal size, avoids latency penalty | 2026-02-04 |
 | AI response validation | Zod schemas | Type-safe structured response parsing | 2026-02-04 |
 | API key security | Server-side Convex actions | Keeps ANTHROPIC_API_KEY secure | 2026-02-04 |
+| Dimension tier MVP | Basic tier only (Claude Vision) | Depth Anything V2 deferred; tier system ready for future | 2026-02-04 |
+| Style mapping | Aesthetic-based (fixed 3 per aesthetic) | Dynamic per-space matching deferred | 2026-02-04 |
+| Render partial failures | Graceful handling | Return successful renders even if some fail | 2026-02-04 |
 
 ### UX Quality Gaps - Approved Fixes
 
@@ -301,6 +304,16 @@
 - Server-side Convex action (analyzeSpaceAction) for secure API calls
 - Zod schema validation for structured response parsing
 - **Summary:** `.planning/phases/03-ai-pipeline/03-02-SUMMARY.md`
+
+**Plan 03 - Dimension Estimation & Render Generation (Completed 2026-02-04):**
+- Dimension estimation module (estimateDimensions, getDimensionTierLabel, formatDimensions)
+- Basic tier for MVP (+/-15% accuracy, 85% confidence), tier system ready for Depth Anything V2
+- Sanity constraints: 500-6000mm width, 300-2000mm depth, 2100-3500mm height
+- Render generation client (getStylesForSpace, buildRenderPrompt, parseRenderResult)
+- POLYTEC_STYLES mapping for all 5 aesthetics with 3 styles each
+- generateRendersAction Convex action using Gemini 2.0 Flash
+- Graceful partial failure handling for render generation
+- **Summary:** `.planning/phases/03-ai-pipeline/03-03-SUMMARY.md`
 
 ---
 
