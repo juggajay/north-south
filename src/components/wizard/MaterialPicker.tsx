@@ -31,9 +31,7 @@ export function MaterialPicker() {
   // Fetch materials from Convex
   const materials = useQuery(api.products.materials.list) || []
   const hardware = useQuery(api.products.hardware.list) || []
-  // TODO: Re-enable when doorProfiles is added to generated API
-  // const doorProfiles = useQuery(api.doorProfiles.list) || []
-  const doorProfiles: any[] = [] // Temporary placeholder
+  const doorProfiles = useQuery(api.doorProfiles.list) || []
 
   const handleMaterialSelect = (code: string) => {
     setFinish('material', code)
