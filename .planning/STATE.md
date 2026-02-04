@@ -3,23 +3,23 @@
 ## Current Position
 
 **Milestone:** 1 (MVP Launch)
-**Phase:** 02 (Mobile UI Shell) - COMPLETE
-**Plan:** 06 of 06 complete (all plans completed)
-**Status:** Phase Complete - Ready for Phase 03
+**Phase:** 03 (AI Pipeline) - IN PROGRESS
+**Plan:** 01 of 05 complete
+**Status:** In progress
 **Last Updated:** 2026-02-04
 
-**Progress:** [##########] 100% (Phase 02: 6/6 plans complete)
+**Progress:** [##--------] 20% (Phase 03: 1/5 plans complete)
 
-**Last activity:** 2026-02-04 - Completed 02-06-PLAN.md (Human Verification)
+**Last activity:** 2026-02-04 - Completed 03-01-PLAN.md (Query Infrastructure)
 
 ---
 
 ## Session Continuity
 
-**Last session:** 2026-02-04T04:25:04Z
-**Stopped at:** Completed Phase 02 (Mobile UI Shell)
+**Last session:** 2026-02-04T05:41:30Z
+**Stopped at:** Completed 03-01-PLAN.md
 **Resume file:** None
-**Next:** Phase 03 (AI Pipeline)
+**Next:** 03-02-PLAN.md (Claude Vision API)
 
 ---
 
@@ -134,6 +134,16 @@
 | Chat page rendering | Dynamic import with ssr:false | Prevents SSR errors for Convex hooks in static export | 2026-02-04 |
 | Conversation persistence | localStorage with conversationId | Simple persistence before auth integration | 2026-02-04 |
 | Message animations | Framer Motion fadeIn + slideUp | Smooth visual feedback for new messages | 2026-02-04 |
+
+### Implementation Decisions (Phase 03)
+
+| Decision | Choice | Rationale | Date |
+|----------|--------|-----------|------|
+| Query library | TanStack Query v5 | Industry standard, good retry logic, caching | 2026-02-04 |
+| Retry policy | 5xx only, not 4xx | 4xx are client errors, shouldn't retry | 2026-02-04 |
+| Retry backoff | Exponential 1s/2s/4s, max 30s | Prevents thundering herd, reasonable wait | 2026-02-04 |
+| Query stale time | 5 minutes | Balance freshness with API call reduction | 2026-02-04 |
+| Provider order | Convex (outer) -> Query (inner) | Query hooks may need auth context | 2026-02-04 |
 
 ### UX Quality Gaps - Approved Fixes
 
@@ -267,6 +277,18 @@
 - **Summary:** `.planning/phases/02-mobile-ui-shell/02-06-SUMMARY.md`
 
 **Phase 02 Complete** - Mobile UI Shell ready for AI Pipeline integration in Phase 03.
+
+---
+
+## Phase 03 Deliverables
+
+**Plan 01 - Query Infrastructure (Completed 2026-02-04):**
+- TanStack Query v5 with production retry configuration
+- AI pipeline TypeScript types (PipelineStage, SpaceAnalysis, Dimensions, StyleMatch, Render, etc.)
+- QueryProvider integrated into app layout
+- Retry only on 5xx errors, exponential backoff (1s, 2s, 4s, max 30s)
+- 5-minute stale time for cached data
+- **Summary:** `.planning/phases/03-ai-pipeline/03-01-SUMMARY.md`
 
 ---
 
