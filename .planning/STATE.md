@@ -4,22 +4,25 @@
 
 **Milestone:** 1 (MVP Launch)
 **Phase:** 05 (Finishes & Pricing) - IN PROGRESS
-**Plan:** 1 of 3 complete
-**Status:** Phase in progress
+**Plan:** 02 of 4 complete
+**Status:** Executing Wave 2
 **Last Updated:** 2026-02-04
 
-**Progress:** [##########-] 91% (Phase 04: 10/10 complete, Phase 05: 1/3 complete)
+**Progress:** 93.1% (27/29 plans complete)
+```
+████████████████████████████░░ 93.1%
+```
 
-**Last activity:** 2026-02-04 - Completed 05-01-PLAN.md (Pricing Data Migration)
+**Latest Completion:** 05-02 - Pricing Hook & Display Components (2026-02-04)
 
 ---
 
 ## Session Continuity
 
-**Last session:** 2026-02-04T10:41:04Z
-**Stopped at:** Completed 05-01-PLAN.md
+**Last session:** 2026-02-04T10:48:13Z
+**Stopped at:** Completed 05-02-PLAN.md
 **Resume file:** None
-**Next:** Continue Phase 05 (plans 05-02, 05-03)
+**Next:** Continue Phase 05 (plans 05-03, 05-04)
 
 ---
 
@@ -68,6 +71,8 @@
 | Price display | Total + category breakdown | Transparent, justifies premium | 2026-02-03 |
 | Price timing | Exact prices with disclaimer | "Final price confirmed after site measure" | 2026-02-03 |
 | Price storage | Integer cents | Prevents JavaScript floating-point errors | 2026-02-04 |
+| Currency formatting | Intl.NumberFormat (en-AU, AUD) | Locale-aware, consistent formatting | 2026-02-04 |
+| Pricing hook pattern | usePricing with Zustand selectors | Reactive, performance-optimized | 2026-02-04 |
 
 ### Quote & Payment Decisions
 
@@ -196,6 +201,14 @@
 | Share page design | Read-only with "Save a Copy" | Prevents unauthorized edits, enables collaboration | 2026-02-04 |
 | Duplicate mutation behavior | Doesn't copy renders | Fresh start for duplicated design | 2026-02-04 |
 | Deep link format | /design/share/{designId} | Simple, clean shareable URL | 2026-02-04 |
+
+### Implementation Decisions (Phase 05)
+
+| Decision | Choice | Rationale | Date |
+|----------|--------|-----------|------|
+| Module type matching | String pattern matching with fallback | Handles store-to-DB impedance mismatch | 2026-02-04 |
+| Loading state strategy | Return zeros, show skeletons | Safe rendering during async data loading | 2026-02-04 |
+| TypeScript query types | Explicit any annotations | Workaround for Convex generated type inference gaps | 2026-02-04 |
 
 ### UX Quality Gaps - Approved Fixes
 
@@ -515,6 +528,29 @@
 - **Summary:** `.planning/phases/04-3d-configurator-core/04-10-SUMMARY.md`
 
 **Phase 04 Complete** - Full 3D configurator operational with all features verified.
+
+---
+
+## Phase 05 Deliverables
+
+**Plan 01 - Pricing Data Migration (Completed 2026-02-04):**
+- Database seed data migrated to cents-based pricing
+- All materials, hardware, doorProfiles, modules priced in integer cents
+- Hardware variance field (5%) set for all hardware items
+- convex/products/modules.ts query API (list, getByCode, listByCategory)
+- clearSeed mutation for database resets
+- **Summary:** `.planning/phases/05-finishes-pricing/05-01-SUMMARY.md`
+
+**Plan 02 - Pricing Hook & Display Components (Completed 2026-02-04):**
+- usePricing hook with Convex queries and Zustand config subscription
+- Integer-based calculations (all in cents) with useMemo optimization
+- Intl.NumberFormat for AUD currency formatting (en-AU locale)
+- Hardware variance (±5%) calculated and displayed
+- PriceDisplay component for single price with optional variance
+- PriceBreakdown component with itemized costs and disclaimer
+- PriceStickyBar component for wizard navigation
+- Loading skeletons for async pricing data
+- **Summary:** `.planning/phases/05-finishes-pricing/05-02-SUMMARY.md`
 
 ---
 
