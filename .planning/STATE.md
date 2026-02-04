@@ -4,25 +4,25 @@
 
 **Milestone:** 1 (MVP Launch)
 **Phase:** 06 (Quote Submission Flow) - IN PROGRESS
-**Plan:** 1 of 4 complete
-**Status:** Backend foundation complete
-**Last Updated:** 2026-02-04
+**Plan:** 2 of 4 complete
+**Status:** Customer submission flow complete
+**Last Updated:** 2026-02-05
 
-**Progress:** 64.6% (5.25/8 phases complete)
+**Progress:** 65.6% (5.5/8 phases complete)
 ```
-██████████████████▓░░░░░░░░░░░ 64.6%
+██████████████████▓░░░░░░░░░░░ 65.6%
 ```
 
-**Latest Completion:** 06-01 - Backend Foundation for Team Workflows (2026-02-04)
+**Latest Completion:** 06-02 - Customer-Facing Submission Flow (2026-02-05)
 
 ---
 
 ## Session Continuity
 
-**Last session:** 2026-02-04T19:01:42Z
-**Stopped at:** Completed 06-01-PLAN.md
+**Last session:** 2026-02-05T06:09:14Z
+**Stopped at:** Completed 06-02-PLAN.md
 **Resume file:** None
-**Next:** Phase 06-02 (Team Dashboard UI)
+**Next:** Phase 06-03 (Team Dashboard UI)
 
 ---
 
@@ -218,6 +218,11 @@
 | listAll limit | 100 most recent | Performance optimization for dashboard | 2026-02-04 |
 | Status workflow | pending/in_review/quoted/ordered/rejected | 3-step workflow for team | 2026-02-04 |
 | Field naming | internalNotes prefix | Clear distinction from customer notes | 2026-02-04 |
+| Submission form fields | NO name/email fields | Auto-populated from useAuth() (logged-in account) | 2026-02-05 |
+| Design ID for submission | From sessionStorage auto-save | No duplicate design creation | 2026-02-05 |
+| Confirmation email | NO confirmation email sent | User only notified when quote ready | 2026-02-05 |
+| Auto-redirect timing | 2.5 seconds to Orders tab | Smooth UX transition after confirmation | 2026-02-05 |
+| Submission flow pattern | Overlay in wizard (replaces review) | Cancel returns to review screen | 2026-02-05 |
 
 ### UX Quality Gaps - Approved Fixes
 
@@ -592,6 +597,17 @@
 - Added updateInternalNotes mutation for managing team notes
 - Extended updateStatus to support 3-step workflow (pending/in_review/quoted/ordered/rejected)
 - **Summary:** `.planning/phases/06-quote-submission-flow/06-01-SUMMARY.md`
+
+**Plan 02 - Customer-Facing Submission Flow (Completed 2026-02-05):**
+- PreSubmitOptions component with site measure and installation toggles
+- ReviewSummary component showing config, pricing, and selected options
+- ConfirmationScreen with success message, no-email clarification, and auto-redirect
+- SubmissionFlow orchestrator managing 3-step state machine (options -> review -> confirmation)
+- StepReview integration with "Submit for Quote" button
+- Auto-populates name/email from logged-in account (no form fields)
+- Uses existing auto-saved designId from sessionStorage (no duplicate creation)
+- React Hook Form + Zod validation for submission
+- **Summary:** `.planning/phases/06-quote-submission-flow/06-02-SUMMARY.md`
 
 ---
 
