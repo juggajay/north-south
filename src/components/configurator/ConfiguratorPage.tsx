@@ -42,7 +42,17 @@ export function ConfiguratorPage({ designId, aiEstimate }: ConfiguratorPageProps
   const router = useRouter()
   const { isAuthenticated, isLoading } = useConvexAuth()
 
-  const [currentDesignId, setCurrentDesignId] = useState<Id<"designs"> | null>(designId || null)
+  // Load design ID from props, or sessionStorage for persistence
+  const getInitialDesignId = (): Id<"designs"> | null => {
+    if (designId) return designId
+    if (typeof window !== 'undefined') {
+      const stored = sessionStorage.getItem('currentDesignId')
+      if (stored) return stored as Id<"designs">
+    }
+    return null
+  }
+
+  const [currentDesignId, setCurrentDesignId] = useState<Id<"designs"> | null>(getInitialDesignId())
 
   // Get cabinet config for auto-save
   const cabinetConfig = useCabinetStore((state) => state.config)
@@ -72,14 +82,18 @@ export function ConfiguratorPage({ designId, aiEstimate }: ConfiguratorPageProps
           },
         })
         setCurrentDesignId(id)
-        router.replace(`/design/${id}`)
+        // Store design ID in sessionStorage for persistence without dynamic routes
+        // (static export doesn't support /design/[id] routes)
+        if (typeof window !== 'undefined') {
+          sessionStorage.setItem('currentDesignId', id)
+        }
       }
     }
 
     if (!isLoading && isAuthenticated && !currentDesignId) {
       initDesign()
     }
-  }, [isAuthenticated, isLoading, currentDesignId, createDesign, aiEstimate, router])
+  }, [isAuthenticated, isLoading, currentDesignId, createDesign, aiEstimate])
 
   // Load existing design (uses existing api.designs.get from Phase 01)
   const design = useQuery(

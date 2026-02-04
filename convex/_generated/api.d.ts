@@ -14,6 +14,7 @@ import type * as chat from "../chat.js";
 import type * as designVersions from "../designVersions.js";
 import type * as designs from "../designs.js";
 import type * as doorProfiles from "../doorProfiles.js";
+import type * as http from "../http.js";
 import type * as products_hardware from "../products/hardware.js";
 import type * as products_materials from "../products/materials.js";
 import type * as seed from "../seed.js";
@@ -33,6 +34,7 @@ declare const fullApi: ApiFromModules<{
   designVersions: typeof designVersions;
   designs: typeof designs;
   doorProfiles: typeof doorProfiles;
+  http: typeof http;
   "products/hardware": typeof products_hardware;
   "products/materials": typeof products_materials;
   seed: typeof seed;

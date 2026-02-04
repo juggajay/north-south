@@ -8,6 +8,7 @@
 import { create } from 'zustand';
 import { immer } from 'zustand/middleware/immer';
 import { temporal } from 'zundo';
+import { enableMapSet } from 'immer';
 import type {
   CabinetConfig,
   CabinetDimensions,
@@ -53,6 +54,9 @@ const DEFAULT_CONFIG: CabinetConfig = {
   slots: new Map<string, SlotConfig>(),
   finishes: DEFAULT_FINISHES,
 };
+
+// Enable Immer's MapSet plugin for Map/Set support
+enableMapSet();
 
 // ============================================================================
 // STORE DEFINITION
