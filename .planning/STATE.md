@@ -3,26 +3,26 @@
 ## Current Position
 
 **Milestone:** 1 (MVP Launch)
-**Phase:** 05 (Finishes & Pricing) - COMPLETE
-**Plan:** 4 of 4 complete
-**Status:** Phase complete, verified
+**Phase:** 06 (Quote Submission Flow) - IN PROGRESS
+**Plan:** 1 of 4 complete
+**Status:** Backend foundation complete
 **Last Updated:** 2026-02-04
 
-**Progress:** 62.5% (5/8 phases complete)
+**Progress:** 64.6% (5.25/8 phases complete)
 ```
-██████████████████░░░░░░░░░░░░ 62.5%
+██████████████████▓░░░░░░░░░░░ 64.6%
 ```
 
-**Latest Completion:** 05-04 - Human Verification of Pricing System (2026-02-04)
+**Latest Completion:** 06-01 - Backend Foundation for Team Workflows (2026-02-04)
 
 ---
 
 ## Session Continuity
 
-**Last session:** 2026-02-04T11:15:00Z
-**Stopped at:** Completed Phase 05
+**Last session:** 2026-02-04T19:01:42Z
+**Stopped at:** Completed 06-01-PLAN.md
 **Resume file:** None
-**Next:** Phase 06 (Quote Submission Flow)
+**Next:** Phase 06-02 (Team Dashboard UI)
 
 ---
 
@@ -209,6 +209,15 @@
 | Module type matching | String pattern matching with fallback | Handles store-to-DB impedance mismatch | 2026-02-04 |
 | Loading state strategy | Return zeros, show skeletons | Safe rendering during async data loading | 2026-02-04 |
 | TypeScript query types | Explicit any annotations | Workaround for Convex generated type inference gaps | 2026-02-04 |
+
+### Implementation Decisions (Phase 06)
+
+| Decision | Choice | Rationale | Date |
+|----------|--------|-----------|------|
+| Internal notes field | Optional field on submissions | Backward compatibility with existing data | 2026-02-04 |
+| listAll limit | 100 most recent | Performance optimization for dashboard | 2026-02-04 |
+| Status workflow | pending/in_review/quoted/ordered/rejected | 3-step workflow for team | 2026-02-04 |
+| Field naming | internalNotes prefix | Clear distinction from customer notes | 2026-02-04 |
 
 ### UX Quality Gaps - Approved Fixes
 
@@ -572,6 +581,17 @@
 - **Summary:** `.planning/phases/05-finishes-pricing/05-04-SUMMARY.md`
 
 **Phase 05 Complete** - Full pricing system operational with database-driven values.
+
+---
+
+## Phase 06 Deliverables
+
+**Plan 01 - Backend Foundation for Team Workflows (Completed 2026-02-04):**
+- Added internalNotes field to submissions schema for team-only context
+- Created listAll query for team dashboard (all submissions with design data)
+- Added updateInternalNotes mutation for managing team notes
+- Extended updateStatus to support 3-step workflow (pending/in_review/quoted/ordered/rejected)
+- **Summary:** `.planning/phases/06-quote-submission-flow/06-01-SUMMARY.md`
 
 ---
 
