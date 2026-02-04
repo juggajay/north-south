@@ -3,23 +3,23 @@
 ## Current Position
 
 **Milestone:** 1 (MVP Launch)
-**Phase:** 04 (3D Configurator Core) - COMPLETE
-**Plan:** 10 of 10 complete
-**Status:** Phase complete, verified
+**Phase:** 05 (Finishes & Pricing) - IN PROGRESS
+**Plan:** 1 of 3 complete
+**Status:** Phase in progress
 **Last Updated:** 2026-02-04
 
-**Progress:** [##########] 100% (Phase 04: 10/10 plans complete)
+**Progress:** [##########-] 91% (Phase 04: 10/10 complete, Phase 05: 1/3 complete)
 
-**Last activity:** 2026-02-04 - Completed 04-10-PLAN.md (Final Integration & Human Verification)
+**Last activity:** 2026-02-04 - Completed 05-01-PLAN.md (Pricing Data Migration)
 
 ---
 
 ## Session Continuity
 
-**Last session:** 2026-02-04T08:36:33Z
-**Stopped at:** Completed 04-09-PLAN.md
+**Last session:** 2026-02-04T10:41:04Z
+**Stopped at:** Completed 05-01-PLAN.md
 **Resume file:** None
-**Next:** Continue Phase 04 (remaining plan 04-10)
+**Next:** Continue Phase 05 (plans 05-02, 05-03)
 
 ---
 
@@ -67,6 +67,7 @@
 | Hardware | Price per item, ±5% variance | Reflects supplier uncertainty | 2026-02-03 |
 | Price display | Total + category breakdown | Transparent, justifies premium | 2026-02-03 |
 | Price timing | Exact prices with disclaimer | "Final price confirmed after site measure" | 2026-02-03 |
+| Price storage | Integer cents | Prevents JavaScript floating-point errors | 2026-02-04 |
 
 ### Quote & Payment Decisions
 
@@ -210,7 +211,18 @@
 
 ## Blockers
 
-**None** - Convex deployment provisioned (wooden-dog-672) and schema pushed successfully.
+**Active:**
+
+1. **Convex bundler error on Windows** (Phase 05-01)
+   - **Impact:** Cannot run Convex dev server or mutations locally
+   - **Root cause:** Windows file system with git `core.ignorecase=true` causes bundler case-sensitivity conflicts
+   - **Error:** "Two output files share the same path but have different contents"
+   - **Workaround:** Code is correct, will work in production. Run mutations via:
+     - Convex dashboard web UI
+     - Production deployment (blissful-parrot-166)
+     - After fixing git case sensitivity
+   - **Blocks:** Database re-seed with cents-based pricing (05-01 Task 3)
+   - **Status:** Code complete, deployment blocked
 
 ---
 
