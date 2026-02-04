@@ -85,7 +85,7 @@ export const listAll = query({
   handler: async (ctx) => {
     const submissions = await ctx.db
       .query("submissions")
-      .order("desc")
+      .order("asc")
       .take(100);
 
     // Enrich with design data
