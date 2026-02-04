@@ -4,22 +4,22 @@
 
 **Milestone:** 1 (MVP Launch)
 **Phase:** 04 (3D Configurator Core)
-**Plan:** 01 of 07 complete
+**Plan:** 04 of 07 complete
 **Status:** In progress
 **Last Updated:** 2026-02-04
 
-**Progress:** [#---------] 14% (Phase 04: 1/7 plans complete)
+**Progress:** [####------] 57% (Phase 04: 4/7 plans complete)
 
-**Last activity:** 2026-02-04 - Completed 04-01-PLAN.md (R3F Foundation)
+**Last activity:** 2026-02-04 - Completed 04-04-PLAN.md (Wizard Shell & Step 1)
 
 ---
 
 ## Session Continuity
 
-**Last session:** 2026-02-04T08:00:45Z
-**Stopped at:** Completed 04-01-PLAN.md
+**Last session:** 2026-02-04T08:07:55Z
+**Stopped at:** Completed 04-04-PLAN.md
 **Resume file:** None
-**Next:** Continue Phase 04 (04-02: 3D Cabinet Primitives)
+**Next:** Continue Phase 04 (04-05: Layout Step or 04-06: Performance Testing)
 
 ---
 
@@ -170,6 +170,10 @@
 | Canvas DPR | Adaptive 1-1.5 | Mobile performance optimization | 2026-02-04 |
 | Canvas frameloop | demand | Render only when needed (battery saving) | 2026-02-04 |
 | WebGL antialias | Disabled | Mobile performance optimization | 2026-02-04 |
+| Step indicator clickability | Visited steps clickable | Unlocking progression pattern - free navigation once visited | 2026-02-04 |
+| DimensionSync pattern | Inside Canvas context only | useThree() must be inside Canvas, store subscription triggers invalidate() | 2026-02-04 |
+| Depth selector UI | Discrete button grid | 5 fixed options clearer than slider with snapping | 2026-02-04 |
+| Step indicator placement | Top of wizard shell | Always-visible progress, natural reading order | 2026-02-04 |
 
 ### UX Quality Gaps - Approved Fixes
 
@@ -375,6 +379,16 @@
 - Canvas3D wrapper with adaptive DPR (1-1.5), demand frameloop, mobile optimizations
 - Fixed Convex schema issues (designVersions table, .js/.ts conflicts)
 - **Summary:** `.planning/phases/04-3d-configurator-core/04-01-SUMMARY.md`
+
+**Plan 04 - Wizard Shell & Step 1 (Completed 2026-02-04):**
+- WizardShell with StepIndicator, StepNavigation, and step content routing
+- StepIndicator with clickable visited steps (unlocking progression)
+- StepNavigation with Next/Back buttons and validation gates
+- StepDimensions with SliderControl (width/height) and DepthSelector (depth)
+- DimensionSync component for 3D viewport updates inside Canvas context
+- Touch-friendly controls with plus/minus steppers and 44px minimum touch targets
+- Sticky price bar placeholder
+- **Summary:** `.planning/phases/04-3d-configurator-core/04-04-SUMMARY.md`
 
 ---
 
