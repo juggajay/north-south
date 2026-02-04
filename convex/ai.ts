@@ -65,7 +65,7 @@ export const analyzeSpaceAction = action({
       const client = new Anthropic({ apiKey });
 
       const message = await client.messages.create({
-        model: "claude-sonnet-4-5-20250514",
+        model: "claude-opus-4-5-20251101",
         max_tokens: 1024,
         messages: [
           {
@@ -214,7 +214,7 @@ export const generateRendersAction = action({
 
     // Use Gemini 2.0 Flash for image generation
     // Note: Image generation capabilities vary by model availability
-    const modelName = "gemini-2.0-flash-exp";
+    const modelName = "gemini-3-pro-image-preview";
 
     const renderResults = await Promise.all(
       args.styles.slice(0, 3).map(async (style, index) => {

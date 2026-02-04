@@ -1,8 +1,8 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useRef } from "react";
 import { AnimatePresence } from "framer-motion";
-import { Camera } from "lucide-react";
+import { Camera, Upload } from "lucide-react";
 import { CameraCapture } from "@/components/camera/CameraCapture";
 import { ProcessingScreen } from "@/components/processing/ProcessingScreen";
 import { RenderCarousel } from "@/components/renders/RenderCarousel";
@@ -18,9 +18,25 @@ export default function HomePage() {
   const [cameraOpen, setCameraOpen] = useState(false);
   const [view, setView] = useState<ViewState>("camera");
   const [capturedImageUrl, setCapturedImageUrl] = useState<string | null>(null);
+  const fileInputRef = useRef<HTMLInputElement>(null);
 
   // Pipeline orchestration hook
   const pipeline = useProcessPhoto();
+
+  /**
+   * Handle desktop file upload
+   */
+  const handleFileUpload = (event: React.ChangeEvent<HTMLInputElement>) => {
+    const file = event.target.files?.[0];
+    if (file) {
+      const imageUrl = URL.createObjectURL(file);
+      handlePhotoAccepted(imageUrl);
+    }
+    // Reset input so same file can be selected again
+    if (fileInputRef.current) {
+      fileInputRef.current.value = "";
+    }
+  };
 
   /**
    * Handle "Take Photo" button click
@@ -138,6 +154,26 @@ export default function HomePage() {
             >
               Or browse your gallery
             </button>
+
+            {/* Desktop file upload option */}
+            <div className="mt-6 flex flex-col items-center gap-2 border-t border-zinc-200 pt-6 dark:border-zinc-800">
+              <p className="text-xs text-zinc-400">Desktop testing</p>
+              <input
+                ref={fileInputRef}
+                type="file"
+                accept="image/*"
+                onChange={handleFileUpload}
+                className="hidden"
+                id="desktop-upload"
+              />
+              <button
+                onClick={() => fileInputRef.current?.click()}
+                className="flex items-center gap-2 rounded-lg border border-zinc-300 px-4 py-2 text-sm text-zinc-600 transition-colors hover:bg-zinc-100 dark:border-zinc-700 dark:text-zinc-400 dark:hover:bg-zinc-800"
+              >
+                <Upload className="h-4 w-4" />
+                Upload Image (Desktop)
+              </button>
+            </div>
           </div>
         </div>
       )}
