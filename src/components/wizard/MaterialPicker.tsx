@@ -1,11 +1,13 @@
 /**
  * MaterialPicker component
  * Phase 04-07: Finish Selection & Review
+ * Phase 05-03: Pricing integration
  *
  * Features:
  * - Tabbed interface for material/hardware/door profile
  * - Swatch grid for materials with category grouping
  * - Real-time store updates with visual selection
+ * - Price display on all options (materials, hardware, door profiles)
  */
 
 import { useState } from 'react'
@@ -14,6 +16,7 @@ import { useQuery } from 'convex/react'
 import { api } from '../../../convex/_generated/api'
 import { cn } from '@/lib/utils'
 import { motion, AnimatePresence } from 'framer-motion'
+import { usePricing } from '@/hooks/usePricing'
 
 type FinishCategory = 'material' | 'hardware' | 'doorProfile'
 
@@ -115,6 +118,8 @@ interface MaterialSwatchesProps {
 }
 
 function MaterialSwatches({ materials, selected, onSelect }: MaterialSwatchesProps) {
+  const { formatPrice } = usePricing()
+
   // Group by category
   const grouped = materials.reduce((acc: any, mat: any) => {
     const category = mat.category || 'other'
@@ -144,30 +149,34 @@ function MaterialSwatches({ materials, selected, onSelect }: MaterialSwatchesPro
           </h4>
           <div className="grid grid-cols-4 gap-3">
             {grouped[category].map((mat: any) => (
-              <button
-                key={mat.code}
-                onClick={() => onSelect(mat.code)}
-                className={cn(
-                  "aspect-square rounded-lg border-2 overflow-hidden transition-all",
-                  selected === mat.code
-                    ? "border-zinc-900 ring-2 ring-zinc-900 ring-offset-2"
-                    : "border-zinc-200 hover:border-zinc-400"
-                )}
-                title={mat.name}
-              >
-                {mat.swatchUrl ? (
-                  <img
-                    src={mat.swatchUrl}
-                    alt={mat.name}
-                    className="w-full h-full object-cover"
-                  />
-                ) : (
-                  <div
-                    className="w-full h-full"
-                    style={{ backgroundColor: mat.colorHex || '#d4d4d4' }}
-                  />
-                )}
-              </button>
+              <div key={mat.code} className="flex flex-col">
+                <button
+                  onClick={() => onSelect(mat.code)}
+                  className={cn(
+                    "aspect-square rounded-lg border-2 overflow-hidden transition-all",
+                    selected === mat.code
+                      ? "border-zinc-900 ring-2 ring-zinc-900 ring-offset-2"
+                      : "border-zinc-200 hover:border-zinc-400"
+                  )}
+                  title={mat.name}
+                >
+                  {mat.swatchUrl ? (
+                    <img
+                      src={mat.swatchUrl}
+                      alt={mat.name}
+                      className="w-full h-full object-cover"
+                    />
+                  ) : (
+                    <div
+                      className="w-full h-full"
+                      style={{ backgroundColor: mat.colorHex || '#d4d4d4' }}
+                    />
+                  )}
+                </button>
+                <p className="text-xs text-zinc-600 mt-1 text-center font-medium">
+                  {formatPrice(mat.pricePerUnit)}
+                </p>
+              </div>
             ))}
           </div>
         </div>
@@ -187,6 +196,8 @@ interface HardwareOptionsProps {
 }
 
 function HardwareOptions({ hardware, selected, onSelect }: HardwareOptionsProps) {
+  const { formatPrice } = usePricing()
+
   if (hardware.length === 0) {
     return (
       <div className="text-center py-8 text-zinc-500">
@@ -209,11 +220,21 @@ function HardwareOptions({ hardware, selected, onSelect }: HardwareOptionsProps)
               : "border-zinc-200 hover:border-zinc-400"
           )}
         >
-          <p className="font-medium">{item.name}</p>
-          <p className="text-sm text-zinc-500">{item.supplier}</p>
-          {item.category && (
-            <p className="text-xs text-zinc-400 mt-1 capitalize">{item.category}</p>
-          )}
+          <div className="flex justify-between items-start">
+            <div>
+              <p className="font-medium">{item.name}</p>
+              <p className="text-sm text-zinc-500">{item.supplier}</p>
+              {item.category && (
+                <p className="text-xs text-zinc-400 mt-1 capitalize">{item.category}</p>
+              )}
+            </div>
+            <div className="text-right">
+              <p className="font-semibold text-zinc-900">{formatPrice(item.pricePerUnit)}</p>
+              {item.priceVariance && (
+                <p className="text-xs text-zinc-500">±{item.priceVariance}%</p>
+              )}
+            </div>
+          </div>
         </button>
       ))}
     </div>
@@ -231,6 +252,8 @@ interface DoorProfilesProps {
 }
 
 function DoorProfiles({ profiles, selected, onSelect }: DoorProfilesProps) {
+  const { formatPrice } = usePricing()
+
   if (profiles.length === 0) {
     return (
       <div className="text-center py-8 text-zinc-500">
@@ -264,6 +287,9 @@ function DoorProfiles({ profiles, selected, onSelect }: DoorProfilesProps) {
           {profile.description && (
             <p className="text-xs text-zinc-500 mt-1">{profile.description}</p>
           )}
+          <p className="text-sm font-semibold text-zinc-900 mt-2">
+            {formatPrice(profile.pricePerDoor)} <span className="text-xs font-normal text-zinc-500">per door</span>
+          </p>
         </button>
       ))}
     </div>
