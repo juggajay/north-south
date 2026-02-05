@@ -4,25 +4,25 @@
 
 **Milestone:** 1 (MVP Launch)
 **Phase:** 08 (Production Integration & Admin) - IN PROGRESS
-**Plan:** 03 of 4 complete
-**Status:** Order management UI complete
+**Plan:** 01 of 6 complete
+**Status:** PDF generation infrastructure complete
 **Last Updated:** 2026-02-05
 
-**Progress:** 90.6% (7/8 phases complete, 08-03 of 08-04 done)
+**Progress:** 87.5% (7/8 phases complete, 08-01 of 08-06 done)
 ```
-█████████████████████████████░ 90.6%
+███████████████████████████░░░ 87.5%
 ```
 
-**Latest Completion:** 08-03 - Order Management UI (2026-02-05)
+**Latest Completion:** 08-01 - PDF Generation Infrastructure (2026-02-05)
 
 ---
 
 ## Session Continuity
 
-**Last session:** 2026-02-05 07:05 UTC
-**Stopped at:** Completed 08-03-PLAN.md
+**Last session:** 2026-02-05 18:14 UTC
+**Stopped at:** Completed 08-01-PLAN.md
 **Resume file:** None
-**Next:** 08-04 - Production Spec Generation (if planned)
+**Next:** 08-02 - PDF Generation API & Download
 
 ---
 
@@ -115,6 +115,10 @@
 | QR error correction | Level M (15%) | Minimum for production labels, handles wear/damage | 2026-02-05 |
 | QR code size | 96px default | ~25mm at print resolution, scannable from 30cm | 2026-02-05 |
 | Label print layout | 4 columns on A4 | Optimal for standard paper, ~40-50 labels per page | 2026-02-05 |
+| PDF library | @react-pdf/renderer | React JSX syntax, standard for React projects | 2026-02-05 |
+| PDF table library | @ag-media/react-pdf-table | Provides Table/TR/TH/TD for @react-pdf/renderer | 2026-02-05 |
+| PDF page structure | Multi-page split | Cabinets/panels/hardware page 1, drilling page 2, assembly page 3 | 2026-02-05 |
+| PDF style management | Centralized StyleSheet | Single source of truth, zinc color scheme consistency | 2026-02-05 |
 
 ### Implementation Decisions (Phase 01)
 
@@ -267,6 +271,9 @@
 | Status workflow enforcement | UI-level validation | Only show valid next-status transitions | 2026-02-05 |
 | Timeline display | All completed milestones | Shows production progress with timestamps | 2026-02-05 |
 | Admin navigation | Bi-directional links | Easy movement between submissions ↔ orders | 2026-02-05 |
+| PDF conditional styles | Spread with ternary | `...(condition ? [style] : [])` avoids boolean in style arrays | 2026-02-05 |
+| useSearchParams wrapping | Suspense boundary | Required for static export compatibility | 2026-02-05 |
+| useAuth type annotations | @ts-ignore with explicit types | Breaks TypeScript recursion in Convex deep inference | 2026-02-05 |
 | Panel dimensions format | "W × H × D mm" | Clear, consistent display | 2026-02-05 |
 
 ### UX Quality Gaps - Approved Fixes
@@ -725,6 +732,17 @@
 ---
 
 ## Phase 08 Deliverables
+
+**Plan 01 - PDF Generation Infrastructure (Completed 2026-02-05):**
+- @react-pdf/renderer@4.3.2 and @ag-media/react-pdf-table@2.0.3 installed
+- Complete type system for production spec data (OrderInfo, CabinetItem, PanelItem, HardwareItem, DrillingItem, AssemblyGroup)
+- Shared StyleSheet with zinc color scheme matching app theme
+- Seven section components: HeaderSection, CabinetSchedule, PanelSchedule, EdgeBandingSchedule, HardwareList, DrillingSchedule, AssemblyGroups
+- ProductionSpecPDF main document composing all sections with multi-page layout
+- Fixed blocking TypeScript recursion errors in useAuth hook
+- Fixed missing Suspense boundaries in /panel and /portal pages for static export
+- Build passes without errors, all PDF components render correctly
+- **Summary:** `.planning/phases/08-production-integration---admin/08-01-SUMMARY.md`
 
 **Plan 02 - CSV Export & QR Label Generation (Completed 2026-02-05):**
 - react-papaparse v4.4.0 for CSV generation with automatic character escaping
