@@ -129,7 +129,42 @@ export const useCabinetStore = create<CabinetState>()(
     {
       // Temporal options
       limit: 20, // Maximum 20 undo states
-      equality: (a, b) => JSON.stringify(a) === JSON.stringify(b), // Deep equality check
+      // Custom equality check (much faster than JSON.stringify)
+      equality: (a, b) => {
+        // Compare dimensions
+        const dimA = a.config.dimensions;
+        const dimB = b.config.dimensions;
+        if (dimA.width !== dimB.width) return false;
+        if (dimA.height !== dimB.height) return false;
+        if (dimA.depth !== dimB.depth) return false;
+
+        // Compare finishes
+        const finA = a.config.finishes;
+        const finB = b.config.finishes;
+        if (finA.material !== finB.material) return false;
+        if (finA.hardware !== finB.hardware) return false;
+        if (finA.doorProfile !== finB.doorProfile) return false;
+
+        // Compare slots - check size first
+        const slotsA = a.config.slots;
+        const slotsB = b.config.slots;
+        if (slotsA.size !== slotsB.size) return false;
+
+        // Compare slot contents
+        for (const [key, slotA] of slotsA) {
+          const slotB = slotsB.get(key);
+          if (!slotB) return false;
+
+          // Compare module presence
+          if (!slotA.module && !slotB.module) continue;
+          if (!slotA.module || !slotB.module) return false;
+
+          // Compare module type
+          if (slotA.module.type !== slotB.module.type) return false;
+        }
+
+        return true;
+      },
     }
   )
 );
