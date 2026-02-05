@@ -82,6 +82,7 @@ export default defineSchema({
         confirmed: v.optional(v.number()),
         productionStart: v.optional(v.number()),
         qcComplete: v.optional(v.number()),
+        readyToShip: v.optional(v.number()),
         shipped: v.optional(v.number()),
         delivered: v.optional(v.number()),
         installed: v.optional(v.number()),

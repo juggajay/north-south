@@ -36,9 +36,9 @@ export function OrderConfirmedEmail({
   );
 }
 
-export function renderOrderConfirmed(props: OrderConfirmedProps) {
+export async function renderOrderConfirmed(props: OrderConfirmedProps) {
   return {
-    html: render(<OrderConfirmedEmail {...props} />),
-    text: render(<OrderConfirmedEmail {...props} />, { plainText: true }),
+    html: await render(<OrderConfirmedEmail {...props} />),
+    text: await render(<OrderConfirmedEmail {...props} />, { plainText: true }),
   };
 }

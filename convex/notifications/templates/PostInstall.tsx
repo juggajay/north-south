@@ -54,9 +54,9 @@ export function PostInstallEmail({
   );
 }
 
-export function renderPostInstall(props: PostInstallProps) {
+export async function renderPostInstall(props: PostInstallProps) {
   return {
-    html: render(<PostInstallEmail {...props} />),
-    text: render(<PostInstallEmail {...props} />, { plainText: true }),
+    html: await render(<PostInstallEmail {...props} />),
+    text: await render(<PostInstallEmail {...props} />, { plainText: true }),
   };
 }

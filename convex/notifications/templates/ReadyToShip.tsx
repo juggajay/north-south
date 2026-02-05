@@ -36,9 +36,9 @@ export function ReadyToShipEmail({
   );
 }
 
-export function renderReadyToShip(props: ReadyToShipProps) {
+export async function renderReadyToShip(props: ReadyToShipProps) {
   return {
-    html: render(<ReadyToShipEmail {...props} />),
-    text: render(<ReadyToShipEmail {...props} />, { plainText: true }),
+    html: await render(<ReadyToShipEmail {...props} />),
+    text: await render(<ReadyToShipEmail {...props} />, { plainText: true }),
   };
 }

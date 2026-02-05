@@ -36,9 +36,9 @@ export function DeliveredEmail({
   );
 }
 
-export function renderDelivered(props: DeliveredProps) {
+export async function renderDelivered(props: DeliveredProps) {
   return {
-    html: render(<DeliveredEmail {...props} />),
-    text: render(<DeliveredEmail {...props} />, { plainText: true }),
+    html: await render(<DeliveredEmail {...props} />),
+    text: await render(<DeliveredEmail {...props} />, { plainText: true }),
   };
 }

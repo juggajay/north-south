@@ -36,9 +36,9 @@ export function ProductionStartedEmail({
   );
 }
 
-export function renderProductionStarted(props: ProductionStartedProps) {
+export async function renderProductionStarted(props: ProductionStartedProps) {
   return {
-    html: render(<ProductionStartedEmail {...props} />),
-    text: render(<ProductionStartedEmail {...props} />, { plainText: true }),
+    html: await render(<ProductionStartedEmail {...props} />),
+    text: await render(<ProductionStartedEmail {...props} />, { plainText: true }),
   };
 }

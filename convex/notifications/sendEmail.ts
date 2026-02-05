@@ -84,27 +84,27 @@ export const sendNotificationEmail = internalAction({
 
       switch (args.type) {
         case "order_confirmed":
-          rendered = renderOrderConfirmed({ customerName, orderNumber, portalUrl });
+          rendered = await renderOrderConfirmed({ customerName, orderNumber, portalUrl });
           subject = `Order Confirmed - ${orderNumber}`;
           break;
         case "production_started":
-          rendered = renderProductionStarted({ customerName, orderNumber, portalUrl });
+          rendered = await renderProductionStarted({ customerName, orderNumber, portalUrl });
           subject = `Production Started - ${orderNumber}`;
           break;
         case "qc_complete":
-          rendered = renderQCComplete({ customerName, orderNumber, portalUrl });
+          rendered = await renderQCComplete({ customerName, orderNumber, portalUrl });
           subject = `Quality Check Complete - ${orderNumber}`;
           break;
         case "ready_to_ship":
-          rendered = renderReadyToShip({ customerName, orderNumber, portalUrl });
+          rendered = await renderReadyToShip({ customerName, orderNumber, portalUrl });
           subject = `Ready to Ship - ${orderNumber}`;
           break;
         case "delivered":
-          rendered = renderDelivered({ customerName, orderNumber, portalUrl });
+          rendered = await renderDelivered({ customerName, orderNumber, portalUrl });
           subject = `Delivered - ${orderNumber}`;
           break;
         case "post_install":
-          rendered = renderPostInstall({
+          rendered = await renderPostInstall({
             customerName,
             orderNumber,
             portalUrl,

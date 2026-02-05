@@ -36,9 +36,9 @@ export function QCCompleteEmail({
   );
 }
 
-export function renderQCComplete(props: QCCompleteProps) {
+export async function renderQCComplete(props: QCCompleteProps) {
   return {
-    html: render(<QCCompleteEmail {...props} />),
-    text: render(<QCCompleteEmail {...props} />, { plainText: true }),
+    html: await render(<QCCompleteEmail {...props} />),
+    text: await render(<QCCompleteEmail {...props} />, { plainText: true }),
   };
 }
