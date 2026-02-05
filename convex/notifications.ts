@@ -9,6 +9,32 @@ export const resend = new Resend(internal.resend.send, {
 });
 
 /**
+ * Log notification to database
+ */
+export const logNotification = internalMutation({
+  args: {
+    orderId: v.id("orders"),
+    type: v.string(),
+    channel: v.string(),
+    recipient: v.string(),
+    sentAt: v.number(),
+    status: v.string(),
+    errorMessage: v.optional(v.string()),
+  },
+  handler: async (ctx, args) => {
+    await ctx.db.insert("notifications", {
+      orderId: args.orderId,
+      type: args.type,
+      channel: args.channel,
+      recipient: args.recipient,
+      sentAt: args.sentAt,
+      status: args.status,
+      errorMessage: args.errorMessage,
+    });
+  },
+});
+
+/**
  * Internal mutation for sending order notification emails
  * Will be extended with email templates in Plan 02
  */

@@ -2,7 +2,7 @@
 
 import { v } from "convex/values";
 import { internal } from "../_generated/api";
-import { internalAction, internalMutation } from "../_generated/server";
+import { internalAction } from "../_generated/server";
 import { resend } from "../notifications";
 import { renderOrderConfirmed } from "./templates/OrderConfirmed";
 import { renderProductionStarted } from "./templates/ProductionStarted";
@@ -10,32 +10,6 @@ import { renderQCComplete } from "./templates/QCComplete";
 import { renderReadyToShip } from "./templates/ReadyToShip";
 import { renderDelivered } from "./templates/Delivered";
 import { renderPostInstall } from "./templates/PostInstall";
-
-/**
- * Log notification to database
- */
-export const logNotification = internalMutation({
-  args: {
-    orderId: v.id("orders"),
-    type: v.string(),
-    channel: v.string(),
-    recipient: v.string(),
-    sentAt: v.number(),
-    status: v.string(),
-    errorMessage: v.optional(v.string()),
-  },
-  handler: async (ctx, args) => {
-    await ctx.db.insert("notifications", {
-      orderId: args.orderId,
-      type: args.type,
-      channel: args.channel,
-      recipient: args.recipient,
-      sentAt: args.sentAt,
-      status: args.status,
-      errorMessage: args.errorMessage,
-    });
-  },
-});
 
 /**
  * Send notification email
@@ -124,7 +98,7 @@ export const sendNotificationEmail = internalAction({
       });
 
       // Log successful send
-      await ctx.runMutation(internal.notifications.sendEmail.logNotification, {
+      await ctx.runMutation(internal.notifications.logNotification, {
         orderId: args.orderId,
         type: args.type,
         channel: "email",
@@ -138,7 +112,7 @@ export const sendNotificationEmail = internalAction({
       // Log error but don't throw - allow order status update to succeed
       console.error(`Failed to send email for order ${args.orderId}:`, error);
 
-      await ctx.runMutation(internal.notifications.sendEmail.logNotification, {
+      await ctx.runMutation(internal.notifications.logNotification, {
         orderId: args.orderId,
         type: args.type,
         channel: "email",
