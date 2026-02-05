@@ -11,7 +11,7 @@
 
 'use client';
 
-import { useMemo, useEffect } from 'react';
+import { useMemo, useEffect, useState } from 'react';
 import * as THREE from 'three';
 import { useThree } from '@react-three/fiber';
 import { useCabinetStore } from '@/stores/useCabinetStore';
@@ -102,6 +102,7 @@ export function useMaterialPreview() {
 
 /**
  * Component to apply materials to all cabinet meshes in the scene
+ * OPTIMIZED: Caches mesh references with invalidation on scene change
  *
  * This traverses the scene and updates materials on any mesh marked as
  * part of the cabinet (via name or userData).
@@ -116,24 +117,60 @@ export function useMaterialPreview() {
  */
 export function MaterialApplicator() {
   const { cabinetMaterial, doorMaterial } = useMaterialPreview();
-  const { scene } = useThree();
+  const { scene, invalidate } = useThree();
 
+  // Track scene children count for cache invalidation
+  const [sceneVersion, setSceneVersion] = useState(0);
+
+  // Update version when scene children change
   useEffect(() => {
-    // Traverse scene and update materials on cabinet parts
+    const checkScene = () => {
+      setSceneVersion((v) => v + 1);
+    };
+
+    // Listen for scene changes
+    scene.addEventListener('childadded', checkScene);
+    scene.addEventListener('childremoved', checkScene);
+
+    return () => {
+      scene.removeEventListener('childadded', checkScene);
+      scene.removeEventListener('childremoved', checkScene);
+    };
+  }, [scene]);
+
+  // Cache mesh references, invalidate when scene changes
+  const meshRefs = useMemo(() => {
+    const cabinetMeshes: THREE.Mesh[] = [];
+    const doorMeshes: THREE.Mesh[] = [];
+
     scene.traverse((object) => {
       if (object instanceof THREE.Mesh) {
-        // Apply to cabinet carcass parts
         if (object.name.includes('cabinet') || object.userData.isCabinet) {
-          object.material = cabinetMaterial;
+          cabinetMeshes.push(object);
         }
-
-        // Apply to door parts (could use different material/finish)
         if (object.name.includes('door') || object.userData.isDoor) {
-          object.material = doorMaterial;
+          doorMeshes.push(object);
         }
       }
     });
-  }, [cabinetMaterial, doorMaterial, scene]);
 
-  return null; // This component doesn't render anything visible
+    return { cabinetMeshes, doorMeshes };
+  }, [scene, sceneVersion]);
+
+  // Apply materials only to cached meshes
+  useEffect(() => {
+    meshRefs.cabinetMeshes.forEach((mesh) => {
+      if (mesh.material !== cabinetMaterial) {
+        mesh.material = cabinetMaterial;
+      }
+    });
+    meshRefs.doorMeshes.forEach((mesh) => {
+      if (mesh.material !== doorMaterial) {
+        mesh.material = doorMaterial;
+      }
+    });
+    invalidate();
+  }, [cabinetMaterial, doorMaterial, meshRefs, invalidate]);
+
+  return null;
 }
