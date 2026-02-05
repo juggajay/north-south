@@ -3,9 +3,9 @@
 ## Current Position
 
 **Milestone:** 1 (MVP Launch)
-**Phase:** 06 (Quote Submission Flow) - COMPLETE ✓
-**Plan:** 4 of 4 complete
-**Status:** Full submission flow verified
+**Phase:** 07 (Customer Portal & Notifications) - IN PROGRESS
+**Plan:** 1 of 3 complete
+**Status:** Backend foundation complete
 **Last Updated:** 2026-02-05
 
 **Progress:** 75% (6/8 phases complete)
@@ -13,16 +13,16 @@
 ██████████████████████░░░░░░░░ 75%
 ```
 
-**Latest Completion:** 06-04 - Human Verification (2026-02-05)
+**Latest Completion:** 07-01 - Backend Foundation (2026-02-05)
 
 ---
 
 ## Session Continuity
 
 **Last session:** 2026-02-05
-**Stopped at:** Completed Phase 06 (Quote Submission Flow)
+**Stopped at:** Completed 07-01-PLAN.md
 **Resume file:** None
-**Next:** Phase 07 (Customer Portal & Notifications)
+**Next:** 07-02 (Email Templates) or 07-03 (Portal UI)
 
 ---
 
@@ -228,6 +228,18 @@
 | Status action buttons | Context-aware transitions | Shows only valid next states from current status | 2026-02-04 |
 | Internal notes styling | Amber background | Visual distinction from customer notes | 2026-02-04 |
 | Admin auth | Unprotected for MVP | Role-based access control deferred to production | 2026-02-04 |
+
+### Implementation Decisions (Phase 07)
+
+| Decision | Choice | Rationale | Date |
+|----------|--------|-----------|------|
+| Order number format | NS-YYYYMMDD-XXX | Human-readable with date and daily sequence | 2026-02-05 |
+| Timeline tracking | Status-mapped object fields | Timestamp each milestone (confirmed, productionStart, qcComplete, etc.) | 2026-02-05 |
+| Document versioning | Auto-increment per type | Version tracking for quotes and invoices | 2026-02-05 |
+| Panel QR format | {orderId}-{panelId} | Simple, unique, easy to generate | 2026-02-05 |
+| Panel QR lookup | Public (no auth) | Installers can scan without login | 2026-02-05 |
+| Email masking | j***n@example.com pattern | Referral privacy (first/last char visible) | 2026-02-05 |
+| Referral rewards | Manual for MVP | Automation deferred to post-MVP | 2026-02-05 |
 
 ### UX Quality Gaps - Approved Fixes
 
@@ -634,6 +646,23 @@
 - **Summary:** `.planning/phases/06-quote-submission-flow/06-04-SUMMARY.md`
 
 **Phase 06 Complete** - Full quote submission flow operational with verified customer and team workflows.
+
+---
+
+## Phase 07 Deliverables
+
+**Plan 01 - Backend Foundation (Completed 2026-02-05):**
+- Resend email component configured (@convex-dev/resend, @react-email/components, @react-email/render)
+- Order management API with NS-YYYYMMDD-XXX order numbers and timeline tracking
+- Document storage with auto-versioning (quotes, invoices) using Convex storage
+- Panel QR lookup (public, no auth) for installer scanning
+- Referral tracking with email masking (j***n@example.com pattern)
+- convex/orders.ts: create, get, getBySubmission, listByUserId, updateStatus, getTimeline
+- convex/documents.ts: upload, list, getDownloadUrl, generateUploadUrl
+- convex/panels.ts: lookupByQrCode (public), createPanelQr
+- convex/referrals.ts: create, getMyReferrals, getReferralLink, updateStatus
+- convex/notifications.ts: Resend initialization, sendOrderEmail placeholder
+- **Summary:** `.planning/phases/07-customer-portal-notifications/07-01-SUMMARY.md`
 
 ---
 
