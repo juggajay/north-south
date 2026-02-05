@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useConvexAuth } from "convex/react";
 import { useRouter } from "next/navigation";
 import { LoginForm } from "./LoginForm";
@@ -14,8 +14,13 @@ export function LoginPageContent() {
   const { isAuthenticated } = useConvexAuth();
 
   // Redirect if authenticated
+  useEffect(() => {
+    if (isAuthenticated) {
+      router.push("/");
+    }
+  }, [isAuthenticated, router]);
+
   if (isAuthenticated) {
-    router.push("/");
     return (
       <div className="min-h-screen flex items-center justify-center">
         <p className="text-zinc-600 dark:text-zinc-400">Redirecting...</p>

@@ -3,7 +3,7 @@
 import { useState, useCallback } from 'react';
 import { useMutation } from '@tanstack/react-query';
 import { useAction } from 'convex/react';
-import { api } from '../../../convex/_generated/api';
+import { api } from '../../../../convex/_generated/api';
 import { imageUriToBase64, resizeImageForVision } from '../ai/claude-vision';
 import { estimateDimensions } from '../ai/depth-estimation';
 import { getStylesForSpace } from '../ai/render-generation';
