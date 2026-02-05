@@ -11,6 +11,9 @@ const nextConfig: NextConfig = {
 
   // Better for static hosting and deep linking
   trailingSlash: true,
+
+  // Externalize @react-pdf/renderer to prevent SSR bundling issues (Next.js 16+)
+  serverExternalPackages: ["@react-pdf/renderer"],
 };
 
 export default nextConfig;

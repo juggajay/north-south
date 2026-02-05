@@ -115,7 +115,7 @@ export function SpecDownloader({ order }: SpecDownloaderProps) {
           variant="outline"
           onClick={() => {
             // Open QR label sheet in new window for printing
-            window.open(`/admin/orders/${order._id}/qr-labels`, "_blank");
+            window.open(`/admin/qr-labels?id=${order._id}`, "_blank");
           }}
           className="w-full justify-start"
         >
