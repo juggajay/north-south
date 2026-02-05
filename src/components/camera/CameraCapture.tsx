@@ -143,10 +143,10 @@ export function CameraCapture({
               {/* Guidance overlay */}
               <GuidanceOverlay onGalleryClick={handleGallerySelect} />
 
-              {/* Capture button */}
+              {/* Capture button - positioned high to clear browser bottom bar */}
               <div
                 className="absolute left-0 right-0 flex justify-center"
-                style={{ bottom: 'calc(2rem + env(safe-area-inset-bottom, 0px))' }}
+                style={{ bottom: 'calc(100px + env(safe-area-inset-bottom, 0px))' }}
               >
                 <CaptureButton onCapture={handleCapture} />
               </div>

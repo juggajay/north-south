@@ -54,8 +54,8 @@ export function PhotoPreview({
         />
       </div>
 
-      {/* Validation status and actions */}
-      <div className="flex flex-col gap-4 bg-zinc-900 p-6 pb-safe" style={{ paddingBottom: 'max(2rem, env(safe-area-inset-bottom, 2rem))' }}>
+      {/* Validation status and actions - large padding to clear browser bottom bar */}
+      <div className="flex flex-col gap-4 bg-zinc-900 p-6" style={{ paddingBottom: 'calc(100px + env(safe-area-inset-bottom, 0px))' }}>
         {validating ? (
           <div className="flex items-center gap-3 text-white">
             <Loader2 className="h-5 w-5 animate-spin" />

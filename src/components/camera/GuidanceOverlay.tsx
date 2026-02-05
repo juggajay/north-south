@@ -71,8 +71,8 @@ export function GuidanceOverlay({ onGalleryClick }: GuidanceOverlayProps) {
         />
       </svg>
 
-      {/* Rotating tips at bottom */}
-      <div className="absolute bottom-36 left-0 right-0 flex justify-center px-6" style={{ bottom: 'calc(9rem + env(safe-area-inset-bottom, 0px))' }}>
+      {/* Rotating tips at bottom - above capture button */}
+      <div className="absolute left-0 right-0 flex justify-center px-6" style={{ bottom: 'calc(200px + env(safe-area-inset-bottom, 0px))' }}>
         <div className="pointer-events-none rounded-lg bg-black/50 px-4 py-3 backdrop-blur-sm">
           <p className="text-center text-sm font-medium text-white">
             {TIPS[currentTipIndex]}
@@ -80,11 +80,11 @@ export function GuidanceOverlay({ onGalleryClick }: GuidanceOverlayProps) {
         </div>
       </div>
 
-      {/* Gallery button in bottom-left */}
+      {/* Gallery button in bottom-left - same height as capture button */}
       <button
         onClick={onGalleryClick}
         className="pointer-events-auto absolute left-6 flex h-12 w-12 items-center justify-center rounded-full bg-white/20 backdrop-blur-sm transition-all active:scale-95"
-        style={{ bottom: 'calc(2rem + env(safe-area-inset-bottom, 0px))' }}
+        style={{ bottom: 'calc(110px + env(safe-area-inset-bottom, 0px))' }}
       >
         <ImageIcon className="h-6 w-6 text-white" />
       </button>
