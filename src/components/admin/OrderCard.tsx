@@ -5,6 +5,8 @@ import { Card, CardHeader, CardContent, CardFooter, CardTitle, CardDescription }
 import { Button } from "@/components/ui/button";
 import { ChevronDown, ChevronUp, Package, User, Mail, Phone } from "lucide-react";
 import { OrderStatusActions } from "./OrderStatusActions";
+import { PhotoUploader } from "./PhotoUploader";
+import { NotificationTrigger } from "./NotificationTrigger";
 import type { Id } from "../../../convex/_generated/dataModel";
 
 interface OrderCardProps {
@@ -288,6 +290,39 @@ export function OrderCard({ order }: OrderCardProps) {
               )}
             </div>
           )}
+
+          {/* Photo Upload section */}
+          <div className="mt-4 pt-4 border-t border-zinc-100 dark:border-zinc-700">
+            <details className="group">
+              <summary className="flex items-center justify-between cursor-pointer list-none">
+                <p className="text-sm font-medium text-zinc-700 dark:text-zinc-300">
+                  Upload Photos
+                </p>
+                <ChevronDown className="h-4 w-4 text-zinc-400 transition-transform group-open:rotate-180" />
+              </summary>
+              <div className="mt-4">
+                <PhotoUploader orderId={order._id} />
+              </div>
+            </details>
+          </div>
+
+          {/* Notification Trigger section */}
+          <div className="mt-4 pt-4 border-t border-zinc-100 dark:border-zinc-700">
+            <details className="group">
+              <summary className="flex items-center justify-between cursor-pointer list-none">
+                <p className="text-sm font-medium text-zinc-700 dark:text-zinc-300">
+                  Send Notification
+                </p>
+                <ChevronDown className="h-4 w-4 text-zinc-400 transition-transform group-open:rotate-180" />
+              </summary>
+              <div className="mt-4">
+                <NotificationTrigger
+                  orderId={order._id}
+                  customerEmail={order.submission?.email}
+                />
+              </div>
+            </details>
+          </div>
         </CardContent>
       )}
     </Card>
