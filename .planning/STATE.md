@@ -4,25 +4,25 @@
 
 **Milestone:** 1 (MVP Launch)
 **Phase:** 08 (Production Integration & Admin) - IN PROGRESS
-**Plan:** 04 of 6 complete
-**Status:** Photo upload and notification triggers integrated
+**Plan:** 05 of 6 complete
+**Status:** Production spec downloads complete (PDF, CSV, QR labels)
 **Last Updated:** 2026-02-05
 
-**Progress:** 90.0% (7/8 phases complete, 08-04 of 08-06 done)
+**Progress:** 91.7% (7/8 phases complete, 08-05 of 08-06 done)
 ```
-█████████████████████████████░ 90.0%
+█████████████████████████████▓ 91.7%
 ```
 
-**Latest Completion:** 08-04 - Photo Upload and Notification Triggers (2026-02-05)
+**Latest Completion:** 08-05 - Production Spec Downloads (2026-02-05)
 
 ---
 
 ## Session Continuity
 
-**Last session:** 2026-02-05 19:29 UTC
-**Stopped at:** Completed 08-04-PLAN.md
+**Last session:** 2026-02-05 07:30 UTC
+**Stopped at:** Completed 08-05-PLAN.md
 **Resume file:** None
-**Next:** 08-05 - Production Spec Data & CSV Export
+**Next:** 08-06 - Final Phase Plan (if any)
 
 ---
 
@@ -115,6 +115,9 @@
 | QR error correction | Level M (15%) | Minimum for production labels, handles wear/damage | 2026-02-05 |
 | QR code size | 96px default | ~25mm at print resolution, scannable from 30cm | 2026-02-05 |
 | Label print layout | 4 columns on A4 | Optimal for standard paper, ~40-50 labels per page | 2026-02-05 |
+| Type adapter pattern | Separate CSV and PDF formats with converter | Bridges incompatible library structures without rewrites | 2026-02-05 |
+| QR labels route | Static route with query params | Avoids generateStaticParams requirement for client components | 2026-02-05 |
+| SSR package handling | serverExternalPackages in Next.js 16 | Turbopack-native way to externalize @react-pdf/renderer | 2026-02-05 |
 
 ### Admin UI Decisions
 
