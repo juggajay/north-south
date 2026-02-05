@@ -247,6 +247,37 @@ export const updateStatus = mutation({
 });
 
 /**
+ * List all orders (admin use)
+ */
+export const listAll = query({
+  args: {},
+  handler: async (ctx) => {
+    const orders = await ctx.db
+      .query("orders")
+      .order("desc")
+      .take(100);
+
+    // Enrich with submission and design data
+    const enriched = await Promise.all(
+      orders.map(async (order) => {
+        const submission = await ctx.db.get(order.submissionId);
+        let design = null;
+        if (submission) {
+          design = await ctx.db.get(submission.designId);
+        }
+        return {
+          ...order,
+          submission,
+          design,
+        };
+      })
+    );
+
+    return enriched;
+  },
+});
+
+/**
  * Get timeline data for an order
  */
 export const getTimeline = query({
