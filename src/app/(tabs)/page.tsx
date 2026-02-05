@@ -1,6 +1,7 @@
 "use client";
 
 import { useState, useRef } from "react";
+import { useRouter } from "next/navigation";
 import { AnimatePresence } from "framer-motion";
 import { Camera, Upload } from "lucide-react";
 import { CameraCapture } from "@/components/camera/CameraCapture";
@@ -15,6 +16,7 @@ import type { Render } from "@/types/ai-pipeline";
 type ViewState = "camera" | "processing" | "renders";
 
 export default function HomePage() {
+  const router = useRouter();
   const [cameraOpen, setCameraOpen] = useState(false);
   const [view, setView] = useState<ViewState>("camera");
   const [capturedImageUrl, setCapturedImageUrl] = useState<string | null>(null);
@@ -100,15 +102,23 @@ export default function HomePage() {
 
   /**
    * Handle customize render selection
-   * Stub for Phase 04 integration
+   * Stores AI dimensions and navigates to configurator
    */
   const handleCustomize = (render: Render) => {
-    console.log("Customize render selected:", {
-      id: render.id,
-      styleId: render.styleId,
-      styleLabel: render.styleLabel,
-    });
-    // Phase 04: Navigate to configurator with selected render
+    // Store AI-detected dimensions for the configurator
+    if (pipeline.result?.dimensions) {
+      const { width, depth, height } = pipeline.result.dimensions;
+      sessionStorage.setItem('aiEstimate', JSON.stringify({ width, depth, height }));
+    }
+
+    // Store selected style for potential use
+    sessionStorage.setItem('selectedStyle', JSON.stringify({
+      id: render.styleId,
+      label: render.styleLabel,
+    }));
+
+    // Navigate to configurator
+    router.push('/design');
   };
 
   return (
