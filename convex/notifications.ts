@@ -1,4 +1,5 @@
 import { Resend } from "@convex-dev/resend";
+import { v } from "convex/values";
 import { internal } from "./_generated/api";
 import { internalMutation } from "./_generated/server";
 
@@ -13,9 +14,9 @@ export const resend = new Resend(internal.resend.send, {
  */
 export const sendOrderEmail = internalMutation({
   args: {
-    to: internal.resend.send.args.to,
-    subject: internal.resend.send.args.subject,
-    html: internal.resend.send.args.html,
+    to: v.string(),
+    subject: v.string(),
+    html: v.string(),
   },
   handler: async (ctx, args) => {
     // Template rendering logic will be added in Plan 02
