@@ -1,7 +1,7 @@
 import { Resend } from "@convex-dev/resend";
 import { v } from "convex/values";
 import { internal } from "./_generated/api";
-import { internalMutation } from "./_generated/server";
+import { internalMutation, mutation } from "./_generated/server";
 
 // Initialize Resend component
 // @ts-ignore - Resend component not yet deployed to Convex
@@ -31,5 +31,54 @@ export const sendOrderEmail = internalMutation({
       html: args.html,
       from: "North South Carpentry <orders@northsouthcarpentry.com>",
     });
+  },
+});
+
+/**
+ * Admin action to manually trigger notification
+ * Allows re-sending emails or sending custom notifications
+ */
+export const adminTriggerNotification = mutation({
+  args: {
+    orderId: v.id("orders"),
+    type: v.string(),
+  },
+  handler: async (ctx, args) => {
+    // Get order to find customer email
+    const order = await ctx.db.get(args.orderId);
+    if (!order) {
+      throw new Error("Order not found");
+    }
+
+    const submission = await ctx.db.get(order.submissionId);
+    if (!submission || !submission.email) {
+      throw new Error("Customer email not found");
+    }
+
+    // Validate notification type
+    const validTypes = [
+      "order_confirmed",
+      "production_started",
+      "qc_complete",
+      "ready_to_ship",
+      "delivered",
+      "post_install",
+    ];
+    if (!validTypes.includes(args.type)) {
+      throw new Error(`Invalid notification type: ${args.type}`);
+    }
+
+    // Schedule email
+    await ctx.scheduler.runAfter(
+      0,
+      internal.notifications.sendEmail.sendNotificationEmail,
+      {
+        orderId: args.orderId,
+        type: args.type as any,
+        to: submission.email,
+      }
+    );
+
+    return { success: true, sentTo: submission.email };
   },
 });
