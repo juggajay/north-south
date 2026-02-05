@@ -1,30 +1,26 @@
 import { query, mutation } from "./_generated/server";
 import { v } from "convex/values";
 import { internal } from "./_generated/api";
+import { requireAdmin, requireOwnershipOrAdmin } from "./lib/auth";
+import { MS_PER_DAY, ORDER_STATUSES, OrderStatus, STATUS_TO_TIMELINE, STATUS_TO_NOTIFICATION, NotificationType, OrderTimeline } from "./lib/types";
 
 /**
- * Generate order number in format: NS-YYYYMMDD-XXX
+ * Generate secure order number with random component
+ * Format: NS-YYYYMMDD-XXXX (4 random alphanumeric chars)
  */
-async function generateOrderNumber(ctx: any): Promise<string> {
+function generateOrderNumber(): string {
   const now = new Date();
   const dateStr = now.toISOString().slice(0, 10).replace(/-/g, ""); // YYYYMMDD
 
-  // Get count of orders created today
-  const startOfDay = new Date(now.getFullYear(), now.getMonth(), now.getDate()).getTime();
-  const endOfDay = startOfDay + 86400000; // +24 hours
+  // Generate 4 random alphanumeric characters
+  // Exclude confusing chars (0/O, 1/I/L)
+  const chars = "ABCDEFGHJKLMNPQRSTUVWXYZ23456789";
+  let randomPart = "";
+  for (let i = 0; i < 4; i++) {
+    randomPart += chars.charAt(Math.floor(Math.random() * chars.length));
+  }
 
-  const todayOrders = await ctx.db
-    .query("orders")
-    .filter((q: any) =>
-      q.and(
-        q.gte(q.field("createdAt"), startOfDay),
-        q.lt(q.field("createdAt"), endOfDay)
-      )
-    )
-    .collect();
-
-  const sequence = (todayOrders.length + 1).toString().padStart(3, "0");
-  return `NS-${dateStr}-${sequence}`;
+  return `NS-${dateStr}-${randomPart}`;
 }
 
 /**
@@ -44,7 +40,7 @@ export const create = mutation({
     }
 
     // Generate order number
-    const orderNumber = await generateOrderNumber(ctx);
+    const orderNumber = generateOrderNumber();
 
     // Create order with initial "confirmed" status
     const orderId = await ctx.db.insert("orders", {
@@ -162,53 +158,28 @@ export const updateStatus = mutation({
       throw new Error("Order not found");
     }
 
-    // Validate status
-    const validStatuses = [
-      "confirmed",
-      "production",
-      "qc",
-      "ready_to_ship",
-      "shipped",
-      "delivered",
-      "complete",
-    ];
-    if (!validStatuses.includes(status)) {
+    // Validate status using imported constant
+    if (!ORDER_STATUSES.includes(status as OrderStatus)) {
       throw new Error(`Invalid status: ${status}`);
     }
 
-    // Map status to timeline field
-    const timelineMap: Record<string, string> = {
-      confirmed: "confirmed",
-      production: "productionStart",
-      qc: "qcComplete",
-      ready_to_ship: "readyToShip",
-      shipped: "shipped",
-      delivered: "delivered",
-    };
+    const typedStatus = status as OrderStatus;
 
-    // Update timeline
-    const timeline = order.timeline || {};
-    const timelineField = timelineMap[status];
+    // Update timeline using imported mapping
+    const timeline: OrderTimeline = (order.timeline as OrderTimeline) || {};
+    const timelineField = STATUS_TO_TIMELINE[typedStatus];
     if (timelineField) {
-      (timeline as any)[timelineField] = Date.now();
+      timeline[timelineField] = Date.now();
     }
 
     // Update order
     await ctx.db.patch(id, {
-      status,
+      status: typedStatus,
       timeline,
     });
 
-    // Map status to notification type
-    const notificationMap: Record<string, string> = {
-      confirmed: "order_confirmed",
-      production: "production_started",
-      qc: "qc_complete",
-      ready_to_ship: "ready_to_ship",
-      delivered: "delivered",
-    };
-
-    const notificationType = notificationMap[status];
+    // Get notification type using imported mapping
+    const notificationType = STATUS_TO_NOTIFICATION[typedStatus];
 
     // Schedule email notification if applicable
     if (notificationType) {
@@ -216,25 +187,26 @@ export const updateStatus = mutation({
       const submission = await ctx.db.get(order.submissionId);
       if (submission && submission.email) {
         // Schedule email (non-blocking, runs async)
+        // Type assertion needed to avoid TS2589 with Convex scheduler inference
         await ctx.scheduler.runAfter(
           0,
           internal.notifications.sendEmail.sendNotificationEmail,
           {
             orderId: id,
-            type: notificationType as any,
+            type: notificationType as NotificationType,
             to: submission.email,
           }
         );
 
         // Special case: schedule post-install email 7 days after delivered
-        if (status === "delivered") {
-          const sevenDaysMs = 7 * 24 * 60 * 60 * 1000;
+        if (typedStatus === "delivered") {
+          const sevenDaysMs = 7 * MS_PER_DAY;
           await ctx.scheduler.runAfter(
             sevenDaysMs,
             internal.notifications.sendEmail.sendNotificationEmail,
             {
               orderId: id,
-              type: "post_install",
+              type: "post_install" as NotificationType,
               to: submission.email,
             }
           );
@@ -247,11 +219,15 @@ export const updateStatus = mutation({
 });
 
 /**
- * List all orders (admin use)
+ * List all orders (admin use only)
+ * SECURED: Requires admin authentication
  */
 export const listAll = query({
   args: {},
   handler: async (ctx) => {
+    // SECURITY: Require admin access
+    await requireAdmin(ctx);
+
     const orders = await ctx.db
       .query("orders")
       .order("desc")
