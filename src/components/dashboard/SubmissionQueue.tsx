@@ -33,7 +33,7 @@ export function SubmissionQueue() {
 
   return (
     <div className="space-y-4">
-      {submissions.map((submission) => (
+      {submissions.map((submission: any) => (
         <SubmissionCard key={submission._id} submission={submission} />
       ))}
     </div>

@@ -126,7 +126,7 @@ export function ReferralTracker() {
             </h3>
           </div>
           <div className="space-y-2">
-            {referrals.map((referral) => {
+            {referrals.map((referral: any) => {
               const status =
                 STATUS_CONFIG[referral.status as keyof typeof STATUS_CONFIG] ||
                 STATUS_CONFIG.pending;

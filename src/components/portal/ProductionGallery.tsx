@@ -43,7 +43,7 @@ export function ProductionGallery({ orderId }: ProductionGalleryProps) {
 
   // Count total photos
   const totalPhotos = Object.values(photos).reduce(
-    (sum, group) => sum + group.length,
+    (sum, group: any) => sum + group.length,
     0
   );
 
@@ -63,7 +63,7 @@ export function ProductionGallery({ orderId }: ProductionGalleryProps) {
   return (
     <>
       <div className="space-y-6">
-        {Object.entries(photos).map(([milestone, group]) => {
+        {Object.entries(photos).map(([milestone, group]: [string, any]) => {
           if (group.length === 0) return null;
 
           return (
@@ -72,7 +72,7 @@ export function ProductionGallery({ orderId }: ProductionGalleryProps) {
                 {MILESTONE_LABELS[milestone] || milestone}
               </h3>
               <div className="grid grid-cols-3 gap-2">
-                {group.map((photo) => (
+                {group.map((photo: any) => (
                   <PhotoThumbnail
                     key={photo._id}
                     photo={photo}

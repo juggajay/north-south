@@ -71,7 +71,7 @@ export function DocumentList({ orderId }: DocumentListProps) {
         <div>
           <h3 className="text-sm font-medium text-zinc-900 mb-3">Quotes</h3>
           <div className="space-y-2">
-            {documents.quotes.map((doc) => (
+            {documents.quotes.map((doc: any) => (
               <button
                 key={doc._id}
                 onClick={() => handleDownload(doc.storageId, doc.fileName)}
@@ -103,7 +103,7 @@ export function DocumentList({ orderId }: DocumentListProps) {
         <div>
           <h3 className="text-sm font-medium text-zinc-900 mb-3">Invoices</h3>
           <div className="space-y-2">
-            {documents.invoices.map((doc) => (
+            {documents.invoices.map((doc: any) => (
               <button
                 key={doc._id}
                 onClick={() => handleDownload(doc.storageId, doc.fileName)}
