@@ -1,5 +1,6 @@
 import type { Metadata, Viewport } from "next";
 import { Inter } from "next/font/google";
+import { Toaster } from "sonner";
 import "./globals.css";
 import { ConvexClientProvider } from "@/lib/convex";
 import { QueryProvider } from "@/lib/query-client";
@@ -46,6 +47,7 @@ export default function RootLayout({
             <ProductCatalogProvider>{children}</ProductCatalogProvider>
           </QueryProvider>
         </ConvexClientProvider>
+        <Toaster position="top-center" richColors />
       </body>
     </html>
   );

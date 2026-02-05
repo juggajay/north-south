@@ -22,14 +22,16 @@ export function StepNavigation() {
         Back
       </Button>
 
-      <Button
-        onClick={nextStep}
-        disabled={!canGoNext}
-        className="min-w-[100px]"
-      >
-        {isLastStep ? 'Submit' : 'Next'}
-        {!isLastStep && <ChevronRight className="w-4 h-4 ml-1" />}
-      </Button>
+      {!isLastStep && (
+        <Button
+          onClick={nextStep}
+          disabled={!canGoNext}
+          className="min-w-[100px]"
+        >
+          Next
+          <ChevronRight className="w-4 h-4 ml-1" />
+        </Button>
+      )}
     </div>
   )
 }
