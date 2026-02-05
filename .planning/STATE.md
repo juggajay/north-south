@@ -4,8 +4,8 @@
 
 **Milestone:** 1 (MVP Launch)
 **Phase:** 07 (Customer Portal & Notifications) - IN PROGRESS
-**Plan:** 1 of 3 complete
-**Status:** Backend foundation complete
+**Plan:** 2 of 3 complete
+**Status:** Email notifications complete, portal UI remaining
 **Last Updated:** 2026-02-05
 
 **Progress:** 75% (6/8 phases complete)
@@ -13,16 +13,16 @@
 ██████████████████████░░░░░░░░ 75%
 ```
 
-**Latest Completion:** 07-01 - Backend Foundation (2026-02-05)
+**Latest Completion:** 07-02 - Email Notification Templates (2026-02-05)
 
 ---
 
 ## Session Continuity
 
 **Last session:** 2026-02-05
-**Stopped at:** Completed 07-01-PLAN.md
+**Stopped at:** Completed 07-02-PLAN.md
 **Resume file:** None
-**Next:** 07-02 (Email Templates) or 07-03 (Portal UI)
+**Next:** 07-03 (Portal UI) - Frontend components for customer portal
 
 ---
 
@@ -93,6 +93,10 @@
 | Customer portal sections | All 7 sections | Order status, photos, docs, guides, QR lookup, chat, referrals | 2026-02-03 |
 | Notification channel | Email only (MVP) | SMS/push later | 2026-02-03 |
 | Notification triggers | 6 key milestones | Order confirmed, Production started, QC complete, Ready to ship, Delivered, Post-install | 2026-02-03 |
+| Email template framework | React Email | Type-safe JSX templates, automatic HTML + plaintext generation | 2026-02-05 |
+| Email tone | Professional + tradesperson authenticity | "Cheers" not "Best regards" per CONTEXT.md | 2026-02-05 |
+| Email delivery | Convex scheduler (non-blocking) | Status updates succeed even if email fails | 2026-02-05 |
+| Post-install timing | 7 days after delivered | Gives customer time to install and evaluate | 2026-02-05 |
 | QR labels link to | Panel info + assembly context + video placeholder | Maximum helpfulness | 2026-02-03 |
 
 ### Production Decisions
