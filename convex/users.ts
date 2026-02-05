@@ -1,5 +1,6 @@
 import { query, mutation } from "./_generated/server";
 import { v } from "convex/values";
+import { getAuthIdentity, requireAdmin } from "./lib/auth";
 
 /**
  * Get user by email, or create a new one if doesn't exist
@@ -87,14 +88,48 @@ export const update = mutation({
 });
 
 /**
- * List all users (admin function)
+ * List all users (admin only)
+ * SECURED: Requires admin authentication
  */
 export const list = query({
   args: { limit: v.optional(v.number()) },
   handler: async (ctx, { limit = 50 }) => {
+    // SECURITY: Require admin access
+    await requireAdmin(ctx);
+
     return await ctx.db
       .query("users")
       .order("desc")
       .take(limit);
+  },
+});
+
+/**
+ * Get the currently authenticated user
+ * Returns user profile if found, null otherwise
+ */
+export const current = query({
+  args: {},
+  handler: async (ctx) => {
+    const identity = await getAuthIdentity(ctx);
+    if (!identity || !identity.email) {
+      return null;
+    }
+
+    // Find user by email from identity
+    const user = await ctx.db
+      .query("users")
+      .withIndex("by_email", (q) => q.eq("email", identity.email))
+      .first();
+
+    if (!user) {
+      return null;
+    }
+
+    // Return user with email from identity (in case stored email differs)
+    return {
+      ...user,
+      email: identity.email,
+    };
   },
 });
