@@ -86,7 +86,10 @@ export function RenderCarousel({
   };
 
   return (
-    <div className="fixed inset-0 z-50 flex flex-col bg-black">
+    <div
+      className="fixed left-0 right-0 top-0 z-50 flex flex-col bg-black"
+      style={{ height: '100dvh', minHeight: '-webkit-fill-available' }}
+    >
       {/* Header */}
       <div className="relative z-10 flex items-center justify-between px-4 py-4 bg-gradient-to-b from-black/80 to-transparent">
         {/* Back button */}
