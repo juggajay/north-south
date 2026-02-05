@@ -1,7 +1,9 @@
 import { query, mutation } from "./_generated/server";
 import { v } from "convex/values";
 import { internal } from "./_generated/api";
+import { Id } from "./_generated/dataModel";
 import { requireAdmin, requireOwnershipOrAdmin } from "./lib/auth";
+import { batchGet } from "./lib/batch";
 import { MS_PER_DAY, ORDER_STATUSES, OrderStatus, STATUS_TO_TIMELINE, STATUS_TO_NOTIFICATION, NotificationType, OrderTimeline } from "./lib/types";
 
 /**
@@ -76,6 +78,34 @@ export const get = query({
     const submission = await ctx.db.get(order.submissionId);
 
     // Get design data if submission exists
+    let design = null;
+    if (submission) {
+      design = await ctx.db.get(submission.designId);
+    }
+
+    return {
+      ...order,
+      submission,
+      design,
+    };
+  },
+});
+
+/**
+ * Get order by ID with ownership check
+ * Returns order only if user owns it or is admin
+ */
+export const getSecure = query({
+  args: { id: v.id("orders") },
+  handler: async (ctx, { id }) => {
+    const order = await ctx.db.get(id);
+    if (!order) return null;
+
+    const submission = await ctx.db.get(order.submissionId);
+
+    // Check ownership
+    await requireOwnershipOrAdmin(ctx, submission?.email);
+
     let design = null;
     if (submission) {
       design = await ctx.db.get(submission.designId);
@@ -233,23 +263,27 @@ export const listAll = query({
       .order("desc")
       .take(100);
 
-    // Enrich with submission and design data
-    const enriched = await Promise.all(
-      orders.map(async (order) => {
-        const submission = await ctx.db.get(order.submissionId);
-        let design = null;
-        if (submission) {
-          design = await ctx.db.get(submission.designId);
-        }
-        return {
-          ...order,
-          submission,
-          design,
-        };
-      })
-    );
+    // Parallel load all submissions
+    const submissionIds = orders.map((o) => o.submissionId);
+    const submissionsMap = await batchGet(ctx, submissionIds);
 
-    return enriched;
+    // Collect design IDs from loaded submissions
+    const designIds: Id<"designs">[] = [];
+    submissionsMap.forEach((sub) => {
+      if (sub.designId) designIds.push(sub.designId);
+    });
+
+    // Parallel load all designs
+    const designsMap = await batchGet(ctx, designIds);
+
+    // Enrich orders
+    return orders.map((order) => {
+      const submission = submissionsMap.get(order.submissionId.toString());
+      const design = submission
+        ? designsMap.get(submission.designId.toString())
+        : null;
+      return { ...order, submission, design };
+    });
   },
 });
 

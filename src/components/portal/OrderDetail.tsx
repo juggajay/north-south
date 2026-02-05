@@ -23,9 +23,9 @@ export function OrderDetail({ orderId }: OrderDetailProps) {
   const [documentsExpanded, setDocumentsExpanded] = useState(false);
   const [photosExpanded, setPhotosExpanded] = useState(false);
 
-  // Fetch order data
+  // Fetch order data with ownership check
   const order = useQuery(
-    api.orders.get,
+    api.orders.getSecure,
     orderId ? { id: orderId as Id<"orders"> } : "skip"
   );
 
