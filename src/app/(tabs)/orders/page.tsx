@@ -4,7 +4,9 @@ import { useEffect, useState } from "react";
 import { useQuery } from "convex/react";
 import { api } from "../../../../convex/_generated/api";
 import { useAuth } from "@/hooks/useAuth";
-import { Package, Clock, CheckCircle, FileText } from "lucide-react";
+import { Package, Clock, CheckCircle, FileText, ArrowRight } from "lucide-react";
+import { ReferralTracker } from "@/components/portal/ReferralTracker";
+import { useRouter } from "next/navigation";
 
 // Status display configuration
 const statusConfig = {
@@ -16,6 +18,7 @@ const statusConfig = {
 };
 
 export default function OrdersPage() {
+  const router = useRouter();
   const { user, isLoading: authLoading, getOrCreateUser, isLoggedIn } = useAuth();
   const [userId, setUserId] = useState<string | null>(null);
   const [userCheckDone, setUserCheckDone] = useState(false);
@@ -58,6 +61,12 @@ export default function OrdersPage() {
   // Query submissions by user's ID (more reliable than email)
   const submissions = useQuery(
     api.submissions.listByUserId,
+    userId ? { userId: userId as any } : "skip"
+  );
+
+  // Query orders by user's ID
+  const orders = useQuery(
+    api.orders.listByUserId,
     userId ? { userId: userId as any } : "skip"
   );
 
@@ -125,13 +134,92 @@ export default function OrdersPage() {
   // Orders list
   return (
     <div className="min-h-screen bg-zinc-50 dark:bg-zinc-950 px-4 py-6 pb-24">
-      <div className="max-w-2xl mx-auto">
-        <h1 className="text-2xl font-bold text-zinc-900 dark:text-zinc-50 mb-6">
+      <div className="max-w-2xl mx-auto space-y-8">
+        <h1 className="text-2xl font-bold text-zinc-900 dark:text-zinc-50">
           Your Orders
         </h1>
 
+        {/* Active Orders */}
+        {orders && orders.length > 0 && (
+          <div className="space-y-4">
+            <h2 className="text-lg font-semibold text-zinc-900 dark:text-zinc-50">
+              Active Orders
+            </h2>
+            {orders.map((order: any) => {
+              const date = new Date(order.createdAt).toLocaleDateString();
+              const getStatusLabel = (status: string) => {
+                return status.replace(/_/g, " ").toUpperCase();
+              };
+              const getStatusColor = (status: string) => {
+                const colors: Record<string, string> = {
+                  confirmed: "bg-blue-100 text-blue-800",
+                  production: "bg-purple-100 text-purple-800",
+                  qc: "bg-indigo-100 text-indigo-800",
+                  ready_to_ship: "bg-cyan-100 text-cyan-800",
+                  shipped: "bg-orange-100 text-orange-800",
+                  delivered: "bg-green-100 text-green-800",
+                  complete: "bg-zinc-100 text-zinc-800",
+                };
+                return colors[status] || "bg-zinc-100 text-zinc-800";
+              };
+
+              return (
+                <button
+                  key={order._id}
+                  onClick={() => router.push(`/portal/${order._id}`)}
+                  className="w-full bg-white dark:bg-zinc-900 rounded-xl border border-zinc-200 dark:border-zinc-800 p-4 shadow-sm hover:shadow-md transition-shadow text-left"
+                >
+                  {/* Header with status */}
+                  <div className="flex items-center justify-between mb-3">
+                    <div className="flex items-center gap-2">
+                      <span className={`inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-medium ${getStatusColor(order.status)}`}>
+                        <Package className="w-3.5 h-3.5" />
+                        {getStatusLabel(order.status)}
+                      </span>
+                    </div>
+                    <span className="text-sm text-zinc-500">{date}</span>
+                  </div>
+
+                  {/* Order number */}
+                  <p className="text-lg font-semibold text-zinc-900 dark:text-zinc-100 mb-2">
+                    {order.orderNumber}
+                  </p>
+
+                  {/* Design info */}
+                  {order.design && (
+                    <div className="space-y-1 mb-3">
+                      <div className="flex justify-between text-sm">
+                        <span className="text-zinc-600 dark:text-zinc-400">Dimensions</span>
+                        <span className="font-medium text-zinc-900 dark:text-zinc-100">
+                          {order.design.config?.dimensions?.width || '—'}mm × {order.design.config?.dimensions?.height || '—'}mm
+                        </span>
+                      </div>
+                      <div className="flex justify-between text-sm">
+                        <span className="text-zinc-600 dark:text-zinc-400">Product</span>
+                        <span className="font-medium text-zinc-900 dark:text-zinc-100 capitalize">
+                          {order.design.productType || 'Kitchen'}
+                        </span>
+                      </div>
+                    </div>
+                  )}
+
+                  {/* View Details */}
+                  <div className="flex items-center justify-end gap-1 text-sm font-medium text-blue-600 mt-3">
+                    <span>View Details</span>
+                    <ArrowRight className="w-4 h-4" />
+                  </div>
+                </button>
+              );
+            })}
+          </div>
+        )}
+
+        {/* Submissions (Quotes pending) */}
         <div className="space-y-4">
-          {submissions.map((submission) => {
+          <h2 className="text-lg font-semibold text-zinc-900 dark:text-zinc-50">
+            Submissions
+          </h2>
+          {submissions.map((submission: any) => {
             const status = statusConfig[submission.status as keyof typeof statusConfig] || statusConfig.pending;
             const StatusIcon = status.icon;
             const date = new Date(submission.createdAt).toLocaleDateString();
@@ -200,6 +288,11 @@ export default function OrdersPage() {
               </div>
             );
           })}
+        </div>
+
+        {/* Referral Tracker */}
+        <div className="pt-4">
+          <ReferralTracker />
         </div>
       </div>
     </div>
