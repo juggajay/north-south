@@ -3,26 +3,26 @@
 ## Current Position
 
 **Milestone:** 1 (MVP Launch)
-**Phase:** 07 (Customer Portal & Notifications) - COMPLETE
-**Plan:** 3 of 3 complete
-**Status:** Phase complete - Backend, email templates, and portal UI all done
+**Phase:** 07 (Customer Portal & Notifications) - IN PROGRESS
+**Plan:** 4 of 5 complete
+**Status:** QR panel lookup complete; referral program UI remaining
 **Last Updated:** 2026-02-05
 
-**Progress:** 87.5% (7/8 phases complete)
+**Progress:** 75% (6/8 phases complete)
 ```
-███████████████████████████░░░ 87.5%
+██████████████████████░░░░░░░░ 75%
 ```
 
-**Latest Completion:** 07-03 - Customer Portal UI (2026-02-05)
+**Latest Completion:** 07-04 - QR Panel Lookup (2026-02-05)
 
 ---
 
 ## Session Continuity
 
 **Last session:** 2026-02-05
-**Stopped at:** Completed 07-03-PLAN.md
+**Stopped at:** Completed 07-04-PLAN.md
 **Resume file:** None
-**Next:** Phase 08 (Admin Portal) - Admin tools for quote generation, document upload, order management
+**Next:** 07-05 (Referral Program UI) or Phase 08 (Admin Portal)
 
 ---
 
@@ -249,6 +249,10 @@
 | Panel QR lookup | Public (no auth) | Installers can scan without login | 2026-02-05 |
 | Email masking | j***n@example.com pattern | Referral privacy (first/last char visible) | 2026-02-05 |
 | Referral rewards | Manual for MVP | Automation deferred to post-MVP | 2026-02-05 |
+| Material swatch colors | Gradient from material name | Placeholder until DB swatches (oak→amber, white→zinc) | 2026-02-05 |
+| Static export dynamic routes | Server/client split pattern | generateStaticParams + dummy __placeholder__ param | 2026-02-05 |
+| Dynamic params config | False for static export | Real routing handled client-side in Capacitor | 2026-02-05 |
+| Panel dimensions format | "W × H × D mm" | Clear, consistent display | 2026-02-05 |
 
 ### UX Quality Gaps - Approved Fixes
 
@@ -672,6 +676,36 @@
 - convex/referrals.ts: create, getMyReferrals, getReferralLink, updateStatus
 - convex/notifications.ts: Resend initialization, sendOrderEmail placeholder
 - **Summary:** `.planning/phases/07-customer-portal-notifications/07-01-SUMMARY.md`
+
+**Plan 02 - Email Notification Templates (Completed 2026-02-05):**
+- Six email templates for order lifecycle (order_confirmed, production_started, qc_complete, ready_to_ship, delivered, post_install)
+- Text-only emails with professional-yet-approachable tone
+- @react-email/components for template structure with text fallbacks
+- sendNotificationEmail action with template selection and rendering
+- Portal URLs included in all emails for order tracking
+- Post-install email includes referral link CTA for Google/social reviews
+- **Summary:** `.planning/phases/07-customer-portal-notifications/07-02-SUMMARY.md`
+
+**Plan 03 - Customer Portal UI (Completed 2026-02-05):**
+- OrderTimeline component with vertical stepper (completed/active/future milestones)
+- DocumentList component with download functionality for quotes and invoices
+- ProductionGallery component with milestone-grouped photo display
+- ReferralTracker component with masked emails and status badges
+- Order detail page at /portal/[orderId] with expandable sections
+- Enhanced Orders tab with active orders and submissions display
+- Mobile-responsive layouts with thumb-friendly interactions
+- **Summary:** `.planning/phases/07-customer-portal-notifications/07-03-SUMMARY.md`
+
+**Plan 04 - QR Panel Lookup (Completed 2026-02-05):**
+- Public /panel/[qrCode] route accessible without authentication
+- PanelCard component with material swatch gradient and panel details
+- PanelNotFound component with helpful messaging for invalid codes
+- Mobile-optimized card layout (max-w-sm, centered, rounded-2xl)
+- Server/client component split for static export compatibility
+- generateStaticParams with dummy __placeholder__ for build-time generation
+- Material color mapping algorithm (oak→amber, white→zinc, black→slate)
+- Fixed blocking TypeScript and static export issues from previous plans
+- **Summary:** `.planning/phases/07-customer-portal-notifications/07-04-SUMMARY.md`
 
 ---
 
