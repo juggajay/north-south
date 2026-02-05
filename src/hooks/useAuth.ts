@@ -7,10 +7,14 @@ import { api } from "../../convex/_generated/api";
  * Hook for authentication state and actions
  */
 export function useAuth() {
-  const isLoggedIn = useQuery(api.auth.isLoggedIn);
-  const currentUser = useQuery(api.auth.getCurrentUser);
-  const getOrCreateUser = useMutation(api.auth.getOrCreateUser);
-  const updateProfile = useMutation(api.auth.updateProfile);
+  // @ts-ignore - Convex type inference can be deep
+  const isLoggedIn: boolean | undefined = useQuery(api.auth.isLoggedIn);
+  // @ts-ignore - Convex type inference can be deep
+  const currentUser: any = useQuery(api.auth.getCurrentUser);
+  // @ts-ignore - Convex type inference can be deep
+  const getOrCreateUser: any = useMutation(api.auth.getOrCreateUser);
+  // @ts-ignore - Convex type inference can be deep
+  const updateProfile: any = useMutation(api.auth.updateProfile);
 
   return {
     // State

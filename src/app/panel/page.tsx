@@ -1,20 +1,15 @@
 "use client";
 
-import { useSearchParams, useParams } from "next/navigation";
-import { useEffect, useState } from "react";
+import { useSearchParams } from "next/navigation";
+import { useEffect, useState, Suspense } from "react";
 import { PanelLookup } from "@/components/portal/PanelLookup";
 
 /**
- * Panel QR Lookup Page
+ * Panel QR Lookup Page - Inner Component
  *
- * Supports two URL patterns for static export compatibility:
- * 1. /panel?code=xxx (query param - preferred for static export)
- * 2. /panel/xxx (path segment - for deep linking)
- *
- * Uses client-side URL parsing for path segments since
- * dynamic routes don't work with output: "export"
+ * Wrapped in Suspense for static export compatibility
  */
-export default function PanelLookupPage() {
+function PanelLookupContent() {
   const searchParams = useSearchParams();
   const [qrCode, setQrCode] = useState<string | null>(null);
   const [isLoading, setIsLoading] = useState(true);
@@ -66,4 +61,28 @@ export default function PanelLookupPage() {
   }
 
   return <PanelLookup qrCode={qrCode} />;
+}
+
+/**
+ * Panel QR Lookup Page
+ *
+ * Supports two URL patterns for static export compatibility:
+ * 1. /panel?code=xxx (query param - preferred for static export)
+ * 2. /panel/xxx (path segment - for deep linking)
+ *
+ * Uses client-side URL parsing for path segments since
+ * dynamic routes don't work with output: "export"
+ */
+export default function PanelLookupPage() {
+  return (
+    <Suspense fallback={
+      <div className="min-h-screen bg-zinc-50 flex items-center justify-center p-4">
+        <div className="animate-pulse">
+          <div className="w-64 h-48 bg-zinc-200 rounded-2xl"></div>
+        </div>
+      </div>
+    }>
+      <PanelLookupContent />
+    </Suspense>
+  );
 }

@@ -1,20 +1,15 @@
 "use client";
 
 import { useSearchParams } from "next/navigation";
-import { useEffect, useState } from "react";
+import { useEffect, useState, Suspense } from "react";
 import { OrderDetail } from "@/components/portal/OrderDetail";
 
 /**
- * Order Portal Page
+ * Order Portal Page - Inner Component
  *
- * Supports two URL patterns for static export compatibility:
- * 1. /portal?id=xxx (query param - preferred for static export)
- * 2. /portal/xxx (path segment - for deep linking)
- *
- * Uses client-side URL parsing for path segments since
- * dynamic routes don't work with output: "export"
+ * Wrapped in Suspense for static export compatibility
  */
-export default function OrderPortalPage() {
+function OrderPortalContent() {
   const searchParams = useSearchParams();
   const [orderId, setOrderId] = useState<string | null>(null);
   const [isLoading, setIsLoading] = useState(true);
@@ -67,4 +62,29 @@ export default function OrderPortalPage() {
   }
 
   return <OrderDetail orderId={orderId} />;
+}
+
+/**
+ * Order Portal Page
+ *
+ * Supports two URL patterns for static export compatibility:
+ * 1. /portal?id=xxx (query param - preferred for static export)
+ * 2. /portal/xxx (path segment - for deep linking)
+ *
+ * Uses client-side URL parsing for path segments since
+ * dynamic routes don't work with output: "export"
+ */
+export default function OrderPortalPage() {
+  return (
+    <Suspense fallback={
+      <div className="min-h-screen bg-zinc-50 flex items-center justify-center p-4">
+        <div className="animate-pulse space-y-4">
+          <div className="w-64 h-8 bg-zinc-200 rounded"></div>
+          <div className="w-64 h-48 bg-zinc-200 rounded-lg"></div>
+        </div>
+      </div>
+    }>
+      <OrderPortalContent />
+    </Suspense>
+  );
 }
