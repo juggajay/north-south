@@ -9,6 +9,7 @@ import { QRLabelSheet, printStyles } from "@/lib/qr";
 import { transformOrderToSpec } from "@/lib/pdf/transformOrderToSpec";
 import { Loader2, Printer } from "lucide-react";
 import { Button } from "@/components/ui/button";
+import { AdminGuard } from "@/components/auth/AdminGuard";
 
 function QRLabelsContent() {
   const searchParams = useSearchParams();
@@ -97,14 +98,16 @@ function QRLabelsContent() {
 
 export default function QRLabelsPage() {
   return (
-    <Suspense
-      fallback={
-        <div className="min-h-screen flex items-center justify-center">
-          <Loader2 className="h-8 w-8 animate-spin text-zinc-400" />
-        </div>
-      }
-    >
-      <QRLabelsContent />
-    </Suspense>
+    <AdminGuard>
+      <Suspense
+        fallback={
+          <div className="min-h-screen flex items-center justify-center">
+            <Loader2 className="h-8 w-8 animate-spin text-zinc-400" />
+          </div>
+        }
+      >
+        <QRLabelsContent />
+      </Suspense>
+    </AdminGuard>
   );
 }
