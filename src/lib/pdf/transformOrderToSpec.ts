@@ -1,8 +1,9 @@
-import type { PanelItem } from "../csv/generatePanelCSV";
-import type { HardwareItem } from "../csv/generateHardwareCSV";
+import type { PanelItem as CSVPanelItem } from "../csv/generatePanelCSV";
+import type { HardwareItem as CSVHardwareItem } from "../csv/generateHardwareCSV";
+import type { ProductionSpecData as PDFProductionSpecData } from "./types";
 
 /**
- * Production spec data structure
+ * Production spec data structure for CSV exports
  */
 export interface ProductionSpecData {
   orderNumber: string;
@@ -10,8 +11,8 @@ export interface ProductionSpecData {
   customerEmail: string;
   createdAt: string;
   cabinets: CabinetItem[];
-  panels: PanelItem[];
-  hardware: HardwareItem[];
+  panels: CSVPanelItem[];
+  hardware: CSVHardwareItem[];
   edgeBanding: EdgeBandingItem[];
   notes?: string;
 }
@@ -90,14 +91,14 @@ export function transformOrderToSpec(order: OrderData): ProductionSpecData {
 
   // Generate panels from cabinets
   // Each cabinet generates: Left Side, Right Side, Back, Top, Bottom, plus shelves/doors
-  const panels: PanelItem[] = [];
+  const panels: CSVPanelItem[] = [];
   const materialCode = finishes.material?.code || "Unknown";
 
   cabinets.forEach((cab, cabIndex) => {
     const panelPrefix = `P${String(cabIndex + 1).padStart(2, "0")}`;
 
     // Standard panels for each cabinet
-    const standardPanels: Array<Omit<PanelItem, "id" | "cabinetRef">> = [
+    const standardPanels: Array<Omit<CSVPanelItem, "id" | "cabinetRef">> = [
       { name: "Left Side", width: cab.depth, height: cab.height, thickness: 18, material: materialCode, grainDirection: "vertical" as const, edgeLeft: true },
       { name: "Right Side", width: cab.depth, height: cab.height, thickness: 18, material: materialCode, grainDirection: "vertical" as const, edgeRight: true },
       { name: "Back", width: cab.width - 36, height: cab.height - 18, thickness: 6, material: materialCode },
@@ -118,7 +119,7 @@ export function transformOrderToSpec(order: OrderData): ProductionSpecData {
   const edgeBanding: EdgeBandingItem[] = calculateEdgeBanding(panels, finishes.material?.name || "Unknown");
 
   // Generate hardware list based on cabinet types
-  const hardware: HardwareItem[] = generateHardwareList(cabinets, finishes.hardware);
+  const hardware: CSVHardwareItem[] = generateHardwareList(cabinets, finishes.hardware);
 
   return {
     orderNumber: order.orderNumber,
@@ -150,7 +151,7 @@ function formatInteriorConfig(config: any): string | undefined {
   return parts.length > 0 ? parts.join(", ") : undefined;
 }
 
-function calculateEdgeBanding(panels: PanelItem[], materialName: string): EdgeBandingItem[] {
+function calculateEdgeBanding(panels: CSVPanelItem[], materialName: string): EdgeBandingItem[] {
   // Count panels with edges
   let totalLength = 0;
   let panelCount = 0;
@@ -175,8 +176,8 @@ function calculateEdgeBanding(panels: PanelItem[], materialName: string): EdgeBa
   }];
 }
 
-function generateHardwareList(cabinets: CabinetItem[], hardwareOption: any): HardwareItem[] {
-  const hardware: HardwareItem[] = [];
+function generateHardwareList(cabinets: CabinetItem[], hardwareOption: any): CSVHardwareItem[] {
+  const hardware: CSVHardwareItem[] = [];
 
   // Count doors and drawers
   let doorCount = 0;
@@ -226,4 +227,71 @@ function generateHardwareList(cabinets: CabinetItem[], hardwareOption: any): Har
   }
 
   return hardware;
+}
+
+/**
+ * Convert simplified ProductionSpecData to PDF-compatible format
+ *
+ * The PDF library (from 08-01) expects a different structure with:
+ * - order: OrderInfo (nested object)
+ * - panels with panelId, cabinetId, type, qrCode, quantity
+ * - cabinets with cabinetId, notes, quantity
+ * - hardware with description (not name)
+ * - drilling and assembly sections
+ */
+export function convertToPDFFormat(data: ProductionSpecData, orderId: string): PDFProductionSpecData {
+  // Base URL for QR codes
+  const baseUrl = typeof window !== "undefined"
+    ? `${window.location.origin}/panel`
+    : "https://northsouthcarpentry.com/panel";
+
+  return {
+    order: {
+      orderNumber: data.orderNumber,
+      orderDate: data.createdAt,
+      customerName: data.customerName,
+      dueDate: undefined, // Not tracked yet
+    },
+    cabinets: data.cabinets.map((cab) => ({
+      cabinetId: cab.id,
+      type: cab.type,
+      width: cab.width,
+      height: cab.height,
+      depth: cab.depth,
+      quantity: 1,
+      notes: cab.interiorConfig,
+    })),
+    panels: data.panels.map((panel) => ({
+      panelId: panel.id,
+      cabinetId: panel.cabinetRef,
+      type: panel.name,
+      material: panel.material,
+      width: panel.width,
+      height: panel.height,
+      thickness: panel.thickness,
+      quantity: 1,
+      edgeBanding: {
+        top: panel.edgeTop ? data.edgeBanding[0]?.material : undefined,
+        bottom: panel.edgeBottom ? data.edgeBanding[0]?.material : undefined,
+        left: panel.edgeLeft ? data.edgeBanding[0]?.material : undefined,
+        right: panel.edgeRight ? data.edgeBanding[0]?.material : undefined,
+      },
+      qrCode: `${baseUrl}/${orderId}-${panel.id}`,
+    })),
+    edgeBanding: data.edgeBanding.map((eb) => ({
+      material: eb.material,
+      color: eb.material, // Use material name as color for now
+      thickness: eb.thickness,
+      totalLength: eb.totalLength * 1000, // Convert back to mm for PDF
+    })),
+    hardware: data.hardware.map((hw) => ({
+      code: hw.code,
+      description: hw.name,
+      supplier: hw.supplier,
+      quantity: hw.quantity,
+      notes: hw.notes,
+    })),
+    drilling: [], // Empty for now - Phase 08-06
+    assembly: [], // Empty for now - Phase 08-06
+  };
 }
