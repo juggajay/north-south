@@ -1,5 +1,6 @@
 import { query, mutation } from "./_generated/server";
 import { v } from "convex/values";
+import { internal } from "./_generated/api";
 
 /**
  * Generate order number in format: NS-YYYYMMDD-XXX
@@ -197,6 +198,49 @@ export const updateStatus = mutation({
       status,
       timeline,
     });
+
+    // Map status to notification type
+    const notificationMap: Record<string, string> = {
+      confirmed: "order_confirmed",
+      production: "production_started",
+      qc: "qc_complete",
+      ready_to_ship: "ready_to_ship",
+      delivered: "delivered",
+    };
+
+    const notificationType = notificationMap[status];
+
+    // Schedule email notification if applicable
+    if (notificationType) {
+      // Get submission to find customer email
+      const submission = await ctx.db.get(order.submissionId);
+      if (submission && submission.email) {
+        // Schedule email (non-blocking, runs async)
+        await ctx.scheduler.runAfter(
+          0,
+          internal.notifications.sendEmail.sendNotificationEmail,
+          {
+            orderId: id,
+            type: notificationType as any,
+            to: submission.email,
+          }
+        );
+
+        // Special case: schedule post-install email 7 days after delivered
+        if (status === "delivered") {
+          const sevenDaysMs = 7 * 24 * 60 * 60 * 1000;
+          await ctx.scheduler.runAfter(
+            sevenDaysMs,
+            internal.notifications.sendEmail.sendNotificationEmail,
+            {
+              orderId: id,
+              type: "post_install",
+              to: submission.email,
+            }
+          );
+        }
+      }
+    }
 
     return await ctx.db.get(id);
   },
