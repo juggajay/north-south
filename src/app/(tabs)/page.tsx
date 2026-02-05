@@ -105,20 +105,29 @@ export default function HomePage() {
    * Stores AI dimensions and navigates to configurator
    */
   const handleCustomize = (render: Render) => {
-    // Store AI-detected dimensions for the configurator
-    if (pipeline.result?.dimensions) {
-      const { width, depth, height } = pipeline.result.dimensions;
-      sessionStorage.setItem('aiEstimate', JSON.stringify({ width, depth, height }));
+    console.log('Customize clicked:', render);
+
+    try {
+      // Store AI-detected dimensions for the configurator
+      if (pipeline.result?.dimensions) {
+        const { width, depth, height } = pipeline.result.dimensions;
+        sessionStorage.setItem('aiEstimate', JSON.stringify({ width, depth, height }));
+        console.log('Stored dimensions:', { width, depth, height });
+      }
+
+      // Store selected style for potential use
+      sessionStorage.setItem('selectedStyle', JSON.stringify({
+        id: render.styleId,
+        label: render.styleLabel,
+      }));
+      console.log('Stored style, navigating to /design');
+
+      // Navigate to configurator
+      router.push('/design');
+    } catch (error) {
+      console.error('Customize error:', error);
+      alert('Error: ' + (error instanceof Error ? error.message : 'Unknown error'));
     }
-
-    // Store selected style for potential use
-    sessionStorage.setItem('selectedStyle', JSON.stringify({
-      id: render.styleId,
-      label: render.styleLabel,
-    }));
-
-    // Navigate to configurator
-    router.push('/design');
   };
 
   return (

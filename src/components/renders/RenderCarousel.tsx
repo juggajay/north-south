@@ -211,7 +211,14 @@ export function RenderCarousel({
 
         {/* Customize CTA */}
         <button
-          onClick={() => currentRender && onCustomize(currentRender)}
+          onClick={() => {
+            console.log('Button clicked, currentRender:', currentRender);
+            if (currentRender) {
+              onCustomize(currentRender);
+            } else {
+              console.error('No currentRender available');
+            }
+          }}
           className="flex h-14 w-full items-center justify-center gap-2 rounded-full bg-white font-semibold text-zinc-900 transition-colors hover:bg-zinc-100 active:bg-zinc-200"
         >
           <Sparkles className="h-5 w-5" />
