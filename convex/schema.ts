@@ -94,6 +94,18 @@ export default defineSchema({
     .index("by_status", ["status"]),
 
   // ===================
+  // DOCUMENTS (quotes, invoices)
+  // ===================
+  documents: defineTable({
+    orderId: v.id("orders"),
+    type: v.union(v.literal("quote"), v.literal("invoice")),
+    version: v.number(), // Auto-increment per type
+    fileName: v.string(),
+    storageId: v.string(), // Convex storage ID
+    createdAt: v.number(),
+  }).index("by_orderId", ["orderId"]),
+
+  // ===================
   // PRODUCTION PHOTOS
   // ===================
   productionPhotos: defineTable({
