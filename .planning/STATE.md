@@ -4,25 +4,25 @@
 
 **Milestone:** 1 (MVP Launch)
 **Phase:** 08 (Production Integration & Admin) - IN PROGRESS
-**Plan:** 02 of 4 complete
-**Status:** CSV export and QR label utilities complete
+**Plan:** 03 of 4 complete
+**Status:** Order management UI complete
 **Last Updated:** 2026-02-05
 
-**Progress:** 87.5% (7/8 phases complete, 08-02 of 08-04 done)
+**Progress:** 90.6% (7/8 phases complete, 08-03 of 08-04 done)
 ```
-███████████████████████████░░░ 87.5%
+█████████████████████████████░ 90.6%
 ```
 
-**Latest Completion:** 08-02 - CSV Export & QR Label Generation (2026-02-05)
+**Latest Completion:** 08-03 - Order Management UI (2026-02-05)
 
 ---
 
 ## Session Continuity
 
-**Last session:** 2026-02-05 18:03 UTC
-**Stopped at:** Completed 08-02-PLAN.md
+**Last session:** 2026-02-05 07:05 UTC
+**Stopped at:** Completed 08-03-PLAN.md
 **Resume file:** None
-**Next:** 08-03 - Production Spec Generation
+**Next:** 08-04 - Production Spec Generation (if planned)
 
 ---
 
@@ -257,6 +257,16 @@
 | Material swatch colors | Gradient from material name | Placeholder until DB swatches (oak→amber, white→zinc) | 2026-02-05 |
 | Static export dynamic routes | Server/client split pattern | generateStaticParams + dummy __placeholder__ param | 2026-02-05 |
 | Dynamic params config | False for static export | Real routing handled client-side in Capacitor | 2026-02-05 |
+
+### Implementation Decisions (Phase 08)
+
+| Decision | Choice | Rationale | Date |
+|----------|--------|-----------|------|
+| Order list pattern | Same as submissions | Consistency in admin UX (List → Card → Actions) | 2026-02-05 |
+| Order card collapsible | Same as submissions | Consistent expand/collapse pattern | 2026-02-05 |
+| Status workflow enforcement | UI-level validation | Only show valid next-status transitions | 2026-02-05 |
+| Timeline display | All completed milestones | Shows production progress with timestamps | 2026-02-05 |
+| Admin navigation | Bi-directional links | Easy movement between submissions ↔ orders | 2026-02-05 |
 | Panel dimensions format | "W × H × D mm" | Clear, consistent display | 2026-02-05 |
 
 ### UX Quality Gaps - Approved Fixes
