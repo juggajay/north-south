@@ -100,7 +100,7 @@ export const sendNotificationEmail = internalAction({
 
       // Log successful send
       // @ts-ignore - logNotification module exists but not in generated types yet
-      await ctx.runMutation(internal.notifications.logNotification, {
+      await ctx.runMutation(internal.notifications.logNotification.logNotification, {
         orderId: args.orderId,
         type: args.type,
         channel: "email",
@@ -115,7 +115,7 @@ export const sendNotificationEmail = internalAction({
       console.error(`Failed to send email for order ${args.orderId}:`, error);
 
       // @ts-ignore - logNotification module exists but not in generated types yet
-      await ctx.runMutation(internal.notifications.logNotification, {
+      await ctx.runMutation(internal.notifications.logNotification.logNotification, {
         orderId: args.orderId,
         type: args.type,
         channel: "email",
