@@ -1,12 +1,14 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useRef, useEffect } from "react";
 import { X } from "lucide-react";
 import { AnimatePresence, motion } from "framer-motion";
 import { CaptureButton } from "./CaptureButton";
 import { GuidanceOverlay } from "./GuidanceOverlay";
 import { PhotoPreview } from "./PhotoPreview";
-import { capturePhoto, selectFromGallery, checkCameraPermission } from "@/lib/camera";
+import { CameraPreview, captureFrame } from "./CameraPreview";
+import { selectFromGallery } from "@/lib/camera";
+import { useFullscreen } from "@/contexts/FullscreenContext";
 
 interface CameraCaptureProps {
   open: boolean;
@@ -28,20 +30,50 @@ export function CameraCapture({
   const [state, setState] = useState<CameraState>("camera");
   const [capturedImageUrl, setCapturedImageUrl] = useState<string | null>(null);
   const [error, setError] = useState<string | null>(null);
+  const videoRef = useRef<HTMLVideoElement | null>(null);
+  const { enterFullscreen, exitFullscreen } = useFullscreen();
+
+  // Enter fullscreen when camera opens, exit when it closes
+  useEffect(() => {
+    if (open) {
+      enterFullscreen();
+    } else {
+      exitFullscreen();
+    }
+  }, [open, enterFullscreen, exitFullscreen]);
+
+  const handleStreamReady = (stream: MediaStream) => {
+    // Get video element from stream for capture
+    const videoTrack = stream.getVideoTracks()[0];
+    if (videoTrack) {
+      const video = document.querySelector('video');
+      if (video) {
+        videoRef.current = video;
+      }
+    }
+  };
+
+  const handleCameraError = (errorMsg: string) => {
+    if (errorMsg.includes("permission") || errorMsg.includes("denied")) {
+      setState("permission-denied");
+    } else {
+      setError(errorMsg);
+    }
+  };
 
   const handleCapture = async () => {
     try {
       setError(null);
 
-      // Check permission first
-      const hasPermission = await checkCameraPermission();
-      if (!hasPermission) {
-        setState("permission-denied");
+      // Get the video element
+      const video = document.querySelector('video') as HTMLVideoElement;
+      if (!video || !video.srcObject) {
+        setError("Camera not ready. Please try again.");
         return;
       }
 
-      // Capture photo
-      const imageUrl = await capturePhoto();
+      // Capture frame from live preview
+      const imageUrl = captureFrame(video);
       setCapturedImageUrl(imageUrl);
       setState("preview");
     } catch (err) {
@@ -94,6 +126,12 @@ export function CameraCapture({
         >
           {state === "camera" && (
             <div className="relative h-full w-full bg-zinc-950">
+              {/* Live camera preview */}
+              <CameraPreview
+                onStreamReady={handleStreamReady}
+                onError={handleCameraError}
+              />
+
               {/* Close button */}
               <button
                 onClick={handleClose}
@@ -106,7 +144,7 @@ export function CameraCapture({
               <GuidanceOverlay onGalleryClick={handleGallerySelect} />
 
               {/* Capture button */}
-              <div className="absolute bottom-8 left-0 right-0 flex justify-center">
+              <div className="absolute bottom-8 left-0 right-0 flex justify-center pb-safe">
                 <CaptureButton onCapture={handleCapture} />
               </div>
 
