@@ -44,9 +44,12 @@ export function PhotoPreview({
   }, [imageUrl]);
 
   return (
-    <div className="fixed inset-0 z-50 flex flex-col bg-black">
+    <div
+      className="fixed left-0 right-0 top-0 z-50 flex flex-col bg-black"
+      style={{ height: '100dvh', minHeight: '-webkit-fill-available' }}
+    >
       {/* Image preview */}
-      <div className="relative flex-1">
+      <div className="relative flex-1 min-h-0">
         <img
           src={imageUrl}
           alt="Captured photo"
@@ -54,8 +57,8 @@ export function PhotoPreview({
         />
       </div>
 
-      {/* Validation status and actions - large padding to clear browser bottom bar */}
-      <div className="flex flex-col gap-4 bg-zinc-900 p-6" style={{ paddingBottom: 'calc(100px + env(safe-area-inset-bottom, 0px))' }}>
+      {/* Validation status and actions */}
+      <div className="flex-shrink-0 flex flex-col gap-4 bg-zinc-900 p-6 pb-8">
         {validating ? (
           <div className="flex items-center gap-3 text-white">
             <Loader2 className="h-5 w-5 animate-spin" />

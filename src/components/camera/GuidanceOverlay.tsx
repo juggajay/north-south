@@ -30,7 +30,7 @@ export function GuidanceOverlay({ onGalleryClick }: GuidanceOverlayProps) {
   }, []);
 
   return (
-    <div className="pointer-events-none fixed inset-0 flex flex-col">
+    <div className="pointer-events-none absolute inset-0 flex flex-col">
       {/* Corner brackets */}
       <svg className="absolute inset-0 h-full w-full" viewBox="0 0 100 100">
         {/* Top-left corner */}
@@ -72,7 +72,7 @@ export function GuidanceOverlay({ onGalleryClick }: GuidanceOverlayProps) {
       </svg>
 
       {/* Rotating tips at bottom - above capture button */}
-      <div className="absolute left-0 right-0 flex justify-center px-6" style={{ bottom: 'calc(200px + env(safe-area-inset-bottom, 0px))' }}>
+      <div className="absolute left-0 right-0 bottom-32 flex justify-center px-6">
         <div className="pointer-events-none rounded-lg bg-black/50 px-4 py-3 backdrop-blur-sm">
           <p className="text-center text-sm font-medium text-white">
             {TIPS[currentTipIndex]}
@@ -83,8 +83,7 @@ export function GuidanceOverlay({ onGalleryClick }: GuidanceOverlayProps) {
       {/* Gallery button in bottom-left - same height as capture button */}
       <button
         onClick={onGalleryClick}
-        className="pointer-events-auto absolute left-6 flex h-12 w-12 items-center justify-center rounded-full bg-white/20 backdrop-blur-sm transition-all active:scale-95"
-        style={{ bottom: 'calc(110px + env(safe-area-inset-bottom, 0px))' }}
+        className="pointer-events-auto absolute left-6 bottom-6 flex h-12 w-12 items-center justify-center rounded-full bg-white/20 backdrop-blur-sm transition-all active:scale-95"
       >
         <ImageIcon className="h-6 w-6 text-white" />
       </button>

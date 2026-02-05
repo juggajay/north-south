@@ -122,10 +122,11 @@ export function CameraCapture({
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
           exit={{ opacity: 0 }}
-          className="fixed inset-0 z-50"
+          className="fixed left-0 right-0 top-0 z-50"
+          style={{ height: '100dvh', minHeight: '-webkit-fill-available' }}
         >
           {state === "camera" && (
-            <div className="relative h-full w-full bg-zinc-950">
+            <div className="relative h-full w-full bg-zinc-950 overflow-hidden">
               {/* Live camera preview */}
               <CameraPreview
                 onStreamReady={handleStreamReady}
@@ -143,11 +144,8 @@ export function CameraCapture({
               {/* Guidance overlay */}
               <GuidanceOverlay onGalleryClick={handleGallerySelect} />
 
-              {/* Capture button - positioned high to clear browser bottom bar */}
-              <div
-                className="absolute left-0 right-0 flex justify-center"
-                style={{ bottom: 'calc(100px + env(safe-area-inset-bottom, 0px))' }}
-              >
+              {/* Capture button */}
+              <div className="absolute left-0 right-0 bottom-6 flex justify-center">
                 <CaptureButton onCapture={handleCapture} />
               </div>
 
