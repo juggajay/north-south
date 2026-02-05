@@ -4,25 +4,25 @@
 
 **Milestone:** 1 (MVP Launch)
 **Phase:** 08 (Production Integration & Admin) - IN PROGRESS
-**Plan:** 01 of 6 complete
-**Status:** PDF generation infrastructure complete
+**Plan:** 04 of 6 complete
+**Status:** Photo upload and notification triggers integrated
 **Last Updated:** 2026-02-05
 
-**Progress:** 87.5% (7/8 phases complete, 08-01 of 08-06 done)
+**Progress:** 90.0% (7/8 phases complete, 08-04 of 08-06 done)
 ```
-███████████████████████████░░░ 87.5%
+█████████████████████████████░ 90.0%
 ```
 
-**Latest Completion:** 08-01 - PDF Generation Infrastructure (2026-02-05)
+**Latest Completion:** 08-04 - Photo Upload and Notification Triggers (2026-02-05)
 
 ---
 
 ## Session Continuity
 
-**Last session:** 2026-02-05 18:14 UTC
-**Stopped at:** Completed 08-01-PLAN.md
+**Last session:** 2026-02-05 19:29 UTC
+**Stopped at:** Completed 08-04-PLAN.md
 **Resume file:** None
-**Next:** 08-02 - PDF Generation API & Download
+**Next:** 08-05 - Production Spec Data & CSV Export
 
 ---
 
@@ -115,6 +115,15 @@
 | QR error correction | Level M (15%) | Minimum for production labels, handles wear/damage | 2026-02-05 |
 | QR code size | 96px default | ~25mm at print resolution, scannable from 30cm | 2026-02-05 |
 | Label print layout | 4 columns on A4 | Optimal for standard paper, ~40-50 labels per page | 2026-02-05 |
+
+### Admin UI Decisions
+
+| Decision | Choice | Rationale | Date |
+|----------|--------|-----------|------|
+| Photo upload UI | Native details/summary for collapsible sections | Lightweight, accessible, no JS state management needed | 2026-02-05 |
+| Production photo milestones | 4 stages (production, qc, packaging, delivery) | Matches production workflow from RESEARCH.md analysis | 2026-02-05 |
+| Manual notification trigger | Reuse Phase 07 email templates | No new templates needed, consistent customer experience | 2026-02-05 |
+| File upload pattern | Convex generateUploadUrl → POST → save record | Standard Convex pattern for client-side file uploads | 2026-02-05 |
 | PDF library | @react-pdf/renderer | React JSX syntax, standard for React projects | 2026-02-05 |
 | PDF table library | @ag-media/react-pdf-table | Provides Table/TR/TH/TD for @react-pdf/renderer | 2026-02-05 |
 | PDF page structure | Multi-page split | Cabinets/panels/hardware page 1, drilling page 2, assembly page 3 | 2026-02-05 |
