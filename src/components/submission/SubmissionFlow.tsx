@@ -81,48 +81,22 @@ export function SubmissionFlow({ designId, onCancel }: SubmissionFlowProps) {
     },
   });
 
-  // Initialize form with user data when available
+  // Populate form fields when user data arrives (only if fields are still empty)
   useEffect(() => {
-    const initForm = async () => {
-      // Already initialized
-      if (isInitialized) return;
-
-      // Try to get user data
-      let userData = user;
-
-      // If no user from query and not loading, try to create
-      if (!user && !isLoading) {
-        try {
-          userData = await getOrCreateUser();
-        } catch (error) {
-          console.error("Could not get user:", error);
-        }
-      }
-
-      // Populate form with whatever data we have
-      if (userData?.name) {
-        form.setValue("name", userData.name);
-      }
-      if (userData?.email) {
-        form.setValue("email", userData.email);
-      }
-
-      setIsInitialized(true);
-    };
-
-    // Add a small delay to allow auth to settle, then initialize
-    const timer = setTimeout(initForm, 500);
-    return () => clearTimeout(timer);
-  }, [user, isLoading, getOrCreateUser, form, isInitialized]);
-
-  // Also initialize immediately if user data is available
-  useEffect(() => {
-    if (user?.name && user?.email && !isInitialized) {
+    if (user?.name && !form.getValues("name")) {
       form.setValue("name", user.name);
+    }
+    if (user?.email && !form.getValues("email")) {
       form.setValue("email", user.email);
+    }
+  }, [user, form]);
+
+  // Mark initialized once auth loading settles
+  useEffect(() => {
+    if (!isLoading) {
       setIsInitialized(true);
     }
-  }, [user, form, isInitialized]);
+  }, [isLoading]);
 
   // Watch form values for review display
   const formValues = form.watch();
