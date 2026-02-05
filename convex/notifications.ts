@@ -2,6 +2,8 @@ import { Resend } from "@convex-dev/resend";
 import { v } from "convex/values";
 import { internal } from "./_generated/api";
 import { internalMutation, mutation } from "./_generated/server";
+import { requireAdmin } from "./lib/auth";
+import { NOTIFICATION_TYPES, NotificationType } from "./lib/types";
 
 // Initialize Resend component
 // @ts-ignore - Resend component not yet deployed to Convex
@@ -37,6 +39,7 @@ export const sendOrderEmail = internalMutation({
 /**
  * Admin action to manually trigger notification
  * Allows re-sending emails or sending custom notifications
+ * SECURED: Requires admin authentication
  */
 export const adminTriggerNotification = mutation({
   args: {
@@ -44,6 +47,9 @@ export const adminTriggerNotification = mutation({
     type: v.string(),
   },
   handler: async (ctx, args) => {
+    // SECURITY: Require admin access
+    await requireAdmin(ctx);
+
     // Get order to find customer email
     const order = await ctx.db.get(args.orderId);
     if (!order) {
@@ -55,16 +61,8 @@ export const adminTriggerNotification = mutation({
       throw new Error("Customer email not found");
     }
 
-    // Validate notification type
-    const validTypes = [
-      "order_confirmed",
-      "production_started",
-      "qc_complete",
-      "ready_to_ship",
-      "delivered",
-      "post_install",
-    ];
-    if (!validTypes.includes(args.type)) {
+    // Validate notification type using shared constant
+    if (!NOTIFICATION_TYPES.includes(args.type as NotificationType)) {
       throw new Error(`Invalid notification type: ${args.type}`);
     }
 
@@ -74,7 +72,7 @@ export const adminTriggerNotification = mutation({
       internal.notifications.sendEmail.sendNotificationEmail,
       {
         orderId: args.orderId,
-        type: args.type as any,
+        type: args.type as NotificationType,
         to: submission.email,
       }
     );
