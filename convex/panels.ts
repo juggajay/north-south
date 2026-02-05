@@ -17,11 +17,6 @@ export const lookupByQrCode = query({
       return null;
     }
 
-    // Update scannedAt timestamp
-    await ctx.db.patch(panelQr._id, {
-      scannedAt: Date.now(),
-    });
-
     // Return ONLY basic info per CONTEXT.md
     // moduleInfo should contain: panelName, dimensions, material, finish
     const { moduleInfo } = panelQr;
@@ -34,6 +29,29 @@ export const lookupByQrCode = query({
       assemblyNotes: panelQr.assemblyNotes,
       videoUrl: panelQr.videoUrl,
     };
+  },
+});
+
+/**
+ * Track QR code scan (mutation for updating scannedAt)
+ */
+export const trackQrScan = mutation({
+  args: { qrCode: v.string() },
+  handler: async (ctx, { qrCode }) => {
+    const panelQr = await ctx.db
+      .query("panelQrCodes")
+      .withIndex("by_qrCode", (q) => q.eq("qrCode", qrCode))
+      .first();
+
+    if (!panelQr) {
+      return null;
+    }
+
+    await ctx.db.patch(panelQr._id, {
+      scannedAt: Date.now(),
+    });
+
+    return { success: true };
   },
 });
 

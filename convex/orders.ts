@@ -177,7 +177,7 @@ export const updateStatus = mutation({
     }
 
     // Map status to timeline field
-    const timelineMap: Record<string, keyof NonNullable<typeof order.timeline>> = {
+    const timelineMap: Record<string, string> = {
       confirmed: "confirmed",
       production: "productionStart",
       qc: "qcComplete",

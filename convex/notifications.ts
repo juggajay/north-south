@@ -4,35 +4,13 @@ import { internal } from "./_generated/api";
 import { internalMutation } from "./_generated/server";
 
 // Initialize Resend component
-export const resend = new Resend(internal.resend.send, {
+// @ts-ignore - Resend component not yet deployed to Convex
+export const resend: any = new Resend((internal as any).resend.send, {
   testMode: false, // Production mode - sends real emails when API key configured
 });
 
-/**
- * Log notification to database
- */
-export const logNotification = internalMutation({
-  args: {
-    orderId: v.id("orders"),
-    type: v.string(),
-    channel: v.string(),
-    recipient: v.string(),
-    sentAt: v.number(),
-    status: v.string(),
-    errorMessage: v.optional(v.string()),
-  },
-  handler: async (ctx, args) => {
-    await ctx.db.insert("notifications", {
-      orderId: args.orderId,
-      type: args.type,
-      channel: args.channel,
-      recipient: args.recipient,
-      sentAt: args.sentAt,
-      status: args.status,
-      errorMessage: args.errorMessage,
-    });
-  },
-});
+// logNotification moved to notifications/logNotification.ts
+// (mutations cannot be in Node.js files)
 
 /**
  * Internal mutation for sending order notification emails
