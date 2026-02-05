@@ -3,16 +3,15 @@
  * Phase 05: Finishes & Pricing
  *
  * Centralized pricing calculation that:
- * - Queries all pricing data from Convex (reactive)
+ * - Uses cached product catalog from context (reactive)
  * - Reads configuration from Zustand store
  * - Calculates breakdown by category (all in cents)
  * - Returns formatted currency strings
  */
 
 import { useMemo } from 'react'
-import { useQuery } from 'convex/react'
 import { useCabinetStore } from '@/stores/useCabinetStore'
-import { api } from '../../convex/_generated/api'
+import { useProductCatalog, Material, Hardware, DoorProfile, Module } from '@/contexts/ProductCatalogContext'
 
 interface PriceBreakdown {
   cabinets: number      // In cents
@@ -34,11 +33,8 @@ interface FormattedBreakdown {
 }
 
 export function usePricing() {
-  // Reactive Convex queries
-  const materials = useQuery(api.products.materials.list)
-  const hardware = useQuery(api.products.hardware.list)
-  const doorProfiles = useQuery(api.doorProfiles.list)
-  const modules = useQuery(api.products.modules.list)
+  // Use cached product catalog from context
+  const { materials, hardware, doorProfiles, modules, isLoading } = useProductCatalog()
 
   // Subscribe only to config slice (not entire store)
   const config = useCabinetStore((state) => state.config)
@@ -76,7 +72,7 @@ export function usePricing() {
       // Module types in store: 'standard', 'sink-base', etc.
       // Modules in DB: 'MOD-BASE-600', 'MOD-BASE-SINK', etc.
       const moduleType = slot.module.type
-      let matchedModule = modules.find((m: any) => {
+      let matchedModule = modules.find((m: Module) => {
         const codeLC = m.code.toLowerCase()
         // Map store module types to database module codes
         if (moduleType === 'standard' && codeLC.includes('base-600')) return true
@@ -96,7 +92,7 @@ export function usePricing() {
 
       // Fallback: use average module price if no match
       if (!matchedModule) {
-        matchedModule = modules.find((m: any) => m.code === 'MOD-BASE-600')
+        matchedModule = modules.find((m: Module) => m.code === 'MOD-BASE-600')
       }
 
       if (matchedModule) {
@@ -105,19 +101,19 @@ export function usePricing() {
     })
 
     // Calculate material cost (flat price per selection)
-    const selectedMaterial = materials.find((m: any) => m.code === config.finishes.material)
+    const selectedMaterial = materials.find((m: Material) => m.code === config.finishes.material)
     if (selectedMaterial) {
       materialCost = selectedMaterial.pricePerUnit // Already in cents
     }
 
     // Calculate hardware cost
-    const selectedHardware = hardware.find((h: any) => h.code === config.finishes.hardware)
+    const selectedHardware = hardware.find((h: Hardware) => h.code === config.finishes.hardware)
     if (selectedHardware) {
       hardwareCost = selectedHardware.pricePerUnit // Already in cents
     }
 
     // Calculate door profile cost (price per door × module count)
-    const selectedProfile = doorProfiles.find((p: any) => p.code === config.finishes.doorProfile)
+    const selectedProfile = doorProfiles.find((p: DoorProfile) => p.code === config.finishes.doorProfile)
     if (selectedProfile) {
       // Count modules that have doors (rough approximation: all modules)
       const doorCount = Array.from(config.slots.values()).filter(s => s.module).length
@@ -150,9 +146,6 @@ export function usePricing() {
       hardwareVariance: formatter.format(hardwareVarianceAmount / 100),
     }
   }, [breakdown, formatter])
-
-  // Loading state
-  const isLoading = !materials || !hardware || !doorProfiles || !modules
 
   // Helper function for ad-hoc formatting
   const formatPrice = (cents: number) => formatter.format(cents / 100)
