@@ -222,28 +222,38 @@ Plans:
 ---
 
 ### Phase 07: Customer Portal & Notifications
-**Status:** Not Started
+**Status:** In Planning
 **Requirements:** ORD-001 → ORD-008, PORT-001 → PORT-007, NOTIF-001 → NOTIF-006
+
+**Goal:** Post-purchase customer experience with order tracking, document access, QR panel lookup, and proactive email notifications at key milestones.
 
 **Deliverables:**
 - Order status display with timeline
 - Production photos gallery
-- Documents section (quote, invoice, specs)
+- Documents section (quote, invoice)
 - Installation guides section (placeholder for videos)
-- QR panel lookup interface
+- QR panel lookup interface (public, no login)
 - Chat/support access
 - Referral program tracking
-- Email notification system (6 triggers)
+- Email notification system (6 triggers via Resend)
 
 **Must-Haves:**
 - [ ] Customer can see current order status
 - [ ] Timeline shows completed + upcoming milestones
 - [ ] Production photos uploaded by team appear in portal
 - [ ] Documents downloadable
-- [ ] QR scan shows panel info + assembly context
+- [ ] QR scan shows panel info (public access)
 - [ ] Chat accessible from portal
 - [ ] Referral link generated
 - [ ] Emails sent at: Order confirmed, Production started, QC complete, Ready to ship, Delivered, Post-install
+
+**Plans:** 5 plans
+Plans:
+- [ ] 07-01-PLAN.md — Backend foundation (Resend component, orders/documents/panels/referrals APIs)
+- [ ] 07-02-PLAN.md — Email templates and notification triggers
+- [ ] 07-03-PLAN.md — Customer portal UI (timeline, documents, photos, referrals)
+- [ ] 07-04-PLAN.md — QR panel lookup (public route)
+- [ ] 07-05-PLAN.md — Human verification of complete portal system
 
 ---
 
@@ -285,7 +295,7 @@ Plans:
 | 04 | 3D Configurator Core | Complete ✓ | CFG-*, SLOT-*, MOD-*, TOUCH-* |
 | 05 | Finishes & Pricing | Complete ✓ | FIN-*, REV-*, PRICE-* |
 | 06 | Quote Submission | Complete ✓ | SUBMIT-*, QUEUE-*, QUOTE-*, PAY-* |
-| 07 | Portal & Notifications | Not Started | ORD-*, PORT-*, NOTIF-* |
+| 07 | Portal & Notifications | In Planning | ORD-*, PORT-*, NOTIF-* |
 | 08 | Production & Admin | Not Started | PROD-*, QR-*, DASH-* |
 
 ---
