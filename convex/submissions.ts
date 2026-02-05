@@ -1,5 +1,6 @@
 import { query, mutation } from "./_generated/server";
 import { v } from "convex/values";
+import { requireAdmin, requireAuth } from "./lib/auth";
 
 /**
  * Create a new submission (submit design for quote)
@@ -80,24 +81,23 @@ export const getByDesign = query({
 });
 
 /**
- * List all submissions (internal/admin use)
+ * List all submissions (admin use only)
+ * SECURED: Requires admin authentication
  */
 export const listAll = query({
   args: {},
   handler: async (ctx) => {
+    await requireAdmin(ctx);
+
     const submissions = await ctx.db
       .query("submissions")
       .order("asc")
       .take(100);
 
-    // Enrich with design data
     const enriched = await Promise.all(
       submissions.map(async (submission) => {
         const design = await ctx.db.get(submission.designId);
-        return {
-          ...submission,
-          design,
-        };
+        return { ...submission, design };
       })
     );
 
@@ -106,25 +106,24 @@ export const listAll = query({
 });
 
 /**
- * List pending submissions (internal/admin use)
+ * List pending submissions (admin use only)
+ * SECURED: Requires admin authentication
  */
 export const listPending = query({
   args: {},
   handler: async (ctx) => {
+    await requireAdmin(ctx);
+
     const submissions = await ctx.db
       .query("submissions")
       .withIndex("by_status", (q) => q.eq("status", "pending"))
       .order("desc")
       .collect();
 
-    // Enrich with design data
     const enriched = await Promise.all(
       submissions.map(async (submission) => {
         const design = await ctx.db.get(submission.designId);
-        return {
-          ...submission,
-          design,
-        };
+        return { ...submission, design };
       })
     );
 
@@ -133,11 +132,14 @@ export const listPending = query({
 });
 
 /**
- * List submissions by status
+ * List submissions by status (admin use only)
+ * SECURED: Requires admin authentication
  */
 export const listByStatus = query({
   args: { status: v.string() },
   handler: async (ctx, { status }) => {
+    await requireAdmin(ctx);
+
     const submissions = await ctx.db
       .query("submissions")
       .withIndex("by_status", (q) => q.eq("status", status))
