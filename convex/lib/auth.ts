@@ -6,12 +6,7 @@ import { EMAIL_CONFIG } from "./types";
  * Get the current authenticated user identity
  * Returns null if not authenticated
  */
-export async function getAuthIdentity(ctx: QueryCtx | MutationCtx): Promise<{
-  subject: string;
-  email?: string;
-  name?: string;
-  [key: string]: unknown;
-} | null> {
+export async function getAuthIdentity(ctx: QueryCtx | MutationCtx) {
   return await ctx.auth.getUserIdentity();
 }
 
