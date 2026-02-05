@@ -259,8 +259,10 @@ Plans:
 ---
 
 ### Phase 08: Production Integration & Admin
-**Status:** Not Started
+**Status:** In Progress
 **Requirements:** PROD-001 → PROD-010, QR-001 → QR-003, DASH-001 → DASH-006
+
+**Goal:** Enable admin to generate production specs (PDF/CSV), print QR labels, manage orders, upload production photos, and trigger notifications.
 
 **Deliverables:**
 - Production spec PDF export
@@ -284,6 +286,15 @@ Plans:
 - [ ] Admin can download production specs
 - [ ] Admin can trigger notification emails
 
+**Plans:** 6 plans
+Plans:
+- [ ] 08-01-PLAN.md — PDF generation infrastructure with @react-pdf/renderer
+- [ ] 08-02-PLAN.md — CSV export and QR label sheet generation
+- [ ] 08-03-PLAN.md — Admin order management UI with status workflow
+- [ ] 08-04-PLAN.md — Photo upload and notification trigger features
+- [ ] 08-05-PLAN.md — Wire PDF/CSV downloads into admin order view
+- [ ] 08-06-PLAN.md — Human verification of complete production system
+
 ---
 
 ## Phase Checklist
@@ -297,7 +308,7 @@ Plans:
 | 05 | Finishes & Pricing | Complete ✓ | FIN-*, REV-*, PRICE-* |
 | 06 | Quote Submission | Complete ✓ | SUBMIT-*, QUEUE-*, QUOTE-*, PAY-* |
 | 07 | Portal & Notifications | Complete ✓ | ORD-*, PORT-*, NOTIF-* |
-| 08 | Production & Admin | Not Started | PROD-*, QR-*, DASH-* |
+| 08 | Production & Admin | In Progress | PROD-*, QR-*, DASH-* |
 
 ---
 
