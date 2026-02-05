@@ -3,26 +3,26 @@
 ## Current Position
 
 **Milestone:** 1 (MVP Launch)
-**Phase:** 07 (Customer Portal & Notifications) - IN PROGRESS
-**Plan:** 2 of 3 complete
-**Status:** Email notifications complete, portal UI remaining
+**Phase:** 07 (Customer Portal & Notifications) - COMPLETE
+**Plan:** 3 of 3 complete
+**Status:** Phase complete - Backend, email templates, and portal UI all done
 **Last Updated:** 2026-02-05
 
-**Progress:** 75% (6/8 phases complete)
+**Progress:** 87.5% (7/8 phases complete)
 ```
-██████████████████████░░░░░░░░ 75%
+███████████████████████████░░░ 87.5%
 ```
 
-**Latest Completion:** 07-02 - Email Notification Templates (2026-02-05)
+**Latest Completion:** 07-03 - Customer Portal UI (2026-02-05)
 
 ---
 
 ## Session Continuity
 
 **Last session:** 2026-02-05
-**Stopped at:** Completed 07-02-PLAN.md
+**Stopped at:** Completed 07-03-PLAN.md
 **Resume file:** None
-**Next:** 07-03 (Portal UI) - Frontend components for customer portal
+**Next:** Phase 08 (Admin Portal) - Admin tools for quote generation, document upload, order management
 
 ---
 
@@ -98,6 +98,11 @@
 | Email delivery | Convex scheduler (non-blocking) | Status updates succeed even if email fails | 2026-02-05 |
 | Post-install timing | 7 days after delivered | Gives customer time to install and evaluate | 2026-02-05 |
 | QR labels link to | Panel info + assembly context + video placeholder | Maximum helpfulness | 2026-02-03 |
+| Timeline pattern | Vertical stepper (not horizontal) | Better for mobile, fits portal context | 2026-02-05 |
+| Portal sections | Collapsible Documents + Photos | Reduces scroll, keeps timeline prominent | 2026-02-05 |
+| Document access | Download-only (no preview) | Simpler, browser handles download | 2026-02-05 |
+| Photo display | Lightbox with framer-motion | Standard gallery pattern, good touch UX | 2026-02-05 |
+| Referral placement | Orders tab (not portal detail) | More visible, users check Orders tab frequently | 2026-02-05 |
 
 ### Production Decisions
 
