@@ -29,10 +29,19 @@ export const getCurrentUser = query({
       return null;
     }
 
+    // Try multiple sources for email (Convex Auth stores it differently depending on provider)
+    const email = identity.email ||
+                  (identity.subject?.includes("@") ? identity.subject : null) ||
+                  identity.tokenIdentifier?.split("|")[1];
+
+    if (!email) {
+      return null;
+    }
+
     // Try to find existing user by email
     const user = await ctx.db
       .query("users")
-      .withIndex("by_email", (q) => q.eq("email", identity.email || ""))
+      .withIndex("by_email", (q) => q.eq("email", email))
       .first();
 
     return user;
@@ -50,8 +59,14 @@ export const getOrCreateUser = mutation({
       throw new Error("Not authenticated");
     }
 
-    const email = identity.email;
+    // Try multiple sources for email (Convex Auth stores it differently depending on provider)
+    // For Password provider, email is often in the subject field
+    const email = identity.email ||
+                  (identity.subject?.includes("@") ? identity.subject : null) ||
+                  identity.tokenIdentifier?.split("|")[1]; // Format: "provider|email"
+
     if (!email) {
+      console.error("Identity fields:", Object.keys(identity), "subject:", identity.subject);
       throw new Error("No email in authentication identity");
     }
 

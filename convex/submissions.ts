@@ -7,6 +7,7 @@ import { v } from "convex/values";
 export const create = mutation({
   args: {
     designId: v.id("designs"),
+    userId: v.optional(v.id("users")), // Link to user account
     name: v.string(),
     email: v.string(),
     phone: v.optional(v.string()),
@@ -24,6 +25,7 @@ export const create = mutation({
     // Create submission
     const submissionId = await ctx.db.insert("submissions", {
       designId: args.designId,
+      userId: args.userId,
       name: args.name,
       email: args.email,
       phone: args.phone,
@@ -155,6 +157,33 @@ export const listByEmail = query({
     const submissions = await ctx.db
       .query("submissions")
       .withIndex("by_email", (q) => q.eq("email", email))
+      .order("desc")
+      .collect();
+
+    // Enrich with design data
+    const enriched = await Promise.all(
+      submissions.map(async (submission) => {
+        const design = await ctx.db.get(submission.designId);
+        return {
+          ...submission,
+          design,
+        };
+      })
+    );
+
+    return enriched;
+  },
+});
+
+/**
+ * List submissions by userId (customer view - preferred method)
+ */
+export const listByUserId = query({
+  args: { userId: v.id("users") },
+  handler: async (ctx, { userId }) => {
+    const submissions = await ctx.db
+      .query("submissions")
+      .withIndex("by_userId", (q) => q.eq("userId", userId))
       .order("desc")
       .collect();
 

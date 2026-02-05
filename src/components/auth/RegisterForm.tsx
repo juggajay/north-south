@@ -11,6 +11,7 @@ interface RegisterFormProps {
 
 export function RegisterForm({ onSwitchToLogin }: RegisterFormProps) {
   const { signIn } = useAuthActions();
+  const [name, setName] = useState("");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
@@ -22,6 +23,11 @@ export function RegisterForm({ onSwitchToLogin }: RegisterFormProps) {
     setError("");
 
     // Client-side validation
+    if (!name.trim()) {
+      setError("Please enter your name");
+      return;
+    }
+
     if (password.length < 8) {
       setError("Password must be at least 8 characters long");
       return;
@@ -38,6 +44,7 @@ export function RegisterForm({ onSwitchToLogin }: RegisterFormProps) {
       await signIn("password", {
         email,
         password,
+        name, // Pass name to auth provider
         flow: "signUp",
       });
     } catch (err) {
@@ -54,6 +61,17 @@ export function RegisterForm({ onSwitchToLogin }: RegisterFormProps) {
   return (
     <form onSubmit={handleSubmit} className="space-y-4 w-full">
       <div className="space-y-3">
+        <Input
+          type="text"
+          label="Name"
+          value={name}
+          onChange={(e) => setName(e.target.value)}
+          placeholder="Your name"
+          required
+          autoComplete="name"
+          disabled={loading}
+        />
+
         <Input
           type="email"
           label="Email"

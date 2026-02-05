@@ -17,6 +17,7 @@ import type * as doorProfiles from "../doorProfiles.js";
 import type * as http from "../http.js";
 import type * as products_hardware from "../products/hardware.js";
 import type * as products_materials from "../products/materials.js";
+import type * as products_modules from "../products/modules.js";
 import type * as seed from "../seed.js";
 import type * as submissions from "../submissions.js";
 import type * as users from "../users.js";
@@ -37,6 +38,7 @@ declare const fullApi: ApiFromModules<{
   http: typeof http;
   "products/hardware": typeof products_hardware;
   "products/materials": typeof products_materials;
+  "products/modules": typeof products_modules;
   seed: typeof seed;
   submissions: typeof submissions;
   users: typeof users;

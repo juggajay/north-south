@@ -50,6 +50,7 @@ export default defineSchema({
   // ===================
   submissions: defineTable({
     designId: v.id("designs"),
+    userId: v.optional(v.id("users")), // Link to user account (optional for backwards compat)
     name: v.string(),
     email: v.string(),
     phone: v.optional(v.string()),
@@ -62,7 +63,8 @@ export default defineSchema({
   })
     .index("by_designId", ["designId"])
     .index("by_status", ["status"])
-    .index("by_email", ["email"]),
+    .index("by_email", ["email"])
+    .index("by_userId", ["userId"]),
 
   // ===================
   // ORDERS

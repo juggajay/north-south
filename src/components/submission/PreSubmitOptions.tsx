@@ -16,14 +16,10 @@ import { FormField, FormItem, FormLabel, FormControl, FormDescription } from "@/
 import { Switch } from "@/components/ui/switch";
 import { Textarea } from "@/components/ui/textarea";
 
-export interface SubmissionFormData {
-  siteMeasure: boolean;
-  installQuote: boolean;
-  notes?: string;
-}
-
+// Generic props - works with any form that has siteMeasure, installQuote, notes fields
 interface PreSubmitOptionsProps {
-  form: UseFormReturn<SubmissionFormData>;
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  form: UseFormReturn<any>;
 }
 
 export function PreSubmitOptions({ form }: PreSubmitOptionsProps) {
