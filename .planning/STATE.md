@@ -3,26 +3,26 @@
 ## Current Position
 
 **Milestone:** 1 (MVP Launch)
-**Phase:** 08 (Production Integration & Admin) - READY TO PLAN
-**Plan:** Not started
-**Status:** Phase 07 complete, ready for admin dashboard
+**Phase:** 08 (Production Integration & Admin) - IN PROGRESS
+**Plan:** 02 of 4 complete
+**Status:** CSV export and QR label utilities complete
 **Last Updated:** 2026-02-05
 
-**Progress:** 87.5% (7/8 phases complete)
+**Progress:** 87.5% (7/8 phases complete, 08-02 of 08-04 done)
 ```
 ███████████████████████████░░░ 87.5%
 ```
 
-**Latest Completion:** 07 - Customer Portal & Notifications (2026-02-05)
+**Latest Completion:** 08-02 - CSV Export & QR Label Generation (2026-02-05)
 
 ---
 
 ## Session Continuity
 
-**Last session:** 2026-02-05
-**Stopped at:** Completed Phase 07 (all 5 plans)
+**Last session:** 2026-02-05 18:03 UTC
+**Stopped at:** Completed 08-02-PLAN.md
 **Resume file:** None
-**Next:** Phase 08 - Production Integration & Admin (planning needed)
+**Next:** 08-03 - Production Spec Generation
 
 ---
 
@@ -110,6 +110,11 @@
 |----------|--------|-----------|------|
 | Export formats | PDF + CSV (MVP), JSON (v2) | Human-readable + spreadsheet now, automation later | 2026-02-03 |
 | Production spec contents | All sections | Header, cabinet, panel, edge, drilling, hardware, assembly, QR | 2026-02-03 |
+| CSV library | react-papaparse | Handles edge cases (commas, quotes, newlines) automatically | 2026-02-05 |
+| QR library | qrcode.react | Better error correction options than alternatives | 2026-02-05 |
+| QR error correction | Level M (15%) | Minimum for production labels, handles wear/damage | 2026-02-05 |
+| QR code size | 96px default | ~25mm at print resolution, scannable from 30cm | 2026-02-05 |
+| Label print layout | 4 columns on A4 | Optimal for standard paper, ~40-50 labels per page | 2026-02-05 |
 
 ### Implementation Decisions (Phase 01)
 
@@ -706,6 +711,21 @@
 - Material color mapping algorithm (oak→amber, white→zinc, black→slate)
 - Fixed blocking TypeScript and static export issues from previous plans
 - **Summary:** `.planning/phases/07-customer-portal-notifications/07-04-SUMMARY.md`
+
+---
+
+## Phase 08 Deliverables
+
+**Plan 02 - CSV Export & QR Label Generation (Completed 2026-02-05):**
+- react-papaparse v4.4.0 for CSV generation with automatic character escaping
+- qrcode.react v4.2.0 for QR code generation with error correction
+- downloadPanelCSV function for panel schedule exports
+- downloadHardwareCSV function for hardware BOM with automatic totals row
+- QRLabelSheet component with 4-column A4 print layout
+- QR codes with error correction level M (15% damage tolerance)
+- Print optimization with @page CSS and color-adjust exact
+- PanelItem, HardwareItem, PanelLabel TypeScript interfaces
+- **Summary:** `.planning/phases/08-production-integration---admin/08-02-SUMMARY.md`
 
 ---
 
