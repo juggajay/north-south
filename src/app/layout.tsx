@@ -3,6 +3,7 @@ import { Inter } from "next/font/google";
 import "./globals.css";
 import { ConvexClientProvider } from "@/lib/convex";
 import { QueryProvider } from "@/lib/query-client";
+import { ProductCatalogProvider } from "@/contexts/ProductCatalogContext";
 
 const inter = Inter({
   variable: "--font-inter",
@@ -41,7 +42,9 @@ export default function RootLayout({
     <html lang="en">
       <body className={`${inter.variable} font-sans antialiased`}>
         <ConvexClientProvider>
-          <QueryProvider>{children}</QueryProvider>
+          <QueryProvider>
+            <ProductCatalogProvider>{children}</ProductCatalogProvider>
+          </QueryProvider>
         </ConvexClientProvider>
       </body>
     </html>
