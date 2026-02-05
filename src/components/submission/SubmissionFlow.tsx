@@ -81,22 +81,34 @@ export function SubmissionFlow({ designId, onCancel }: SubmissionFlowProps) {
     },
   });
 
-  // Populate form fields when user data arrives (only if fields are still empty)
+  // Ensure user record exists, then populate form
   useEffect(() => {
-    if (user?.name && !form.getValues("name")) {
-      form.setValue("name", user.name);
-    }
-    if (user?.email && !form.getValues("email")) {
-      form.setValue("email", user.email);
-    }
-  }, [user, form]);
+    if (isLoading) return;
 
-  // Mark initialized once auth loading settles
-  useEffect(() => {
-    if (!isLoading) {
+    const ensureUser = async () => {
+      let userData = user;
+
+      // User is authenticated but has no users table record yet — create one
+      if (!userData) {
+        try {
+          userData = await getOrCreateUser();
+        } catch (error) {
+          console.error("Could not get/create user:", error);
+        }
+      }
+
+      if (userData?.name && !form.getValues("name")) {
+        form.setValue("name", userData.name);
+      }
+      if (userData?.email && !form.getValues("email")) {
+        form.setValue("email", userData.email);
+      }
+
       setIsInitialized(true);
-    }
-  }, [isLoading]);
+    };
+
+    ensureUser();
+  }, [user, isLoading, getOrCreateUser, form]);
 
   // Watch form values for review display
   const formValues = form.watch();
