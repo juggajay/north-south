@@ -82,6 +82,8 @@ export function PhotoUploader({ orderId }: PhotoUploaderProps) {
         storageId,
         milestone: selectedMilestone,
         caption: `${selectedMilestone} photo - ${new Date().toLocaleDateString()}`,
+        contentType: file.type,
+        fileSize: file.size,
       });
 
       toast.success("Photo uploaded successfully");
