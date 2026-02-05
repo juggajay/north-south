@@ -7,6 +7,7 @@ import type { Id } from "../../../convex/_generated/dataModel";
 import { Button } from "@/components/ui/button";
 import { toast } from "sonner";
 import { Camera, Loader2, Check, X } from "lucide-react";
+import { logger } from "@/lib/logger";
 
 const MILESTONES = [
   { value: "production", label: "Production" },
@@ -91,7 +92,10 @@ export function PhotoUploader({ orderId }: PhotoUploaderProps) {
         fileInputRef.current.value = "";
       }
     } catch (error) {
-      console.error("Upload error:", error);
+      logger.error("Photo upload failed", error instanceof Error ? error : undefined, {
+        orderId: orderId.toString(),
+        milestone: selectedMilestone,
+      });
       toast.error("Failed to upload photo");
     } finally {
       setUploading(false);
