@@ -117,11 +117,30 @@ export function SubmissionFlow({ designId, onCancel }: SubmissionFlowProps) {
   // HANDLERS
   // ============================================================================
 
-  const handleNext = () => {
+  const handleNext = async () => {
     if (step === "options") {
-      // Validate name and email before proceeding
-      const name = form.getValues("name");
-      const email = form.getValues("email");
+      let name = form.getValues("name");
+      let email = form.getValues("email");
+
+      // If form fields are empty, try to fill from user data
+      if (!name || !email) {
+        let userData = user;
+        if (!userData) {
+          try {
+            userData = await getOrCreateUser();
+          } catch (e) {
+            // fall through to validation
+          }
+        }
+        if (userData?.name && !name) {
+          name = userData.name;
+          form.setValue("name", name);
+        }
+        if (userData?.email && !email) {
+          email = userData.email;
+          form.setValue("email", email);
+        }
+      }
 
       if (!name || name.trim() === "") {
         toast.error("Please enter your name");
