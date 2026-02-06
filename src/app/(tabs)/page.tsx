@@ -8,6 +8,8 @@ import { CameraCapture } from "@/components/camera/CameraCapture";
 import { ProcessingScreen } from "@/components/processing/ProcessingScreen";
 import { RenderCarousel } from "@/components/renders/RenderCarousel";
 import { useProcessPhoto } from "@/lib/hooks/useProcessPhoto";
+import { useAuth } from "@/hooks/useAuth";
+import { LandingPage } from "@/components/landing/LandingPage";
 import type { Render } from "@/types/ai-pipeline";
 
 /**
@@ -17,17 +19,29 @@ type ViewState = "camera" | "processing" | "renders";
 
 export default function HomePage() {
   const router = useRouter();
+  const { isLoggedIn, isLoading } = useAuth();
+
+  // All hooks must be called before any early return (Rules of Hooks)
   const [cameraOpen, setCameraOpen] = useState(false);
   const [view, setView] = useState<ViewState>("camera");
   const [capturedImageUrl, setCapturedImageUrl] = useState<string | null>(null);
   const fileInputRef = useRef<HTMLInputElement>(null);
-
-  // Pipeline orchestration hook
   const pipeline = useProcessPhoto();
 
-  /**
-   * Handle desktop file upload
-   */
+  // Show landing page for unauthenticated users
+  if (!isLoading && !isLoggedIn) {
+    return (
+      <LandingPage
+        onGetStarted={() => router.push("/login")}
+        onTryDemo={() => {
+          // TODO: Start demo mode session
+          router.push("/login");
+        }}
+      />
+    );
+  }
+
+  // Handle desktop file upload
   const handleFileUpload = (event: React.ChangeEvent<HTMLInputElement>) => {
     const file = event.target.files?.[0];
     if (file) {

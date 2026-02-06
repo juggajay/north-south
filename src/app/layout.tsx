@@ -1,5 +1,5 @@
 import type { Metadata, Viewport } from "next";
-import { Inter } from "next/font/google";
+import { Inter, Cardo } from "next/font/google";
 import { Toaster } from "sonner";
 import "./globals.css";
 import { ConvexClientProvider } from "@/lib/convex";
@@ -8,6 +8,12 @@ import { ProductCatalogProvider } from "@/contexts/ProductCatalogContext";
 
 const inter = Inter({
   variable: "--font-inter",
+  subsets: ["latin"],
+});
+
+const cardo = Cardo({
+  variable: "--font-display",
+  weight: "400",
   subsets: ["latin"],
 });
 
@@ -41,7 +47,7 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en">
-      <body className={`${inter.variable} font-sans antialiased`}>
+      <body className={`${inter.variable} ${cardo.variable} font-sans antialiased`}>
         <ConvexClientProvider>
           <QueryProvider>
             <ProductCatalogProvider>{children}</ProductCatalogProvider>

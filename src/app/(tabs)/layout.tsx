@@ -1,17 +1,21 @@
 "use client";
 
-import { Authenticated } from "convex/react";
+import { Authenticated, useConvexAuth } from "convex/react";
 import { BottomNav } from "@/components/navigation/BottomNav";
 import { LogoutButton } from "@/components/auth/LogoutButton";
 import { FullscreenProvider, useFullscreen } from "@/contexts/FullscreenContext";
 
 function TabsLayoutContent({ children }: { children: React.ReactNode }) {
   const { isFullscreen } = useFullscreen();
+  const { isAuthenticated } = useConvexAuth();
+
+  // Landing page provides its own chrome — hide tabs layout header/nav
+  const showChrome = isAuthenticated && !isFullscreen;
 
   return (
     <div className="min-h-screen bg-zinc-50 dark:bg-zinc-950">
       {/* Header with logout button for authenticated users */}
-      {!isFullscreen && (
+      {showChrome && (
         <Authenticated>
           <header className="fixed top-0 left-0 right-0 z-40 bg-white/80 dark:bg-zinc-900/80 backdrop-blur-sm border-b border-zinc-200 dark:border-zinc-800 safe-area-inset-top">
             <div className="flex items-center justify-between px-4 h-14">
@@ -25,10 +29,10 @@ function TabsLayoutContent({ children }: { children: React.ReactNode }) {
       )}
 
       {/* Main content area with padding for header and bottom nav */}
-      <main className={isFullscreen ? "" : "pt-14 pb-20"}>{children}</main>
+      <main className={showChrome ? "pt-14 pb-20" : ""}>{children}</main>
 
-      {/* Bottom navigation - hidden in fullscreen mode */}
-      {!isFullscreen && <BottomNav />}
+      {/* Bottom navigation - hidden for unauthenticated and fullscreen */}
+      {showChrome && <BottomNav />}
     </div>
   );
 }

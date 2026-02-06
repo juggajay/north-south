@@ -268,6 +268,89 @@ export default defineSchema({
     .index("by_category", ["category"]),
 
   // ===================
+  // DESIGN SESSIONS (AI-guided flow state)
+  // ===================
+  designSessions: defineTable({
+    userId: v.id("users"),
+    designId: v.optional(v.id("designs")),  // Created once AI generates layout
+
+    // Flow state
+    currentStep: v.string(),  // "intro" | "photo" | "walls" | "discovery" | "processing" | "presentation" | "fine-tuning" | "review" | "submission"
+    completedSteps: v.array(v.string()),
+    lastActiveAt: v.number(),
+
+    // Photo & space data
+    photoStorageId: v.optional(v.string()),  // Convex storage ID
+    photoAnalysis: v.optional(v.string()),   // AI analysis summary
+    walls: v.optional(v.array(v.object({
+      label: v.string(),
+      lengthMm: v.number(),
+      selected: v.boolean(),
+    }))),
+    roomShape: v.optional(v.string()),  // "straight" | "l-shape" | "u-shape"
+
+    // Discovery responses (extracted from conversation)
+    userContext: v.optional(v.object({
+      purpose: v.optional(v.string()),                    // "kitchen" | "laundry" | "pantry" | "other"
+      styleSignals: v.optional(v.array(v.string())),      // ["light", "warm", "coastal"]
+      stylePresetId: v.optional(v.string()),              // Matched preset ID
+      budgetRange: v.optional(v.string()),                // "under-8k" | "8-15k" | "15-25k" | "not-sure"
+      priorities: v.optional(v.array(v.string())),        // ["storage", "clean-look", ...]
+      specificRequests: v.optional(v.array(v.string())),  // ["wine rack", "dog bowl space"]
+      concerns: v.optional(v.array(v.string())),          // ["budget", "corner space"]
+    })),
+
+    // Generated design data
+    layoutConfig: v.optional(v.any()),     // Serialized CabinetConfig
+    layoutDescription: v.optional(v.string()),  // AI description of the layout
+    renderStorageIds: v.optional(v.array(v.string())),  // Generated render images
+    priceEstimate: v.optional(v.object({
+      lowCents: v.number(),
+      estimateCents: v.number(),
+      highCents: v.number(),
+      breakdown: v.optional(v.any()),  // Category breakdown
+    })),
+
+    // Demo mode flag
+    isDemo: v.optional(v.boolean()),
+
+    createdAt: v.number(),
+  })
+    .index("by_userId", ["userId"])
+    .index("by_userId_lastActive", ["userId", "lastActiveAt"]),
+
+  // ===================
+  // DESIGN SESSION MESSAGES (AI companion conversation)
+  // ===================
+  designSessionMessages: defineTable({
+    sessionId: v.id("designSessions"),
+    role: v.string(),      // "user" | "assistant" | "system"
+    content: v.string(),
+    step: v.string(),      // Which screen this message was on
+    createdAt: v.number(),
+  })
+    .index("by_sessionId", ["sessionId"])
+    .index("by_sessionId_createdAt", ["sessionId", "createdAt"]),
+
+  // ===================
+  // GENERATION JOBS (background AI processing)
+  // ===================
+  generationJobs: defineTable({
+    sessionId: v.id("designSessions"),
+    type: v.string(),      // "photo_analysis" | "wall_detection" | "layout_generation" | "render_generation"
+    status: v.string(),    // "queued" | "processing" | "completed" | "failed"
+    progress: v.optional(v.number()),  // 0-100
+    result: v.optional(v.any()),       // Job-specific result data
+    error: v.optional(v.string()),
+    startedAt: v.optional(v.number()),
+    completedAt: v.optional(v.number()),
+    createdAt: v.number(),
+  })
+    .index("by_sessionId", ["sessionId"])
+    .index("by_status", ["status"])
+    .index("by_sessionId_type", ["sessionId", "type"]),
+
+  // ===================
   // QR CODES / PANEL TRACKING
   // ===================
   panelQrCodes: defineTable({
