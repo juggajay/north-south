@@ -1,13 +1,7 @@
 /**
  * MaterialPicker component
- * Phase 04-07: Finish Selection & Review
- * Phase 05-03: Pricing integration
- *
- * Features:
- * - Tabbed interface for material/hardware/door profile
- * - Swatch grid for materials with category grouping
- * - Real-time store updates with visual selection
- * - Price display on all options (materials, hardware, door profiles)
+ * Tabbed interface for material/hardware/door profile selection
+ * with swatch grid, skeleton loading, and error states.
  */
 
 import { useState } from 'react'
@@ -17,92 +11,106 @@ import { api } from '../../../convex/_generated/api'
 import { cn } from '@/lib/utils'
 import { motion, AnimatePresence } from 'framer-motion'
 import { usePricing } from '@/hooks/usePricing'
+import { Check } from 'lucide-react'
+import { Skeleton } from '@/components/ui/skeleton'
+import { Tabs, TabsList, TabsTrigger, TabsContent } from '@/components/ui/tabs'
 
 type FinishCategory = 'material' | 'hardware' | 'doorProfile'
 
-const CATEGORIES: { id: FinishCategory; label: string }[] = [
-  { id: 'material', label: 'Material' },
-  { id: 'hardware', label: 'Hardware' },
-  { id: 'doorProfile', label: 'Door Profile' },
-]
-
 export function MaterialPicker() {
-  const [activeCategory, setActiveCategory] = useState<FinishCategory>('material')
   const finishes = useCabinetStore((state) => state.config.finishes)
   const setFinish = useCabinetStore((state) => state.setFinish)
 
   // Fetch materials from Convex
-  const materials = useQuery(api.products.materials.list) || []
-  const hardware = useQuery(api.products.hardware.list) || []
-  const doorProfiles = useQuery(api.doorProfiles.list) || []
-
-  const handleMaterialSelect = (code: string) => {
-    setFinish('material', code)
-  }
-
-  const handleHardwareSelect = (code: string) => {
-    setFinish('hardware', code)
-  }
-
-  const handleProfileSelect = (code: string) => {
-    setFinish('doorProfile', code)
-  }
+  const materials = useQuery(api.products.materials.list)
+  const hardware = useQuery(api.products.hardware.list)
+  const doorProfiles = useQuery(api.doorProfiles.list)
 
   return (
-    <div className="space-y-4">
-      {/* Category tabs */}
-      <div className="flex border-b">
-        {CATEGORIES.map((cat) => (
-          <button
-            key={cat.id}
-            onClick={() => setActiveCategory(cat.id)}
-            className={cn(
-              "flex-1 py-3 text-sm font-medium border-b-2 -mb-px transition-colors",
-              activeCategory === cat.id
-                ? "border-zinc-900 text-zinc-900"
-                : "border-transparent text-zinc-500 hover:text-zinc-700"
-            )}
-          >
-            {cat.label}
-          </button>
-        ))}
-      </div>
+    <Tabs defaultValue="material" className="w-full">
+      <TabsList className="w-full">
+        <TabsTrigger value="material">Material</TabsTrigger>
+        <TabsTrigger value="hardware">Hardware</TabsTrigger>
+        <TabsTrigger value="doorProfile">Door Profile</TabsTrigger>
+      </TabsList>
 
-      {/* Content area with swipe animation */}
-      <AnimatePresence mode="wait">
-        <motion.div
-          key={activeCategory}
-          initial={{ opacity: 0, x: 20 }}
-          animate={{ opacity: 1, x: 0 }}
-          exit={{ opacity: 0, x: -20 }}
-          transition={{ duration: 0.2 }}
-          className="min-h-[300px]"
-        >
-          {activeCategory === 'material' && (
-            <MaterialSwatches
-              materials={materials}
-              selected={finishes.material}
-              onSelect={handleMaterialSelect}
-            />
-          )}
+      <TabsContent value="material" className="mt-4">
+        {materials === undefined ? (
+          <SwatchSkeleton />
+        ) : materials === null || materials.length === 0 ? (
+          <EmptyState category="materials" onRetry={() => {}} />
+        ) : (
+          <MaterialSwatches
+            materials={materials}
+            selected={finishes.material}
+            onSelect={(code) => setFinish('material', code)}
+          />
+        )}
+      </TabsContent>
 
-          {activeCategory === 'hardware' && (
-            <HardwareOptions
-              hardware={hardware}
-              selected={finishes.hardware}
-              onSelect={handleHardwareSelect}
-            />
-          )}
+      <TabsContent value="hardware" className="mt-4">
+        {hardware === undefined ? (
+          <SwatchSkeleton />
+        ) : hardware === null || hardware.length === 0 ? (
+          <EmptyState category="hardware" onRetry={() => {}} />
+        ) : (
+          <HardwareOptions
+            hardware={hardware}
+            selected={finishes.hardware}
+            onSelect={(code) => setFinish('hardware', code)}
+          />
+        )}
+      </TabsContent>
 
-          {activeCategory === 'doorProfile' && (
-            <DoorProfiles
-              profiles={doorProfiles}
-              selected={finishes.doorProfile}
-              onSelect={handleProfileSelect}
-            />
-          )}
-        </motion.div>
-      </AnimatePresence>
+      <TabsContent value="doorProfile" className="mt-4">
+        {doorProfiles === undefined ? (
+          <SwatchSkeleton />
+        ) : doorProfiles === null || doorProfiles.length === 0 ? (
+          <EmptyState category="door profiles" onRetry={() => {}} />
+        ) : (
+          <DoorProfiles
+            profiles={doorProfiles}
+            selected={finishes.doorProfile}
+            onSelect={(code) => setFinish('doorProfile', code)}
+          />
+        )}
+      </TabsContent>
+    </Tabs>
+  )
+}
+
+// ============================================================================
+// SKELETON LOADING STATE
+// ============================================================================
+
+function SwatchSkeleton() {
+  return (
+    <div className="grid grid-cols-3 gap-3">
+      {Array.from({ length: 9 }).map((_, i) => (
+        <div key={i} className="space-y-2">
+          <Skeleton className="aspect-square rounded-lg" />
+          <Skeleton className="h-3 w-16 mx-auto" />
+        </div>
+      ))}
+    </div>
+  )
+}
+
+// ============================================================================
+// ERROR / EMPTY STATE
+// ============================================================================
+
+function EmptyState({ category, onRetry }: { category: string; onRetry: () => void }) {
+  return (
+    <div className="text-center py-8 text-zinc-500">
+      <p className="text-sm">Couldn&apos;t load {category}.</p>
+      <button
+        type="button"
+        onClick={onRetry}
+        className="text-sm text-zinc-900 underline mt-2 hover:text-zinc-700"
+      >
+        Try again
+      </button>
     </div>
   )
 }
@@ -131,15 +139,6 @@ function MaterialSwatches({ materials, selected, onSelect }: MaterialSwatchesPro
   const categoryOrder = ['woodmatt', 'satin', 'gloss', 'other']
   const sortedCategories = categoryOrder.filter(cat => grouped[cat])
 
-  if (materials.length === 0) {
-    return (
-      <div className="text-center py-8 text-zinc-500">
-        <p className="text-sm">No materials available</p>
-        <p className="text-xs mt-1">Seed data may not be loaded</p>
-      </div>
-    )
-  }
-
   return (
     <div className="space-y-6">
       {sortedCategories.map((category) => (
@@ -147,13 +146,13 @@ function MaterialSwatches({ materials, selected, onSelect }: MaterialSwatchesPro
           <h4 className="text-sm font-medium text-zinc-700 mb-3 capitalize">
             {category.replace('woodmatt', 'Wood Matt')}
           </h4>
-          <div className="grid grid-cols-4 gap-3">
+          <div className="grid grid-cols-3 md:grid-cols-4 gap-3">
             {grouped[category].map((mat: any) => (
               <div key={mat.code} className="flex flex-col">
                 <button
                   onClick={() => onSelect(mat.code)}
                   className={cn(
-                    "aspect-square rounded-lg border-2 overflow-hidden transition-all",
+                    "relative aspect-square rounded-lg border-2 overflow-hidden transition-all",
                     selected === mat.code
                       ? "border-zinc-900 ring-2 ring-zinc-900 ring-offset-2"
                       : "border-zinc-200 hover:border-zinc-400"
@@ -171,6 +170,12 @@ function MaterialSwatches({ materials, selected, onSelect }: MaterialSwatchesPro
                       className="w-full h-full"
                       style={{ backgroundColor: mat.colorHex || '#d4d4d4' }}
                     />
+                  )}
+                  {/* Check overlay on selected */}
+                  {selected === mat.code && (
+                    <div className="absolute inset-0 bg-black/20 flex items-center justify-center">
+                      <Check className="w-6 h-6 text-white drop-shadow-md" />
+                    </div>
                   )}
                 </button>
                 <p className="text-xs text-zinc-600 mt-1 text-center font-medium">
@@ -198,15 +203,6 @@ interface HardwareOptionsProps {
 function HardwareOptions({ hardware, selected, onSelect }: HardwareOptionsProps) {
   const { formatPrice } = usePricing()
 
-  if (hardware.length === 0) {
-    return (
-      <div className="text-center py-8 text-zinc-500">
-        <p className="text-sm">No hardware options available</p>
-        <p className="text-xs mt-1">Seed data may not be loaded</p>
-      </div>
-    )
-  }
-
   return (
     <div className="space-y-2">
       {hardware.map((item: any) => (
@@ -231,7 +227,7 @@ function HardwareOptions({ hardware, selected, onSelect }: HardwareOptionsProps)
             <div className="text-right">
               <p className="font-semibold text-zinc-900">{formatPrice(item.pricePerUnit)}</p>
               {item.priceVariance && (
-                <p className="text-xs text-zinc-500">±{item.priceVariance}%</p>
+                <p className="text-xs text-zinc-500">&plusmn;{item.priceVariance}%</p>
               )}
             </div>
           </div>
@@ -253,15 +249,6 @@ interface DoorProfilesProps {
 
 function DoorProfiles({ profiles, selected, onSelect }: DoorProfilesProps) {
   const { formatPrice } = usePricing()
-
-  if (profiles.length === 0) {
-    return (
-      <div className="text-center py-8 text-zinc-500">
-        <p className="text-sm">No door profiles available</p>
-        <p className="text-xs mt-1">Seed data may not be loaded</p>
-      </div>
-    )
-  }
 
   return (
     <div className="grid grid-cols-2 gap-3">

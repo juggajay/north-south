@@ -1,15 +1,9 @@
 /**
  * SubmissionFlow component
- * Phase 06-02: Customer-facing submission flow
+ * Full-screen multi-step submission flow
  *
- * Features:
- * - Orchestrates multi-step submission flow (options -> review -> confirmation)
- * - Auto-populates name/email from logged-in account when available
- * - Falls back to manual entry if user data unavailable
- * - Uses React Hook Form + Zod for form validation
- * - Calls Convex submissions.create mutation
- * - Shows toast notifications on success/error
- * - State machine: "options" -> "review" -> "confirmation"
+ * Renders at ConfiguratorPage level (replaces WizardShell when active).
+ * State machine: "options" -> "review" -> "confirmation"
  */
 
 "use client";
@@ -25,15 +19,16 @@ import { useAuth } from "@/hooks/useAuth";
 import { toast } from "sonner";
 import { Form, FormField, FormItem, FormLabel, FormControl } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
+import { Button } from "@/components/ui/button";
 import { PreSubmitOptions } from "./PreSubmitOptions";
 import { ReviewSummary } from "./ReviewSummary";
 import { ConfirmationScreen } from "./ConfirmationScreen";
+import { ChevronLeft } from "lucide-react";
 
 // ============================================================================
 // ZOD SCHEMA & TYPES
 // ============================================================================
 
-// Schema includes name/email as fallback if auto-population fails
 const submissionSchema = z.object({
   name: z.string().min(1, "Name is required"),
   email: z.string().email("Valid email is required"),
@@ -49,7 +44,7 @@ export type SubmissionFormData = z.infer<typeof submissionSchema>;
 // ============================================================================
 
 interface SubmissionFlowProps {
-  designId: Id<"designs">; // REQUIRED - passed from existing auto-saved design
+  designId: Id<"designs">;
   onCancel: () => void;
 }
 
@@ -58,18 +53,13 @@ interface SubmissionFlowProps {
 // ============================================================================
 
 export function SubmissionFlow({ designId, onCancel }: SubmissionFlowProps) {
-  // State machine: "options" -> "review" -> "confirmation"
   const [step, setStep] = useState<"options" | "review" | "confirmation">("options");
   const [submissionId, setSubmissionId] = useState<string | null>(null);
   const [isInitialized, setIsInitialized] = useState(false);
 
-  // Get user from auth
   const { user, getOrCreateUser, isLoading } = useAuth();
-
-  // Convex mutation
   const createSubmission = useMutation(api.submissions.create);
 
-  // Form setup - will be populated once we have user data
   const form = useForm<SubmissionFormData>({
     resolver: zodResolver(submissionSchema),
     defaultValues: {
@@ -87,8 +77,6 @@ export function SubmissionFlow({ designId, onCancel }: SubmissionFlowProps) {
 
     const ensureUser = async () => {
       let userData = user;
-
-      // User is authenticated but has no users table record yet — create one
       if (!userData) {
         try {
           userData = await getOrCreateUser();
@@ -110,7 +98,6 @@ export function SubmissionFlow({ designId, onCancel }: SubmissionFlowProps) {
     ensureUser();
   }, [user, isLoading, getOrCreateUser, form]);
 
-  // Watch form values for review display
   const formValues = form.watch();
 
   // ============================================================================
@@ -122,7 +109,6 @@ export function SubmissionFlow({ designId, onCancel }: SubmissionFlowProps) {
       let name = form.getValues("name");
       let email = form.getValues("email");
 
-      // If form fields are empty, try to fill from user data
       if (!name || !email) {
         let userData = user;
         if (!userData) {
@@ -162,17 +148,14 @@ export function SubmissionFlow({ designId, onCancel }: SubmissionFlowProps) {
   };
 
   const handleSubmit = async () => {
-    // Get form data
     const formData = form.getValues();
 
-    // Validate
     if (!formData.name || !formData.email) {
       toast.error("Name and email are required");
       return;
     }
 
     try {
-      // Get or create user to link submission to account
       let currentUser = user;
       if (!currentUser?._id) {
         try {
@@ -182,7 +165,6 @@ export function SubmissionFlow({ designId, onCancel }: SubmissionFlowProps) {
         }
       }
 
-      // Call Convex mutation
       const id = await createSubmission({
         designId,
         userId: currentUser?._id,
@@ -193,7 +175,6 @@ export function SubmissionFlow({ designId, onCancel }: SubmissionFlowProps) {
         notes: formData.notes || undefined,
       });
 
-      // Success!
       setSubmissionId(id);
       setStep("confirmation");
       toast.success("Quote request submitted successfully!");
@@ -207,33 +188,39 @@ export function SubmissionFlow({ designId, onCancel }: SubmissionFlowProps) {
   // RENDER
   // ============================================================================
 
-  // Confirmation screen
+  // Confirmation screen (page 3)
   if (step === "confirmation" && submissionId) {
     return <ConfirmationScreen submissionId={submissionId} />;
   }
 
-  // Brief loading while initializing (max 500ms due to timeout)
+  // Brief loading
   if (!isInitialized && isLoading) {
     return (
-      <div className="min-h-[600px] flex items-center justify-center">
-        <div className="text-center">
-          <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-600 mx-auto mb-4"></div>
-          <p className="text-zinc-600">Loading...</p>
-        </div>
+      <div className="flex flex-col h-screen items-center justify-center">
+        <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-zinc-900 mb-4" />
+        <p className="text-zinc-600">Loading...</p>
       </div>
     );
   }
 
   return (
-    <div className="min-h-[600px]">
+    <div className="flex flex-col h-screen bg-white">
       <Form {...form}>
-        {/* Options Step */}
+        {/* Page 1: Contact & Options */}
         {step === "options" && (
-          <div>
-            {/* Contact Info - shown if not auto-populated or editable */}
-            <div className="p-4 border-b">
-              <h2 className="text-lg font-semibold text-zinc-900 mb-4">Contact Information</h2>
-              <div className="space-y-4">
+          <>
+            {/* Header */}
+            <div className="h-14 px-4 flex items-center gap-3 border-b">
+              <button type="button" onClick={onCancel} className="w-10 h-10 flex items-center justify-center rounded-lg hover:bg-zinc-100">
+                <ChevronLeft className="w-5 h-5 text-zinc-700" />
+              </button>
+              <h1 className="text-lg font-semibold">Contact & Options</h1>
+            </div>
+
+            <div className="flex-1 overflow-y-auto">
+              {/* Contact Info */}
+              <div className="p-6 space-y-4">
+                <h2 className="text-lg font-semibold text-zinc-900">Contact Information</h2>
                 <FormField
                   control={form.control}
                   name="name"
@@ -259,40 +246,54 @@ export function SubmissionFlow({ designId, onCancel }: SubmissionFlowProps) {
                   )}
                 />
               </div>
+
+              <PreSubmitOptions form={form} />
             </div>
 
-            <PreSubmitOptions form={form} />
-
-            {/* Navigation */}
-            <div className="flex items-center justify-between px-4 py-3 bg-white border-t">
-              <button
-                type="button"
-                onClick={onCancel}
-                className="text-sm text-zinc-600 hover:text-zinc-900"
-              >
-                Cancel
-              </button>
-              <button
-                type="button"
-                onClick={handleNext}
-                className="px-6 py-2 bg-blue-600 text-white rounded-lg font-medium hover:bg-blue-700"
-              >
-                Continue to Review
-              </button>
+            {/* Bottom action */}
+            <div className="px-4 py-3 border-t">
+              <Button onClick={handleNext} variant="primary" size="md" className="w-full">
+                Continue
+              </Button>
             </div>
-          </div>
+          </>
         )}
 
-        {/* Review Step */}
+        {/* Page 2: Final Review */}
         {step === "review" && (
-          <ReviewSummary
-            siteMeasure={formValues.siteMeasure}
-            installQuote={formValues.installQuote}
-            notes={formValues.notes}
-            onBack={handleBack}
-            onSubmit={handleSubmit}
-            isSubmitting={form.formState.isSubmitting}
-          />
+          <>
+            {/* Header */}
+            <div className="h-14 px-4 flex items-center gap-3 border-b">
+              <button type="button" onClick={handleBack} className="w-10 h-10 flex items-center justify-center rounded-lg hover:bg-zinc-100">
+                <ChevronLeft className="w-5 h-5 text-zinc-700" />
+              </button>
+              <h1 className="text-lg font-semibold">Final Review</h1>
+            </div>
+
+            <div className="flex-1 overflow-y-auto">
+              <ReviewSummary
+                siteMeasure={formValues.siteMeasure}
+                installQuote={formValues.installQuote}
+                notes={formValues.notes}
+                onBack={handleBack}
+                onSubmit={handleSubmit}
+                isSubmitting={form.formState.isSubmitting}
+              />
+            </div>
+
+            {/* Bottom action */}
+            <div className="px-4 py-3 border-t">
+              <Button
+                onClick={handleSubmit}
+                variant="primary"
+                size="md"
+                className="w-full"
+                loading={form.formState.isSubmitting}
+              >
+                Confirm & Submit
+              </Button>
+            </div>
+          </>
         )}
       </Form>
     </div>

@@ -1,15 +1,13 @@
 /**
  * ConfiguratorPage - Full configurator assembly
- * Phase 04-10: Final Integration
  *
  * THE entry point for configurator usage.
  * Per CONTEXT.md: "Login required to use configurator"
- * This auth check enforces that requirement.
  */
 
 'use client'
 
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useRef } from 'react'
 import { useRouter } from 'next/navigation'
 import { useMutation, useQuery } from 'convex/react'
 import { useConvexAuth } from 'convex/react'
@@ -20,9 +18,6 @@ import type { Id } from '../../../convex/_generated/dataModel'
 import { useCabinetStore } from '@/stores/useCabinetStore'
 import { useWizardStore } from '@/stores/useWizardStore'
 
-// Get selectSlot action from wizard store
-const selectSlot = useWizardStore.getState().selectSlot;
-
 // Components
 import { Canvas3D } from './Canvas3D'
 import { CabinetModel } from './CabinetModel'
@@ -31,10 +26,14 @@ import { SlotSystem } from './SlotSystem'
 import { MaterialApplicator } from './MaterialPreview'
 import { DimensionSync } from '../wizard/DimensionSync'
 import { WizardShell } from '../wizard/WizardShell'
-import { UndoRedoButtons } from '../wizard/UndoRedoButtons'
-import { SaveIndicator } from './SaveIndicator'
 import { VersionHistory } from './VersionHistory'
+import { PreviewOverlay } from './PreviewOverlay'
+import { SubmissionFlow } from '../submission/SubmissionFlow'
 import { useAutoSave } from '@/lib/hooks/useAutoSave'
+import { useFullscreen } from '@/contexts/FullscreenContext'
+
+// Get selectSlot action from wizard store
+const selectSlot = useWizardStore.getState().selectSlot;
 
 interface ConfiguratorPageProps {
   designId?: Id<"designs">
@@ -44,6 +43,22 @@ interface ConfiguratorPageProps {
 export function ConfiguratorPage({ designId, aiEstimate }: ConfiguratorPageProps) {
   const router = useRouter()
   const { isAuthenticated, isLoading } = useConvexAuth()
+
+  // Canvas container ref for PreviewOverlay
+  const canvasContainerRef = useRef<HTMLDivElement>(null)
+
+  // UI state
+  const [showPreview, setShowPreview] = useState(false)
+  const [showHistory, setShowHistory] = useState(false)
+  const [showSubmission, setShowSubmission] = useState(false)
+
+  // Fullscreen management
+  const { enterFullscreen, exitFullscreen } = useFullscreen()
+
+  useEffect(() => {
+    enterFullscreen()
+    return () => exitFullscreen()
+  }, [enterFullscreen, exitFullscreen])
 
   // Load design ID from props, or sessionStorage for persistence
   const getInitialDesignId = (): Id<"designs"> | null => {
@@ -63,14 +78,14 @@ export function ConfiguratorPage({ designId, aiEstimate }: ConfiguratorPageProps
   // Convert cabinet config to serializable format for auto-save
   const serializableConfig = {
     dimensions: cabinetConfig.dimensions,
-    slots: Array.from(cabinetConfig.slots.entries()), // Convert Map to array
+    slots: Array.from(cabinetConfig.slots.entries()),
     finishes: cabinetConfig.finishes,
   }
 
   // Auto-save
   const { isSaving, lastSaved } = useAutoSave(currentDesignId, serializableConfig)
 
-  // Create new design if needed (uses existing api.designs.create from Phase 01)
+  // Create new design if needed
   const createDesign = useMutation(api.designs.create)
 
   useEffect(() => {
@@ -85,8 +100,6 @@ export function ConfiguratorPage({ designId, aiEstimate }: ConfiguratorPageProps
           },
         })
         setCurrentDesignId(id)
-        // Store design ID in sessionStorage for persistence without dynamic routes
-        // (static export doesn't support /design/[id] routes)
         if (typeof window !== 'undefined') {
           sessionStorage.setItem('currentDesignId', id)
         }
@@ -98,7 +111,7 @@ export function ConfiguratorPage({ designId, aiEstimate }: ConfiguratorPageProps
     }
   }, [isAuthenticated, isLoading, currentDesignId, createDesign, aiEstimate])
 
-  // Load existing design (uses existing api.designs.get from Phase 01)
+  // Load existing design
   const design = useQuery(
     api.designs.get,
     currentDesignId ? { id: currentDesignId } : 'skip'
@@ -106,7 +119,6 @@ export function ConfiguratorPage({ designId, aiEstimate }: ConfiguratorPageProps
 
   useEffect(() => {
     if (design?.config) {
-      // Load design config into cabinet store
       const loadedConfig = design.config as any
 
       useCabinetStore.setState({
@@ -130,10 +142,7 @@ export function ConfiguratorPage({ designId, aiEstimate }: ConfiguratorPageProps
     }
   }, [aiEstimate, design])
 
-  // ============================================
-  // AUTH CHECK - This is THE entry point for configurator
-  // Per CONTEXT.md: "Login required to use configurator"
-  // ============================================
+  // Auth check
   if (!isAuthenticated && !isLoading) {
     return (
       <div className="flex flex-col items-center justify-center h-screen p-4">
@@ -149,7 +158,6 @@ export function ConfiguratorPage({ designId, aiEstimate }: ConfiguratorPageProps
     )
   }
 
-  // Show loading while checking auth
   if (isLoading) {
     return (
       <div className="flex items-center justify-center h-screen">
@@ -159,22 +167,40 @@ export function ConfiguratorPage({ designId, aiEstimate }: ConfiguratorPageProps
   }
 
   const handleSlotTap = (slotId: string, slotType: 'base' | 'overhead') => {
-    // Update wizard store to open module picker
     selectSlot(slotId, slotType);
+  }
+
+  const handleSubmit = () => {
+    setShowSubmission(true)
+  }
+
+  // Submission flow replaces wizard when active
+  if (showSubmission) {
+    const submitDesignId = currentDesignId || (typeof window !== 'undefined'
+      ? sessionStorage.getItem('currentDesignId') as Id<"designs"> | null
+      : null)
+
+    if (!submitDesignId) {
+      setShowSubmission(false)
+      return null
+    }
+
+    return (
+      <SubmissionFlow
+        designId={submitDesignId}
+        onCancel={() => setShowSubmission(false)}
+      />
+    )
   }
 
   return (
     <div className="flex flex-col h-screen bg-zinc-100">
-      {/* Header */}
-      <div className="flex items-center justify-between px-4 py-2 bg-white border-b">
-        <UndoRedoButtons />
-        <SaveIndicator isSaving={isSaving} lastSaved={lastSaved} />
-        {currentDesignId && <VersionHistory designId={currentDesignId} />}
-      </div>
-
-      {/* 3D Viewport - upper 60% per CFG-002 */}
-      <div className="h-[60vh] relative bg-zinc-50">
-        <Canvas3D className="absolute inset-0">
+      {/* Canvas3D - hidden off-screen, shown via PreviewOverlay */}
+      <div
+        ref={canvasContainerRef}
+        style={{ position: 'fixed', left: '-9999px', visibility: 'hidden' }}
+      >
+        <Canvas3D className="w-full h-full">
           <DimensionSync />
           <CabinetModel onSlotTap={handleSlotTap} />
           <SlotSystem onSlotTap={handleSlotTap} />
@@ -183,13 +209,32 @@ export function ConfiguratorPage({ designId, aiEstimate }: ConfiguratorPageProps
         </Canvas3D>
       </div>
 
-      {/* Wizard - lower 40% per CFG-003 */}
-      <div className="flex-1 overflow-hidden bg-white">
-        <WizardShell
-          aiEstimate={aiEstimate}
-          onSlotTap={handleSlotTap}
+      {/* Wizard - full screen */}
+      <WizardShell
+        aiEstimate={aiEstimate}
+        onSlotTap={handleSlotTap}
+        isSaving={isSaving}
+        lastSaved={lastSaved}
+        onOpenHistory={() => setShowHistory(true)}
+        onPreview={() => setShowPreview(true)}
+        onSubmit={handleSubmit}
+      />
+
+      {/* Preview overlay */}
+      <PreviewOverlay
+        isOpen={showPreview}
+        onClose={() => setShowPreview(false)}
+        canvasContainerRef={canvasContainerRef}
+      />
+
+      {/* Version history */}
+      {currentDesignId && (
+        <VersionHistory
+          designId={currentDesignId}
+          open={showHistory}
+          onOpenChange={setShowHistory}
         />
-      </div>
+      )}
     </div>
   )
 }

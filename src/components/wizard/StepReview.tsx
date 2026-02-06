@@ -1,166 +1,121 @@
 /**
  * StepReview component
- * Phase 04-07: Finish Selection & Review
- * Phase 05-03: Real pricing integration
- * Phase 06-02: Quote submission integration
- *
- * Features:
- * - Complete configuration summary (dimensions, modules, finishes)
- * - Database-driven price breakdown via PriceBreakdown component
- * - Variance disclaimer per pricing decisions
- * - Submit for Quote button that launches SubmissionFlow
- * - Uses existing auto-saved designId from sessionStorage
+ * Compact summary cards with edit links, clean price list
  */
 
 "use client";
 
-import { useState } from 'react';
 import { useCabinetStore } from '@/stores/useCabinetStore';
-import { useAuth } from '@/hooks/useAuth';
-import { PriceBreakdown } from '@/components/pricing/PriceBreakdown';
-import { SubmissionFlow } from '@/components/submission/SubmissionFlow';
-import { Button } from '@/components/ui/button';
-import { toast } from 'sonner';
-import type { Id } from '../../../convex/_generated/dataModel';
+import { useWizardStore } from '@/stores/useWizardStore';
+import { usePricing } from '@/hooks/usePricing';
+import { Pencil } from 'lucide-react';
 
 export function StepReview() {
-  const [showSubmission, setShowSubmission] = useState(false);
-  const { user } = useAuth();
-
   const dimensions = useCabinetStore((state) => state.config.dimensions);
   const slots = useCabinetStore((state) => state.config.slots);
   const finishes = useCabinetStore((state) => state.config.finishes);
+  const goToStep = useWizardStore((state) => state.goToStep);
+  const { formatted, isLoading } = usePricing();
 
-  // Count modules for summary display
-  const moduleCount = slots.size;
+  const moduleCount = Array.from(slots.values()).filter((s) => s.module).length;
 
-  // Get existing auto-saved designId from sessionStorage
-  // Design was already auto-saved in Phase 04 - DO NOT create new design
-  const getDesignId = (): Id<"designs"> | null => {
-    if (typeof window !== 'undefined') {
-      const stored = sessionStorage.getItem('currentDesignId');
-      if (stored) return stored as Id<"designs">;
-    }
-    return null;
-  };
-
-  const handleStartSubmission = () => {
-    const designId = getDesignId();
-
-    if (!designId) {
-      toast.error("No saved design found. Please save your design first.");
-      return;
-    }
-
-    setShowSubmission(true);
-  };
-
-  // If submission flow is shown, render only that
-  if (showSubmission) {
-    const designId = getDesignId();
-    if (!designId) {
-      toast.error("Design ID missing. Cannot submit.");
-      setShowSubmission(false);
-      return null;
-    }
-
-    return (
-      <SubmissionFlow
-        designId={designId}
-        onCancel={() => setShowSubmission(false)}
-      />
-    );
-  }
-
-  // Normal review content
   return (
-    <div className="p-4 space-y-6">
+    <div className="px-6 py-8 space-y-6">
       <div>
-        <h2 className="text-lg font-semibold text-zinc-900">Review Your Design</h2>
-        <p className="text-sm text-zinc-500">
-          Confirm your configuration before submitting for a quote.
+        <h2 className="text-2xl font-bold text-zinc-900">Review Your Design</h2>
+        <p className="text-sm text-zinc-500 mt-1">
+          Confirm your configuration before submitting.
         </p>
       </div>
 
-      {/* Dimensions summary */}
-      <div className="p-4 bg-zinc-50 rounded-lg">
-        <h3 className="font-medium mb-3">Dimensions</h3>
-        <div className="grid grid-cols-3 gap-4 text-sm">
-          <div>
-            <span className="text-zinc-500 block mb-1">Width</span>
-            <p className="font-semibold text-lg">{dimensions.width}mm</p>
-          </div>
-          <div>
-            <span className="text-zinc-500 block mb-1">Depth</span>
-            <p className="font-semibold text-lg">{dimensions.depth}mm</p>
-          </div>
-          <div>
-            <span className="text-zinc-500 block mb-1">Height</span>
-            <p className="font-semibold text-lg">{dimensions.height}mm</p>
-          </div>
-        </div>
-      </div>
+      {/* Dimensions card */}
+      <SummaryCard
+        label="Dimensions"
+        value={`${dimensions.width} x ${dimensions.height} x ${dimensions.depth}mm`}
+        onEdit={() => goToStep(0)}
+      />
 
-      {/* Modules summary */}
-      <div className="p-4 bg-zinc-50 rounded-lg">
-        <h3 className="font-medium mb-3">Modules ({moduleCount})</h3>
-        <div className="space-y-2">
-          {Array.from(slots.entries()).map(([slotId, config]) => {
-            // Only show slots that have modules
-            if (!config.module) return null;
+      {/* Modules card */}
+      <SummaryCard
+        label="Modules"
+        value={`${moduleCount} module${moduleCount !== 1 ? 's' : ''} configured`}
+        onEdit={() => goToStep(1)}
+      />
 
-            return (
-              <div key={slotId} className="flex justify-between items-center text-sm">
-                <span className="text-zinc-600 capitalize">
-                  {slotId.replace(/-/g, ' ')}
-                </span>
-                <span className="font-medium">{config.module.type}</span>
+      {/* Finishes card */}
+      <SummaryCard
+        label="Finishes"
+        value={finishes.material || 'Not selected'}
+        onEdit={() => goToStep(2)}
+      />
+
+      {/* Clean price list */}
+      <div className="space-y-3">
+        <h3 className="text-sm font-medium text-zinc-700">Price Estimate</h3>
+
+        {isLoading ? (
+          <div className="space-y-2 animate-pulse">
+            {[1, 2, 3, 4].map((i) => (
+              <div key={i} className="flex justify-between">
+                <div className="h-4 bg-zinc-200 rounded w-20" />
+                <div className="h-4 bg-zinc-200 rounded w-16" />
               </div>
-            );
-          })}
-          {moduleCount === 0 && (
-            <p className="text-sm text-zinc-500 italic">No modules configured</p>
-          )}
-        </div>
-      </div>
-
-      {/* Finishes summary */}
-      <div className="p-4 bg-zinc-50 rounded-lg">
-        <h3 className="font-medium mb-3">Finishes</h3>
-        <div className="space-y-2 text-sm">
-          <div className="flex justify-between">
-            <span className="text-zinc-600">Material</span>
-            <span className="font-medium">
-              {finishes.material || <span className="text-zinc-400">Not selected</span>}
-            </span>
+            ))}
           </div>
-          <div className="flex justify-between">
-            <span className="text-zinc-600">Hardware</span>
-            <span className="font-medium">
-              {finishes.hardware || <span className="text-zinc-400">Not selected</span>}
-            </span>
-          </div>
-          <div className="flex justify-between">
-            <span className="text-zinc-600">Door Profile</span>
-            <span className="font-medium">
-              {finishes.doorProfile || <span className="text-zinc-400">Not selected</span>}
-            </span>
-          </div>
-        </div>
-      </div>
+        ) : (
+          <>
+            <PriceLine label="Cabinets" value={formatted.cabinets} />
+            <PriceLine label="Material" value={formatted.material} />
+            <PriceLine label="Hardware" value={formatted.hardware} />
+            <PriceLine label="Door Profile" value={formatted.doorProfile} />
 
-      {/* Price breakdown - database-driven via PriceBreakdown component */}
-      <PriceBreakdown />
+            <div className="border-t border-zinc-200 pt-3 flex justify-between">
+              <span className="font-bold text-zinc-900">Total</span>
+              <span className="font-bold text-zinc-900">{formatted.total}</span>
+            </div>
+          </>
+        )}
 
-      {/* Submit for Quote button */}
-      <div className="flex justify-center pt-4">
-        <Button
-          onClick={handleStartSubmission}
-          className="px-8 py-6 text-lg bg-blue-600 hover:bg-blue-700"
-        >
-          Submit for Quote
-        </Button>
+        <p className="text-xs text-zinc-500">
+          Final price confirmed after site measure. Hardware &plusmn;5% variance.
+        </p>
       </div>
+    </div>
+  );
+}
+
+function SummaryCard({
+  label,
+  value,
+  onEdit,
+}: {
+  label: string;
+  value: string;
+  onEdit: () => void;
+}) {
+  return (
+    <div className="flex items-center justify-between p-4 bg-white border border-zinc-200 rounded-lg">
+      <div>
+        <p className="text-xs text-zinc-500">{label}</p>
+        <p className="text-sm font-medium text-zinc-900">{value}</p>
+      </div>
+      <button
+        type="button"
+        onClick={onEdit}
+        className="flex items-center gap-1 text-xs text-zinc-500 hover:text-zinc-700 transition-colors"
+      >
+        <Pencil className="w-3 h-3" />
+        Edit
+      </button>
+    </div>
+  );
+}
+
+function PriceLine({ label, value }: { label: string; value: string }) {
+  return (
+    <div className="flex justify-between text-sm">
+      <span className="text-zinc-600">{label}</span>
+      <span className="text-zinc-900">{value}</span>
     </div>
   );
 }

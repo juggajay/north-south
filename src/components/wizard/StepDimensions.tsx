@@ -11,17 +11,20 @@ export function StepDimensions({ aiEstimate }: StepDimensionsProps) {
   const dimensions = useCabinetStore((state) => state.config.dimensions)
   const setDimension = useCabinetStore((state) => state.setDimension)
 
-  // No useThree() here! DimensionSync inside Canvas handles invalidation.
-
   return (
-    <div className="space-y-6 p-4">
+    <div className="space-y-10 px-6 py-8">
       <div>
-        <h2 className="text-lg font-semibold text-zinc-900">Set Dimensions</h2>
-        <p className="text-sm text-zinc-500">
-          {aiEstimate
-            ? 'We estimated these dimensions from your photo. Adjust as needed.'
-            : 'Enter your cabinet dimensions.'}
-        </p>
+        <h2 className="text-2xl font-bold text-zinc-900">Set Your Dimensions</h2>
+        {aiEstimate && (
+          <p className="text-sm text-zinc-500 mt-1">
+            AI suggests: {aiEstimate.width} x {aiEstimate.depth}mm
+          </p>
+        )}
+        {!aiEstimate && (
+          <p className="text-sm text-zinc-500 mt-1">
+            Enter your cabinet dimensions.
+          </p>
+        )}
       </div>
 
       <SliderControl
@@ -33,12 +36,6 @@ export function StepDimensions({ aiEstimate }: StepDimensionsProps) {
         onChange={(v) => setDimension('width', v)}
       />
 
-      <DepthSelector
-        value={dimensions.depth}
-        options={DEPTH_OPTIONS}
-        onChange={(v) => setDimension('depth', v)}
-      />
-
       <SliderControl
         label="Height"
         value={dimensions.height}
@@ -48,11 +45,11 @@ export function StepDimensions({ aiEstimate }: StepDimensionsProps) {
         onChange={(v) => setDimension('height', v)}
       />
 
-      {aiEstimate && (
-        <p className="text-xs text-zinc-400 text-center">
-          AI estimated: {aiEstimate.width} x {aiEstimate.depth} x {aiEstimate.height}mm
-        </p>
-      )}
+      <DepthSelector
+        value={dimensions.depth}
+        options={DEPTH_OPTIONS}
+        onChange={(v) => setDimension('depth', v)}
+      />
     </div>
   )
 }
