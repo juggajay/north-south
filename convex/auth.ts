@@ -44,6 +44,16 @@ export const getCurrentUser = query({
       .withIndex("by_email", (q) => q.eq("email", email))
       .first();
 
+    if (!user) {
+      return null;
+    }
+
+    // Return user with a clean name (Convex Auth may store subject ID as name)
+    const isHashLike = (n?: string) => n && /^[a-z0-9]{20,}$/i.test(n);
+    if (isHashLike(user.name)) {
+      return { ...user, name: email.split("@")[0] };
+    }
+
     return user;
   },
 });
@@ -70,6 +80,12 @@ export const getOrCreateUser = mutation({
       throw new Error("No email in authentication identity");
     }
 
+    // Resolve a human-readable name (identity.name can be a Convex internal subject ID)
+    const isHashLikeName = (n?: string) => n && /^[a-z0-9]{20,}$/i.test(n);
+    const resolvedName = (identity.name && !isHashLikeName(identity.name))
+      ? identity.name
+      : email.split("@")[0];
+
     // Try to find existing user
     const existingUser = await ctx.db
       .query("users")
@@ -77,13 +93,18 @@ export const getOrCreateUser = mutation({
       .first();
 
     if (existingUser) {
+      // Fix name if it was stored as a hash-like token
+      if (isHashLikeName(existingUser.name)) {
+        await ctx.db.patch(existingUser._id, { name: resolvedName });
+        return await ctx.db.get(existingUser._id);
+      }
       return existingUser;
     }
 
     // Create new user
     const userId = await ctx.db.insert("users", {
       email,
-      name: identity.name || email.split("@")[0],
+      name: resolvedName,
       createdAt: Date.now(),
     });
 
