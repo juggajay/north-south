@@ -1,4 +1,6 @@
 import { create } from "zustand";
+import type { SpaceAnalysis } from "@/types/ai-pipeline";
+import type { StylePreset } from "@/lib/constants/style-presets";
 
 // ============================================================================
 // TYPES
@@ -69,6 +71,17 @@ export interface DesignFlowState {
   freeText: string;
   budgetResponse: BudgetResponse | null;
 
+  // Space analysis (from Claude Vision — runs after photo capture)
+  spaceAnalysis: SpaceAnalysis | null;
+  isAnalyzing: boolean;
+  analysisError: string | null;
+
+  // Style preset (resolved from discovery choices via matchStylePreset)
+  stylePreset: StylePreset | null;
+
+  // Convex persistence
+  sessionId: string | null;
+
   // Design result (from AI / mock)
   designResult: DesignResult | null;
 
@@ -91,10 +104,15 @@ export interface DesignFlowState {
   setPurpose: (purpose: string) => void;
   addStyleChoice: (choice: StyleChoice) => void;
   setStyleSummary: (summary: string) => void;
+  setStylePreset: (preset: StylePreset) => void;
   setPriorities: (priorities: string[]) => void;
   setSpecificRequests: (requests: string[]) => void;
   setFreeText: (text: string) => void;
   setBudgetResponse: (response: BudgetResponse) => void;
+  setSpaceAnalysis: (analysis: SpaceAnalysis) => void;
+  setIsAnalyzing: (isAnalyzing: boolean) => void;
+  setAnalysisError: (error: string | null) => void;
+  setSessionId: (id: string | null) => void;
   setDesignResult: (result: DesignResult) => void;
   setProcessingProgress: (progress: number, step: string) => void;
   setQuotePhone: (phone: string) => void;
@@ -143,6 +161,11 @@ const initialState = {
   specificRequests: [] as string[],
   freeText: "",
   budgetResponse: null as BudgetResponse | null,
+  spaceAnalysis: null as SpaceAnalysis | null,
+  isAnalyzing: false,
+  analysisError: null as string | null,
+  stylePreset: null as StylePreset | null,
+  sessionId: null as string | null,
   designResult: null as DesignResult | null,
   processingProgress: 0,
   processingStep: "",
@@ -158,19 +181,25 @@ export const useDesignFlowStore = create<DesignFlowState>((set, get) => ({
   setUserName: (userName) => set({ userName }),
   setPhotoUrl: (photoUrl) => set({ photoUrl }),
   setRoomShape: (roomShape) => set({ roomShape }),
-  setWalls: (walls) => set({ walls }),
+  setWalls: (walls) => set({ walls, designResult: null }),
   updateWallLength: (wallId, length) =>
     set((s) => ({
       walls: s.walls.map((w) => (w.id === wallId ? { ...w, length } : w)),
+      designResult: null,
     })),
-  setPurpose: (purpose) => set({ purpose }),
+  setPurpose: (purpose) => set({ purpose, designResult: null }),
   addStyleChoice: (choice) =>
-    set((s) => ({ styleChoices: [...s.styleChoices, choice] })),
-  setStyleSummary: (styleSummary) => set({ styleSummary }),
-  setPriorities: (priorities) => set({ priorities }),
-  setSpecificRequests: (specificRequests) => set({ specificRequests }),
-  setFreeText: (freeText) => set({ freeText }),
+    set((s) => ({ styleChoices: [...s.styleChoices, choice], designResult: null })),
+  setStyleSummary: (styleSummary) => set({ styleSummary, designResult: null }),
+  setStylePreset: (stylePreset) => set({ stylePreset, designResult: null }),
+  setPriorities: (priorities) => set({ priorities, designResult: null }),
+  setSpecificRequests: (specificRequests) => set({ specificRequests, designResult: null }),
+  setFreeText: (freeText) => set({ freeText, designResult: null }),
   setBudgetResponse: (budgetResponse) => set({ budgetResponse }),
+  setSpaceAnalysis: (spaceAnalysis) => set({ spaceAnalysis }),
+  setIsAnalyzing: (isAnalyzing) => set({ isAnalyzing }),
+  setAnalysisError: (analysisError) => set({ analysisError }),
+  setSessionId: (sessionId) => set({ sessionId }),
   setDesignResult: (designResult) => set({ designResult }),
   setProcessingProgress: (processingProgress, processingStep) =>
     set({ processingProgress, processingStep }),

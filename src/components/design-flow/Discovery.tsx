@@ -3,6 +3,8 @@
 import { useState, useCallback } from "react";
 import { ArrowLeft, Check } from "lucide-react";
 import { useDesignFlowStore } from "@/stores/useDesignFlowStore";
+import { matchStylePreset } from "@/lib/constants/style-presets";
+import { useDesignSession } from "@/lib/hooks/useDesignSession";
 
 // ============================================================================
 // TYPES & CONSTANTS
@@ -120,6 +122,19 @@ const STYLE_ROUNDS: StyleRound[] = [
   },
 ];
 
+// Style signals mapped to presets in style-presets.ts
+// These signals drive matchStylePreset() to resolve the right Polytec materials
+const STYLE_ROUND_SIGNALS: Record<number, { a: string[]; b: string[] }> = {
+  1: {
+    a: ['light', 'clean', 'bright', 'natural'],        // "Light & airy"
+    b: ['warm', 'rich', 'heritage', 'dramatic'],        // "Warm & rich"
+  },
+  2: {
+    a: ['modern', 'minimal', 'clean', 'sleek'],         // "Sleek & modern"
+    b: ['classic', 'traditional', 'warm', 'country'],   // "Classic & timeless"
+  },
+};
+
 // ============================================================================
 // PROGRESS BAR
 // ============================================================================
@@ -176,9 +191,11 @@ export function Discovery() {
   const setPurpose = useDesignFlowStore((s) => s.setPurpose);
   const addStyleChoice = useDesignFlowStore((s) => s.addStyleChoice);
   const setStyleSummary = useDesignFlowStore((s) => s.setStyleSummary);
+  const setStylePreset = useDesignFlowStore((s) => s.setStylePreset);
   const setPriorities = useDesignFlowStore((s) => s.setPriorities);
   const setSpecificRequests = useDesignFlowStore((s) => s.setSpecificRequests);
   const setFreeText = useDesignFlowStore((s) => s.setFreeText);
+  const { saveUserContext } = useDesignSession();
 
   const [discoveryStep, setDiscoveryStep] = useState<DiscoveryStep>("q1");
   const [styleRound, setStyleRound] = useState(0);
@@ -186,6 +203,7 @@ export function Discovery() {
   const [localChoices, setLocalChoices] = useState<
     Array<{ round: number; choice: "a" | "b" }>
   >([]);
+  const [accumulatedSignals, setAccumulatedSignals] = useState<string[]>([]);
   const [selectedPriorities, setSelectedPriorities] = useState<string[]>([]);
   const [selectedChips, setSelectedChips] = useState<string[]>([]);
   const [localFreeText, setLocalFreeText] = useState("");
@@ -201,6 +219,7 @@ export function Discovery() {
     setStyleRound(0);
     setShowStyleSummary(false);
     setLocalChoices([]);
+    setAccumulatedSignals([]);
   }, []);
 
   const handleBackFromQ3 = useCallback(() => {
@@ -208,6 +227,7 @@ export function Discovery() {
     setStyleRound(0);
     setShowStyleSummary(false);
     setLocalChoices([]);
+    setAccumulatedSignals([]);
   }, []);
 
   // ── Q1: Purpose selection ──
@@ -215,9 +235,10 @@ export function Discovery() {
   const handlePurposeSelect = useCallback(
     (purpose: string) => {
       setPurpose(purpose);
+      saveUserContext({ purpose });
       setDiscoveryStep("q2");
     },
-    [setPurpose]
+    [setPurpose, saveUserContext]
   );
 
   // ── Q2: Style selection ──
@@ -230,6 +251,11 @@ export function Discovery() {
       setLocalChoices(updatedChoices);
       addStyleChoice({ ...newChoice });
 
+      // Accumulate style signals for preset matching
+      const roundSignals = STYLE_ROUND_SIGNALS[round]?.[choice] ?? [];
+      const newSignals = [...accumulatedSignals, ...roundSignals];
+      setAccumulatedSignals(newSignals);
+
       if (round >= STYLE_ROUNDS.length) {
         // Done with rounds, show summary
         const summaryParts = updatedChoices.map((c) => {
@@ -238,12 +264,23 @@ export function Discovery() {
         });
         const summary = summaryParts.join(", ").toLowerCase();
         setStyleSummary(summary);
+
+        // Resolve style preset from accumulated signals
+        const preset = matchStylePreset(newSignals, "unknown");
+        setStylePreset(preset);
+
+        // Save style context to Convex
+        saveUserContext({
+          styleSignals: newSignals,
+          stylePresetId: preset.id,
+        });
+
         setShowStyleSummary(true);
       } else {
         setStyleRound(round);
       }
     },
-    [styleRound, localChoices, addStyleChoice, setStyleSummary]
+    [styleRound, localChoices, accumulatedSignals, addStyleChoice, setStyleSummary, setStylePreset, saveUserContext]
   );
 
   const handleStyleConfirm = useCallback(() => {
@@ -270,6 +307,10 @@ export function Discovery() {
     setPriorities(selectedPriorities);
     setSpecificRequests(selectedChips);
     setFreeText(localFreeText);
+    saveUserContext({
+      priorities: selectedPriorities,
+      specificRequests: selectedChips,
+    });
     setStep("processing");
   }, [
     selectedPriorities,
@@ -278,6 +319,7 @@ export function Discovery() {
     setPriorities,
     setSpecificRequests,
     setFreeText,
+    saveUserContext,
     setStep,
   ]);
 

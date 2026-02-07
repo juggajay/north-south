@@ -1,9 +1,11 @@
 "use client";
 
-import { useState, useRef } from "react";
+import { useState, useRef, useEffect } from "react";
 import { Camera, Upload, ArrowLeft } from "lucide-react";
 import { useDesignFlowStore } from "@/stores/useDesignFlowStore";
 import type { RoomShape, Wall } from "@/stores/useDesignFlowStore";
+import { useAnalyzePhoto } from "@/lib/hooks/useAnalyzePhoto";
+import { useDesignSession } from "@/lib/hooks/useDesignSession";
 
 // ============================================================================
 // DEFAULT WALLS PER ROOM SHAPE
@@ -151,13 +153,37 @@ export function PhotoCapture() {
 
   const [showManualEntry, setShowManualEntry] = useState(false);
   const fileInputRef = useRef<HTMLInputElement>(null);
+  const photoFileRef = useRef<File | null>(null);
+  const { analyze, isMountedRef } = useAnalyzePhoto();
+  const { uploadFile, savePhoto, saveAnalysis } = useDesignSession();
+
+  // Unmount safety for analysis hook
+  useEffect(() => {
+    return () => {
+      isMountedRef.current = false;
+    };
+  }, [isMountedRef]);
 
   // Handle photo file selection (camera or upload)
   const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     if (file) {
+      photoFileRef.current = file;
       const url = URL.createObjectURL(file);
       setPhotoUrl(url);
+
+      // Fire-and-forget: analyze photo in background while user proceeds
+      analyze(url).then(() => {
+        // After analysis completes, save to Convex
+        const analysis = useDesignFlowStore.getState().spaceAnalysis;
+        if (analysis) saveAnalysis(analysis);
+      });
+
+      // Upload photo to Convex storage (fire-and-forget)
+      uploadFile(file).then((storageId) => {
+        if (storageId) savePhoto(storageId);
+      });
+
       next();
     }
   };

@@ -2,6 +2,18 @@ import { query, mutation } from "./_generated/server";
 import { v } from "convex/values";
 
 // ===================
+// STORAGE (for user photo/render uploads)
+// ===================
+
+/** Generate an upload URL for user photo/render storage */
+export const generateUploadUrl = mutation({
+  args: {},
+  handler: async (ctx) => {
+    return await ctx.storage.generateUploadUrl();
+  },
+});
+
+// ===================
 // CREATE
 // ===================
 

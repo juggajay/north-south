@@ -166,143 +166,124 @@ Return ONLY the JSON object, no markdown formatting or explanation.`,
   },
 });
 
+// ============================================================================
+// JOINERY SYSTEM INSTRUCTION (for Nano Banana Pro)
+// ============================================================================
+
+const JOINERY_SYSTEM_INSTRUCTION = `You are an expert architectural visualisation renderer for an Australian custom joinery company.
+Your role: take a room photograph and generate a photorealistic image showing new cabinetry installed.
+Rules:
+- MUST preserve existing walls, flooring, ceiling, windows, doors EXACTLY as in the original photo
+- MUST match the existing camera angle, perspective, and lens distortion EXACTLY
+- MUST match existing lighting direction, shadows, and colour temperature
+- NEVER change room architecture, wall colours, flooring, or ceiling
+- NEVER add non-cabinetry items (furniture, appliances, decorative objects)
+- NEVER generate text, watermarks, labels, or annotations
+- Cabinetry MUST look physically installed, not digitally overlaid
+- Hardware (handles/knobs) MUST be visible and consistent across all cabinets`;
+
 /**
- * Generate styled renders using Gemini image generation
+ * Generate a styled render using Gemini Nano Banana Pro
  *
- * Takes the original image and generates photorealistic renders
- * showing custom joinery in different style options.
+ * Takes the original image + full user context and generates a single
+ * photorealistic render showing custom joinery matching user preferences.
  *
- * Uses Gemini 2.0 Flash for image generation.
- * Handles partial failures gracefully - returns successful renders
- * even if some style generations fail.
+ * Uses narrative prompt with systemInstruction for best results.
  */
 export const generateRendersAction = action({
   args: {
     imageBase64: v.string(),
-    styles: v.array(
-      v.object({
-        id: v.string(),
-        name: v.string(),
-        polytec: v.array(v.string()),
-      })
-    ),
+    // Style (resolved from discovery, not from photo)
+    styleName: v.string(),
+    styleDescription: v.string(),
+    polytecPrimary: v.string(),
+    polytecSecondary: v.optional(v.string()),
+    doorProfile: v.string(),
+    hardware: v.string(),
+    // Space (from Claude Vision analysis)
     roomType: v.string(),
     dimensions: v.object({
       width: v.number(),
       depth: v.number(),
       height: v.number(),
     }),
-    styleAesthetic: v.string(),
     lightingConditions: v.string(),
+    flooring: v.string(),
+    wallFinishes: v.string(),
+    features: v.array(v.string()),
+    // User context (from discovery)
+    purpose: v.string(),
+    styleSummary: v.string(),
+    priorities: v.array(v.string()),
+    specificRequests: v.array(v.string()),
+    freeText: v.optional(v.string()),
+    // Wall dimensions from user
+    wallDimensions: v.array(v.object({ label: v.string(), lengthMm: v.number() })),
+    // Narrative prompt (pre-built on client)
+    prompt: v.string(),
   },
   handler: async (_ctx, args) => {
     const apiKey = process.env.GEMINI_API_KEY;
     if (!apiKey) {
       return {
-        success: false,
+        success: false as const,
         error: "Render generation service not configured. Please contact support.",
-        renders: [],
-        failedCount: args.styles.length,
-        errors: args.styles.map((s) => ({
-          styleId: s.id,
-          error: "API key not configured",
-        })),
       };
     }
 
     const ai = new GoogleGenAI({ apiKey });
-
-    // Use Gemini 2.0 Flash for image generation
-    // Note: Image generation capabilities vary by model availability
     const modelName = "gemini-3-pro-image-preview";
 
-    const renderResults = await Promise.all(
-      args.styles.slice(0, 3).map(async (style, index) => {
-        const prompt = `Generate a photorealistic interior render showing custom joinery/cabinetry in this ${args.roomType}.
-
-Style: ${style.name}
-Materials: ${style.polytec.join(", ")} (Polytec finishes)
-Space dimensions: ${args.dimensions.width}mm wide x ${args.dimensions.depth}mm deep x ${args.dimensions.height}mm high
-
-Requirements:
-- Keep the original room context (walls, floor, ceiling visible)
-- Add modern ${style.name.toLowerCase()} style cabinetry
-- Use ${style.polytec[0]} as primary material
-- Realistic ${args.lightingConditions} lighting
-- ${args.styleAesthetic} aesthetic
-- Professional custom joinery quality
-
-Output a single photorealistic image.`;
-
-        try {
-          const result = await ai.models.generateContent({
-            model: modelName,
-            contents: [
+    try {
+      // Image FIRST in parts array (best practice for image editing)
+      const result = await ai.models.generateContent({
+        model: modelName,
+        contents: [
+          {
+            role: "user",
+            parts: [
               {
-                role: "user",
-                parts: [
-                  { text: prompt },
-                  {
-                    inlineData: {
-                      mimeType: "image/jpeg",
-                      data: args.imageBase64,
-                    },
-                  },
-                ],
+                inlineData: {
+                  mimeType: "image/jpeg",
+                  data: args.imageBase64,
+                },
               },
+              { text: args.prompt },
             ],
-          });
+          },
+        ],
+        config: {
+          responseModalities: ["IMAGE"],
+          temperature: 0.4,
+          systemInstruction: JOINERY_SYSTEM_INSTRUCTION,
+        },
+      });
 
-          // Try to extract image from response
-          const imagePart = result.candidates?.[0]?.content?.parts?.find(
-            (part: Part) => part.inlineData !== undefined
-          );
+      // Extract image from response
+      const imagePart = result.candidates?.[0]?.content?.parts?.find(
+        (part: Part) => part.inlineData !== undefined
+      );
 
-          if (imagePart?.inlineData?.data) {
-            return {
-              success: true as const,
-              render: {
-                id: `render-${style.id}-${index}`,
-                styleLabel: style.name,
-                styleId: style.id,
-                imageBase64: imagePart.inlineData.data,
-              },
-            };
-          }
+      if (imagePart?.inlineData?.data) {
+        return {
+          success: true as const,
+          render: {
+            id: `render-${Date.now()}`,
+            imageBase64: imagePart.inlineData.data,
+          },
+        };
+      }
 
-          // If no image, model returned text instead
-          // This can happen if the model doesn't support image generation
-          return {
-            success: false as const,
-            error: "Model returned text instead of image",
-            styleId: style.id,
-          };
-        } catch (error) {
-          console.error(`Render generation failed for ${style.name}:`, error);
-          return {
-            success: false as const,
-            error: error instanceof Error ? error.message : "Unknown error",
-            styleId: style.id,
-          };
-        }
-      })
-    );
-
-    // Separate successful and failed renders
-    const successful = renderResults.filter(
-      (r): r is { success: true; render: typeof r extends { render: infer R } ? R : never } =>
-        r.success === true
-    );
-    const failed = renderResults.filter(
-      (r): r is { success: false; error: string; styleId: string } =>
-        r.success === false
-    );
-
-    return {
-      success: successful.length > 0,
-      renders: successful.map((r) => r.render),
-      failedCount: failed.length,
-      errors: failed.map((f) => ({ styleId: f.styleId, error: f.error })),
-    };
+      return {
+        success: false as const,
+        error: "Model returned text instead of image. Please try again.",
+      };
+    } catch (error) {
+      console.error("Render generation failed:", error);
+      return {
+        success: false as const,
+        error: error instanceof Error ? error.message : "Unknown error",
+      };
+    }
   },
 });

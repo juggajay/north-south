@@ -4,21 +4,15 @@ import { useEffect, useRef, useState, useCallback } from "react";
 import { motion, AnimatePresence, useReducedMotion } from "framer-motion";
 import { Check, AlertCircle, ArrowLeft, RotateCcw } from "lucide-react";
 import { useDesignFlowStore } from "@/stores/useDesignFlowStore";
-import type { DesignResult, CabinetSummary } from "@/stores/useDesignFlowStore";
-import { useProcessPhoto } from "@/lib/hooks/useProcessPhoto";
-import { generateLayout, type LayoutIntent, type WallSegment } from "@/lib/engine/layout-engine";
-import { calculatePricing } from "@/lib/engine/pricing-engine";
-import type { PipelineResult } from "@/types/ai-pipeline";
-import type { Priority } from "@/lib/engine/layout-engine";
+import { useGenerateRenders } from "@/lib/hooks/useGenerateRenders";
+import { matchStylePreset } from "@/lib/constants/style-presets";
 
 // ============================================================================
 // PROGRESS STEPS
 // ============================================================================
 
 const PROGRESS_STEPS = [
-  { key: "analyzing", label: "Understanding your space", targetPercent: 24, durationMs: 8000 },
-  { key: "measuring", label: "Checking dimensions", targetPercent: 49, durationMs: 2000 },
-  { key: "styling", label: "Matching your style", targetPercent: 74, durationMs: 2000 },
+  { key: "styling", label: "Matching your style", targetPercent: 30, durationMs: 2000 },
   { key: "creating", label: "Creating your kitchen picture", targetPercent: 95, durationMs: 30000 },
 ] as const;
 
@@ -35,106 +29,6 @@ const CREATING_TIPS = [
 ];
 
 // ============================================================================
-// HELPER: infer handle style from aesthetic
-// ============================================================================
-
-function inferHandleStyle(aesthetic: string): string {
-  const map: Record<string, string> = {
-    modern: "Brushed nickel bar",
-    traditional: "Brass cup pull",
-    industrial: "Matte black bar",
-    coastal: "Brushed brass knob",
-    scandinavian: "Birch wood peg",
-  };
-  return map[aesthetic] || "Brushed nickel bar";
-}
-
-// ============================================================================
-// HELPER: build DesignResult from pipeline + store data
-// ============================================================================
-
-function buildDesignResult(
-  pipelineResult: PipelineResult,
-  storeData: {
-    walls: { id: string; label: string; length: number }[];
-    purpose: string | null;
-    priorities: string[];
-    specificRequests: string[];
-  }
-): DesignResult {
-  // 1. Build wall segments — fallback to a single 3m wall if none provided
-  const wallSegments: WallSegment[] =
-    storeData.walls.length > 0
-      ? storeData.walls.map((w) => ({
-          label: w.label,
-          lengthMm: w.length * 1000,
-          selected: true,
-        }))
-      : [{ label: "Main wall", lengthMm: 3000, selected: true }];
-
-  const firstStyle = pipelineResult.styles[0];
-
-  // Map store priorities to layout engine Priority type
-  const validPriorities: Priority[] = (storeData.priorities || []).filter(
-    (p): p is Priority =>
-      ["storage", "clean-look", "easy-clean", "value", "wow-factor"].includes(p)
-  );
-
-  const intent: LayoutIntent = {
-    walls: wallSegments,
-    purpose: (storeData.purpose || "kitchen") as "kitchen" | "laundry" | "pantry" | "other",
-    budgetTier: "mid",
-    priorities: validPriorities,
-    specificRequests: storeData.specificRequests || [],
-    finishes: {
-      material: firstStyle?.polytec[0] || "Natural Oak",
-      hardware: "bar-pull-brushed-nickel",
-      doorProfile: "slab",
-    },
-  };
-
-  // 2. Generate layout
-  const layoutResult = generateLayout(intent);
-
-  // 3. Calculate pricing
-  const pricingResult = calculatePricing({
-    config: layoutResult.config,
-    budgetTier: "mid",
-  });
-
-  // 4. Build cabinets list from base modules
-  const cabinets: CabinetSummary[] = layoutResult.wallAssignments.flatMap((wa) =>
-    wa.modules
-      .filter((m) => m.position === "base")
-      .map((m, i) => ({
-        position: i + 1,
-        type: m.type,
-        label: m.label,
-        width: m.widthMm,
-      }))
-  );
-
-  // 5. Count overhead modules
-  const wallCabinets = layoutResult.wallAssignments.reduce(
-    (sum, wa) => sum + wa.modules.filter((m) => m.position === "overhead").length,
-    0
-  );
-
-  return {
-    renders: pipelineResult.renders.map((r) => r.imageUrl),
-    description: layoutResult.description,
-    priceRange: [
-      Math.round(pricingResult.total.lowCents / 100),
-      Math.round(pricingResult.total.highCents / 100),
-    ],
-    cabinets,
-    doorStyle: firstStyle?.name || "Classic Oak",
-    handleStyle: inferHandleStyle(pipelineResult.analysis.styleAesthetic),
-    wallCabinets,
-  };
-}
-
-// ============================================================================
 // DESIGN PROCESSING (Screen 6)
 // ============================================================================
 
@@ -144,6 +38,11 @@ export function DesignProcessing() {
   const purpose = useDesignFlowStore((s) => s.purpose);
   const priorities = useDesignFlowStore((s) => s.priorities);
   const specificRequests = useDesignFlowStore((s) => s.specificRequests);
+  const freeText = useDesignFlowStore((s) => s.freeText);
+  const styleSummary = useDesignFlowStore((s) => s.styleSummary);
+  const stylePreset = useDesignFlowStore((s) => s.stylePreset);
+  const spaceAnalysis = useDesignFlowStore((s) => s.spaceAnalysis);
+  const existingResult = useDesignFlowStore((s) => s.designResult);
   const setProcessingProgress = useDesignFlowStore((s) => s.setProcessingProgress);
   const setDesignResult = useDesignFlowStore((s) => s.setDesignResult);
   const next = useDesignFlowStore((s) => s.next);
@@ -151,15 +50,13 @@ export function DesignProcessing() {
   const prefersReducedMotion = useReducedMotion();
 
   const {
-    progress: pipelineProgress,
-    result: pipelineResult,
-    error: pipelineError,
-    processAsync,
+    generate,
     reset: resetPipeline,
-    isProcessing,
-    isSuccess,
-    isError,
-  } = useProcessPhoto();
+    isGenerating,
+    error: pipelineError,
+    designResult: pipelineDesignResult,
+    stage: pipelineStage,
+  } = useGenerateRenders();
 
   // Prevent double-invoke in React Strict Mode
   const invokedRef = useRef(false);
@@ -172,24 +69,52 @@ export function DesignProcessing() {
   const progressStartRef = useRef<{ startPercent: number; targetPercent: number; startTime: number; durationMs: number } | null>(null);
 
   // Determine current pipeline stage index
-  const currentStageKey = pipelineProgress?.stage || "analyzing";
+  const currentStageKey = pipelineStage === 'done' ? 'creating' : pipelineStage;
   const stageIndex = PROGRESS_STEPS.findIndex((s) => s.key === currentStageKey);
+
+  const isSuccess = pipelineStage === 'done' && pipelineDesignResult !== null;
+  const isError = pipelineError !== null;
+
+  // ── Phase 5: Skip processing if result already exists ──
+  useEffect(() => {
+    if (existingResult && !invokedRef.current) {
+      // No upstream changes — skip straight to presentation
+      next();
+    }
+  }, [existingResult, next]);
 
   // ── Start pipeline on mount ──
   useEffect(() => {
+    if (existingResult) return; // Skip if result exists
     if (!photoUrl || invokedRef.current) return;
+    if (!spaceAnalysis) return; // Need analysis for the prompt
     invokedRef.current = true;
 
-    processAsync(photoUrl).catch(() => {
+    // Resolve style preset — use store value or fallback
+    const resolvedPreset = stylePreset ?? matchStylePreset([], 'unknown');
+
+    generate({
+      photoUrl,
+      stylePreset: resolvedPreset,
+      spaceAnalysis,
+      walls,
+      purpose: purpose || 'kitchen',
+      styleSummary: styleSummary || 'modern, clean',
+      priorities,
+      specificRequests,
+      freeText,
+    }).catch(() => {
       // Error handled by hook state
     });
-  }, [photoUrl, processAsync]);
+  }, [
+    photoUrl, spaceAnalysis, stylePreset, walls, purpose,
+    styleSummary, priorities, specificRequests, freeText,
+    existingResult, generate,
+  ]);
 
   // ── Synthetic progress interpolation ──
-  // When the pipeline stage changes, start interpolating toward the new target
   useEffect(() => {
     if (isSuccess) {
-      // Snap to 100%
       setDisplayProgress(100);
       setProcessingProgress(100, "Complete");
       if (animFrameRef.current) cancelAnimationFrame(animFrameRef.current);
@@ -204,7 +129,6 @@ export function DesignProcessing() {
     const stepDef = PROGRESS_STEPS[stageIndex >= 0 ? stageIndex : 0];
     if (!stepDef) return;
 
-    // Snap to the start of this stage (previous stage's target + 1, or 0)
     const snapPercent = stageIndex > 0 ? PROGRESS_STEPS[stageIndex - 1].targetPercent + 1 : 0;
 
     progressStartRef.current = {
@@ -230,14 +154,12 @@ export function DesignProcessing() {
 
       const elapsed = performance.now() - p.startTime;
       const t = Math.min(elapsed / p.durationMs, 1);
-      // Ease-out cubic for decelerating feel
       const eased = 1 - Math.pow(1 - t, 3);
       const current = p.startPercent + (p.targetPercent - p.startPercent) * eased;
 
       const rounded = Math.round(current);
       setDisplayProgress(rounded);
 
-      // Update store for accessibility
       const stepDef = PROGRESS_STEPS[stageIndex >= 0 ? stageIndex : 0];
       if (stepDef) {
         setProcessingProgress(rounded, stepDef.label);
@@ -262,44 +184,52 @@ export function DesignProcessing() {
     return () => clearInterval(interval);
   }, [currentStageKey]);
 
-  // ── On success, build DesignResult and advance ──
+  // ── On success, save DesignResult and advance ──
   useEffect(() => {
-    if (!isSuccess || !pipelineResult || completedRef.current) return;
+    if (!isSuccess || !pipelineDesignResult || completedRef.current) return;
     completedRef.current = true;
 
-    const designResult = buildDesignResult(pipelineResult, {
-      walls,
-      purpose,
-      priorities,
-      specificRequests,
-    });
-
-    // Brief delay so the user sees 100% before transitioning
     const timeout = setTimeout(() => {
-      setDesignResult(designResult);
+      setDesignResult(pipelineDesignResult);
       next();
     }, 600);
     return () => clearTimeout(timeout);
-  }, [isSuccess, pipelineResult, walls, purpose, priorities, specificRequests, setDesignResult, next]);
+  }, [isSuccess, pipelineDesignResult, setDesignResult, next]);
 
   // ── Retry handler ──
   const handleRetry = useCallback(() => {
-    if (!photoUrl) return;
+    if (!photoUrl || !spaceAnalysis) return;
     invokedRef.current = false;
     completedRef.current = false;
     setDisplayProgress(0);
     resetPipeline();
-    // Re-trigger on next tick after reset
+
+    const resolvedPreset = stylePreset ?? matchStylePreset([], 'unknown');
+
     setTimeout(() => {
       invokedRef.current = true;
-      processAsync(photoUrl).catch(() => {});
+      generate({
+        photoUrl,
+        stylePreset: resolvedPreset,
+        spaceAnalysis,
+        walls,
+        purpose: purpose || 'kitchen',
+        styleSummary: styleSummary || 'modern, clean',
+        priorities,
+        specificRequests,
+        freeText,
+      }).catch(() => {});
     }, 50);
-  }, [photoUrl, resetPipeline, processAsync]);
+  }, [
+    photoUrl, spaceAnalysis, stylePreset, walls, purpose,
+    styleSummary, priorities, specificRequests, freeText,
+    resetPipeline, generate,
+  ]);
 
-  // ── Go back to photo step ──
+  // ── Go back ──
   const handleBackToPhoto = useCallback(() => {
-    back(); // to discovery-priorities
-    back(); // further back — store's back() handles step order
+    back();
+    back();
   }, [back]);
 
   // ── No photo guard ──
@@ -331,7 +261,6 @@ export function DesignProcessing() {
   if (isError) {
     return (
       <div className="relative min-h-[100dvh] flex flex-col items-center justify-center overflow-hidden">
-        {/* Blurred photo background */}
         <div
           className="absolute inset-0 bg-cover bg-center blur-2xl scale-110 brightness-50"
           style={{ backgroundImage: `url(${photoUrl})` }}
@@ -429,7 +358,6 @@ export function DesignProcessing() {
 
             return (
               <li key={step.key} className="flex items-center gap-3">
-                {/* Step indicator */}
                 <div
                   className={[
                     "flex items-center justify-center w-6 h-6 rounded-full shrink-0 transition-colors duration-300",
@@ -453,7 +381,6 @@ export function DesignProcessing() {
                   )}
                 </div>
 
-                {/* Step label */}
                 <span
                   className={[
                     "text-sm transition-colors duration-300",

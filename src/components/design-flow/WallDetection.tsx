@@ -1,9 +1,12 @@
 "use client";
 
-import { useState, useCallback } from "react";
-import { ArrowLeft, Minus, Plus, Check } from "lucide-react";
+import { useState, useCallback, useEffect } from "react";
+import { ArrowLeft, Minus, Plus, Check, Loader2 } from "lucide-react";
 import { useDesignFlowStore } from "@/stores/useDesignFlowStore";
 import type { Wall, RoomShape } from "@/stores/useDesignFlowStore";
+import { estimateDimensions } from "@/lib/ai/depth-estimation";
+import type { SpaceAnalysis } from "@/types/ai-pipeline";
+import { useDesignSession } from "@/lib/hooks/useDesignSession";
 
 // ============================================================================
 // CONSTANTS
@@ -12,6 +15,60 @@ import type { Wall, RoomShape } from "@/stores/useDesignFlowStore";
 const MIN_LENGTH = 1.0;
 const MAX_LENGTH = 6.0;
 const STEP = 0.1;
+
+// Default walls per shape (used when no photo analysis available)
+const DEFAULT_WALLS: Record<RoomShape, Wall[]> = {
+  straight: [{ id: "a", label: "Wall A", length: 3.0 }],
+  "l-shape": [
+    { id: "a", label: "Wall A", length: 3.0 },
+    { id: "b", label: "Wall B", length: 2.4 },
+  ],
+  "u-shape": [
+    { id: "a", label: "Wall A", length: 3.0 },
+    { id: "b", label: "Wall B", length: 2.4 },
+    { id: "c", label: "Wall C", length: 3.0 },
+  ],
+  galley: [
+    { id: "a", label: "Wall A", length: 3.0 },
+    { id: "b", label: "Wall B (opposite)", length: 3.0 },
+  ],
+};
+
+/**
+ * Derive wall dimensions from AI space analysis.
+ * Converts mm estimates to metres, constrained by depth-estimation module.
+ */
+function deriveWallsFromAnalysis(
+  analysis: SpaceAnalysis,
+  roomShape: RoomShape | null
+): Wall[] {
+  const dims = estimateDimensions(analysis, "basic");
+  const widthM = +(dims.width / 1000).toFixed(1);
+  const depthM = +(dims.depth / 1000).toFixed(1);
+
+  const shape = roomShape || "l-shape";
+
+  switch (shape) {
+    case "straight":
+      return [{ id: "a", label: "Wall A", length: widthM }];
+    case "l-shape":
+      return [
+        { id: "a", label: "Wall A", length: widthM },
+        { id: "b", label: "Wall B", length: depthM },
+      ];
+    case "u-shape":
+      return [
+        { id: "a", label: "Wall A", length: widthM },
+        { id: "b", label: "Wall B", length: depthM },
+        { id: "c", label: "Wall C", length: widthM },
+      ];
+    case "galley":
+      return [
+        { id: "a", label: "Wall A", length: widthM },
+        { id: "b", label: "Wall B (opposite)", length: widthM },
+      ];
+  }
+}
 
 // ============================================================================
 // ROOM SHAPE SCHEMATIC SVGs
@@ -443,24 +500,66 @@ export function WallDetection() {
   const walls = useDesignFlowStore((s) => s.walls);
   const setWalls = useDesignFlowStore((s) => s.setWalls);
   const updateWallLength = useDesignFlowStore((s) => s.updateWallLength);
+  const spaceAnalysis = useDesignFlowStore((s) => s.spaceAnalysis);
+  const isAnalyzing = useDesignFlowStore((s) => s.isAnalyzing);
+  const setRoomShape = useDesignFlowStore((s) => s.setRoomShape);
+  const { saveWallData } = useDesignSession();
 
   const [subScreen, setSubScreen] = useState<SubScreen>("confirmation");
-
-  // If no walls are set (came from photo path), generate mock walls
-  const effectiveWalls =
-    walls.length > 0
-      ? walls
-      : [
-          { id: "a", label: "Wall A", length: 3.0 },
-          { id: "b", label: "Wall B", length: 2.4 },
-        ];
+  const [wallsInitialized, setWallsInitialized] = useState(false);
 
   const effectiveShape = roomShape || "l-shape";
 
-  // Ensure store has the mock walls if they aren't set
-  if (walls.length === 0) {
-    // We call setWalls in a microtask to avoid setting state during render
-    queueMicrotask(() => setWalls(effectiveWalls));
+  // Derive walls from AI analysis or use defaults
+  useEffect(() => {
+    if (wallsInitialized) return;
+    if (walls.length > 0) {
+      setWallsInitialized(true);
+      return;
+    }
+    // Wait for analysis to finish if it's running
+    if (isAnalyzing) return;
+
+    if (spaceAnalysis) {
+      // Use AI-estimated dimensions
+      const aiWalls = deriveWallsFromAnalysis(spaceAnalysis, roomShape);
+      setWalls(aiWalls);
+      // Auto-detect room shape if not set
+      if (!roomShape) {
+        setRoomShape("l-shape");
+      }
+    } else {
+      // No analysis available — use defaults
+      const defaults = DEFAULT_WALLS[effectiveShape];
+      setWalls(defaults);
+    }
+    setWallsInitialized(true);
+  }, [
+    wallsInitialized, walls.length, isAnalyzing, spaceAnalysis,
+    roomShape, effectiveShape, setWalls, setRoomShape,
+  ]);
+
+  const effectiveWalls =
+    walls.length > 0
+      ? walls
+      : DEFAULT_WALLS[effectiveShape];
+
+  // Show loading state while analysis is running and walls haven't been set yet
+  if (isAnalyzing && walls.length === 0) {
+    return (
+      <div className="min-h-[100dvh] bg-white px-6 pt-4 pb-8 flex flex-col items-center justify-center">
+        <Loader2 className="size-8 text-[#77BC40] animate-spin mb-4" />
+        <p
+          className="text-lg text-[#232323] text-center"
+          style={{ fontFamily: "var(--font-display)" }}
+        >
+          Analysing your photo...
+        </p>
+        <p className="text-sm text-[#616161] text-center mt-2">
+          Estimating room dimensions from your image
+        </p>
+      </div>
+    );
   }
 
   // ── Screen 4a: Wall Confirmation ──
@@ -480,14 +579,17 @@ export function WallDetection() {
           {/* AI companion message */}
           <div className="bg-[#F9FBF7] border border-[#77BC40]/20 rounded-xl p-4">
             <p className="text-sm text-[#232323] leading-relaxed">
-              {describeShape(effectiveShape, effectiveWalls)}
+              {spaceAnalysis
+                ? `From your photo, I can see ${describeShape(effectiveShape, effectiveWalls).toLowerCase()}`
+                : describeShape(effectiveShape, effectiveWalls)
+              }
             </p>
           </div>
 
           {/* Detected walls list */}
           <div className="mt-6 space-y-3">
             <h3 className="text-xs font-semibold text-[#616161] uppercase tracking-wider">
-              Detected Walls
+              {spaceAnalysis ? "Estimated Walls" : "Detected Walls"}
             </h3>
             {effectiveWalls.map((wall) => (
               <div
@@ -566,7 +668,11 @@ export function WallDetection() {
 
         {/* CTA */}
         <button
-          onClick={() => setStep("discovery-purpose")}
+          onClick={() => {
+            // Save walls to Convex (fire-and-forget)
+            saveWallData(effectiveWalls, effectiveShape);
+            setStep("discovery-purpose");
+          }}
           className="mt-8 w-full h-[52px] flex items-center justify-center gap-2 bg-[#232323] text-white text-[15px] font-semibold rounded-xl shadow-lg shadow-[#232323]/10 hover:bg-[#2D2D2D] active:scale-[0.98] transition-all"
         >
           Looks Good

@@ -1,8 +1,10 @@
 "use client";
 
+import { useEffect } from "react";
 import { motion, useReducedMotion, type Variants } from "framer-motion";
 import { ArrowRight } from "lucide-react";
 import { useDesignFlowStore } from "@/stores/useDesignFlowStore";
+import { useDesignSession } from "@/lib/hooks/useDesignSession";
 
 // ============================================================================
 // ANIMATION VARIANTS
@@ -30,6 +32,13 @@ export function AIIntroduction() {
   const next = useDesignFlowStore((s) => s.next);
   const prefersReducedMotion = useReducedMotion();
   const shouldAnimate = !prefersReducedMotion;
+
+  const { initSession } = useDesignSession();
+
+  // Initialize or restore Convex session on mount
+  useEffect(() => {
+    initSession();
+  }, [initSession]);
 
   return (
     <div className="min-h-[100dvh] flex flex-col items-center justify-center bg-white px-6">
