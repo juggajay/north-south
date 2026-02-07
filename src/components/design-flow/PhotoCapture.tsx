@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useRef, useEffect } from "react";
+import { useState, useRef } from "react";
 import { Camera, Upload, ArrowLeft } from "lucide-react";
 import { useDesignFlowStore } from "@/stores/useDesignFlowStore";
 import type { RoomShape, Wall } from "@/stores/useDesignFlowStore";
@@ -154,15 +154,8 @@ export function PhotoCapture() {
   const [showManualEntry, setShowManualEntry] = useState(false);
   const fileInputRef = useRef<HTMLInputElement>(null);
   const photoFileRef = useRef<File | null>(null);
-  const { analyze, isMountedRef } = useAnalyzePhoto();
+  const { analyze } = useAnalyzePhoto();
   const { uploadFile, savePhoto, saveAnalysis } = useDesignSession();
-
-  // Unmount safety for analysis hook
-  useEffect(() => {
-    return () => {
-      isMountedRef.current = false;
-    };
-  }, [isMountedRef]);
 
   // Handle photo file selection (camera or upload)
   const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
